@@ -57,6 +57,8 @@ describe('AutoCompleteAdapter', () => {
       disposable: new CompositeDisposable(),
       process: undefined as any,
       projectPath: '/',
+      additionalPaths: new Set(),
+      considerDefinitionPath: (_: string): void => {},
     };
   }
 
