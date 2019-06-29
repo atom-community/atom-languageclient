@@ -67,6 +67,7 @@ export class ServerManager {
     private _changeWatchedFileFilter: (filePath: string) => boolean,
     private _reportBusyWhile: ReportBusyWhile,
     private _languageServerName: string,
+    private _stopServersGracefully: boolean,
   ) {
     this.updateNormalizedProjectPaths();
   }
@@ -226,7 +227,7 @@ export class ServerManager {
         this._activeServers.splice(this._activeServers.indexOf(server), 1);
         this._stoppingServers.push(server);
         server.disposable.dispose();
-        if (server.connection.isConnected) {
+        if (this._stopServersGracefully && server.connection.isConnected) {
           await server.connection.shutdown();
         }
 
