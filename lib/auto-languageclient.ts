@@ -478,7 +478,10 @@ export default class AutoLanguageClient {
       suggestionPriority: 2,
       excludeLowerPriority: false,
       getSuggestions: this.getSuggestions.bind(this),
-      onDidInsertSuggestion: this.onDidInsertSuggestion.bind(this),
+      onDidInsertSuggestion: (event) => {
+        this.handleAdditionalTextEdits(event);
+        this.onDidInsertSuggestion(event);
+      },
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
     };
   }
@@ -515,6 +518,16 @@ export default class AutoLanguageClient {
     _suggestion: ac.AnySuggestion,
     _request: ac.SuggestionsRequestedEvent,
   ): void {
+  }
+
+  // Handle additional stuff after a suggestion insert, e.g. `additionalTextEdits`.
+  private handleAdditionalTextEdits(e: ac.SuggestionInsertedEvent): void {
+    const suggestion = e.suggestion as atomIde.SuggestionBase;
+    const additionalEdits = suggestion.completionItem && suggestion.completionItem.additionalTextEdits;
+    const buffer = e.editor.getBuffer();
+
+    ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(additionalEdits));
+    buffer.groupLastChanges();
   }
 
   protected onDidInsertSuggestion(_arg: ac.SuggestionInsertedEvent): void { }
