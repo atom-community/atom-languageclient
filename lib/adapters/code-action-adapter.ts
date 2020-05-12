@@ -44,6 +44,8 @@ export default class CodeActionAdapter {
     editor: TextEditor,
     range: Range,
     diagnostics: atomIde.Diagnostic[],
+    filterActions: (actions: (Command | CodeAction)[]) => (Command | CodeAction)[],
+    onApply: (action: (Command | CodeAction)) => Promise<boolean>,
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return [];
@@ -51,16 +53,19 @@ export default class CodeActionAdapter {
     assert(serverCapabilities.codeActionProvider, 'Must have the textDocument/codeAction capability');
 
     const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics);
-    const actions = await connection.codeAction(params);
-    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection));
+    const actions = filterActions(await connection.codeAction(params));
+    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection, onApply));
   }
 
   private static createCodeAction(
     action: Command | CodeAction,
     connection: LanguageClientConnection,
+    onApply: (action: (Command | CodeAction)) => Promise<boolean>,
   ): atomIde.CodeAction {
     return {
       async apply() {
+        if (await onApply(action) === false) return;
+
         if (CodeAction.is(action)) {
           CodeActionAdapter.applyWorkspaceEdit(action.edit);
           await CodeActionAdapter.executeCommand(action.command, connection);

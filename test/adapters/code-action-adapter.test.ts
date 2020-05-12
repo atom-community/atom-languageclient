@@ -52,6 +52,8 @@ describe('CodeActionAdapter', () => {
             providerName: 'test linter',
           },
         ],
+        (_actions) => _actions,
+        async (_action) => true,
       );
 
       expect((languageClient as any).codeAction.called).to.be.true;
