@@ -189,6 +189,12 @@ export default class AutoLanguageClient {
           },
           codeAction: {
             dynamicRegistration: false,
+            codeActionLiteralSupport: {
+              codeActionKind: {
+                // TODO explicitly support more?
+                valueSet: ['']
+              }
+            }
           },
           codeLens: {
             dynamicRegistration: false,
