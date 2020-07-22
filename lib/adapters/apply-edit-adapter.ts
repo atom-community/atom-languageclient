@@ -13,7 +13,7 @@ import {
 /** Public: Adapts workspace/applyEdit commands to editors. */
 export default class ApplyEditAdapter {
   /** Public: Attach to a {LanguageClientConnection} to receive edit events. */
-  public static attach(connection: LanguageClientConnection) {
+  public static attach(connection: LanguageClientConnection): void {
     connection.onApplyEdit((m) => ApplyEditAdapter.onApplyEdit(m));
   }
 
@@ -49,7 +49,7 @@ export default class ApplyEditAdapter {
     if (params.edit.documentChanges) {
       changes = {};
       params.edit.documentChanges.forEach((change) => {
-        if (change && change.textDocument) {
+        if (change && "textDocument" in change && change.textDocument) {
           changes[change.textDocument.uri] = change.edits;
         }
       });
