@@ -33,7 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
     "chai": "^4.2.0",
-    "eslint": "^7.5.0",
+    "eslint": "^7.6.0",
     "mocha": "^8.1.0",
     "mocha-appveyor-reporter": "^0.4.2",
     "sinon": "^9.0.2",
