@@ -25,7 +25,7 @@
   "devDependencies": {
     "@atom/mocha-test-runner": "^1.6.0",
     "@types/atom": "^1.40.4",
-    "@types/chai": "^4.2.13",
+    "@types/chai": "^4.2.14",
     "@types/fuzzaldrin-plus": "0.6.1",
     "@types/mocha": "^8.0.3",
     "@types/node": "14.11.8",
