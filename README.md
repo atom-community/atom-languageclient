@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/atom-ide-community/atom-languageclient/workflows/CI/badge.svg)](https://github.com/atom-ide-community/atom-languageclient/actions) [![Dependency Status](https://david-dm.org/atom-ide-community/atom-languageclient.svg)](https://david-dm.org/atom-ide-community/atom-languageclient)
 
-This is a fork of [atom/atom-languageclient](https://github.com/atom/atom-languageclient)
+This repo was moved from [atom/atom-languageclient](https://github.com/atom/atom-languageclient)
 
 Provide integration support for adding Language Server Protocol servers to Atom.
 
