@@ -1,5 +1,5 @@
 {
-  "name": "atom-ide-languageclient",
+  "name": "atom-languageclient",
   "version": "0.9.9",
   "description": "Integrate Language Servers with Atom",
   "repository": "https://github.com/atom-ide-community/atom-ide-languageclient",
