@@ -22,7 +22,6 @@ jobs:
 
       - uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update Dependencies
           title: "fix: Update Dependencies"
           labels: Dependencies
@@ -46,7 +45,6 @@ jobs:
 
       - uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update devDependencies
           title: "chore: Update devDependencies"
           labels: Dependencies
