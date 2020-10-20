@@ -1,8 +1,7 @@
 name: Bump_Dependencies
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  push
 
 jobs:
   Bump_Dependencies:
