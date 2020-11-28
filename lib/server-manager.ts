@@ -23,9 +23,9 @@ export interface LanguageServerProcess extends EventEmitter {
   stderr: stream.Readable;
   pid: number;
 
-  kill(signal?: string): void;
+  kill(signal?: NodeJS.Signals | number): void;
   on(event: 'error', listener: (err: Error) => void): this;
-  on(event: 'exit', listener: (code: number, signal: string) => void): this;
+  on(event: 'exit', listener: (code: number, signal: NodeJS.Signals | number) => void): this;
 }
 
 /** The necessary elements for a server that has started or is starting. */
