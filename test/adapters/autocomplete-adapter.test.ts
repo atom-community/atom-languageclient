@@ -483,6 +483,27 @@ describe('AutoCompleteAdapter', () => {
       result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
       expect(result.replacementPrefix).equals('#al');
     });
+
+    it('does not include the triggerChar in replacementPrefix', async () => {
+      const customRequest = createRequest({ prefix: '.', position: new Point(0, 4) });
+      customRequest.editor.setText('foo.');
+      server.capabilities.completionProvider!.triggerCharacters = ['.'];
+      sinon.stub(server.connection, 'completion').resolves([
+          createCompletionItem('bar'),
+      ]);
+      let result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
+      expect(result.replacementPrefix).equals('');
+      customRequest.editor.setTextInBufferRange([[0, 4], [0, 4]], 'b');
+      customRequest.prefix = 'b';
+      customRequest.bufferPosition = new Point(0, 5);
+      result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
+      expect(result.replacementPrefix).equals('b');
+      customRequest.editor.setTextInBufferRange([[0, 5], [0, 5]], 'a');
+      customRequest.prefix = 'ba';
+      customRequest.bufferPosition = new Point(0, 6);
+      result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
+      expect(result.replacementPrefix).equals('ba');
+    });
   });
 
   describe('completionKindToSuggestionType', () => {
