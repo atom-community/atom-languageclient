@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.0...v1.0.1) (2020-11-30)
+
+
+### Bug Fixes
+
+* fix removing triggerChar ([5ef25a8](https://github.com/atom-ide-community/atom-languageclient/commit/5ef25a85a26fc0b22cfa1e31f8041c2c0dc5e8f0))
+* kill and on exit signature match child_process ([#103](https://github.com/atom-ide-community/atom-languageclient/issues/103)) ([84f5401](https://github.com/atom-ide-community/atom-languageclient/commit/84f54016247c45c96286107d759cb30907024817))
+
 ## v1.0.0
 
 - Repo moved to https://github.com/atom-ide-community/atom-languageclient so the community can take over development.
