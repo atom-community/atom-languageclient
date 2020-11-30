@@ -1,3 +1,8 @@
+## v1.0.0
+
+- Repo moved to https://github.com/atom-ide-community/atom-languageclient so the community can take over development.
+- Updated deps
+
 ## v0.9.9
 
 - Fixes (bugs introduced in v0.9.8)
