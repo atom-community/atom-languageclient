@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.2...v1.0.3) (2020-12-11)
+
+
+### Bug Fixes
+
+* bump deps + devDeps ([#105](https://github.com/atom-ide-community/atom-languageclient/issues/105)) ([f98326c](https://github.com/atom-ide-community/atom-languageclient/commit/f98326c942fa0e9ffa541505f5e5c33cdebb9203))
+
 ## [1.0.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.1...v1.0.2) (2020-11-30)
 
 
