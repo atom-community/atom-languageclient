@@ -123,7 +123,7 @@ export default class AutoLanguageClient {
       processId: process.pid,
       rootPath: projectPath,
       rootUri: Convert.pathToUri(projectPath),
-      workspaceFolders: [],
+      workspaceFolders: null,
       capabilities: {
         workspace: {
           applyEdit: true,
