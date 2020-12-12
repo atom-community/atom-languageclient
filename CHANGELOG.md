@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.3...v1.0.4) (2020-12-12)
+
+
+### Bug Fixes
+
+* set workspaceFolders to null when there is no workspace ([5814197](https://github.com/atom-ide-community/atom-languageclient/commit/58141978570ed0ab8736b4d8f28a57425b4f08fb))
+
 ## [1.0.3](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.2...v1.0.3) (2020-12-11)
 
 
