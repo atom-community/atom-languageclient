@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.4...v1.0.5) (2020-12-20)
+
+
+### Bug Fixes
+
+* update fuzzaldrin-plus-fast ([#109](https://github.com/atom-ide-community/atom-languageclient/issues/109)) ([8c8053b](https://github.com/atom-ide-community/atom-languageclient/commit/8c8053b8b7efebb812b2a773f2d9bfb785695885))
+
 ## [1.0.4](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.3...v1.0.4) (2020-12-12)
 
 
