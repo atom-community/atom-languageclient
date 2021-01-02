@@ -11,7 +11,9 @@ import {
   CompletionParams,
   CompletionTriggerKind,
   InsertTextFormat,
+  InsertReplaceEdit,
   LanguageClientConnection,
+  Range,
   ServerCapabilities,
   TextEdit,
 } from '../languageclient';
@@ -21,6 +23,18 @@ import {
 } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
 import { Suggestion, TextSuggestion, SnippetSuggestion } from 'atom-ide';
+
+/**
+ * Defines the behavior of suggestion acceptance.
+ * Assume you have "cons|ole" in the editor (`|` is the cursor position)
+ * and the autocomplete suggestion is `const`.
+ * - insert mode: const|ole
+ * - replace mode: const|
+ */
+enum InsertMode {
+  insert = 'insert',
+  replace = 'replace',
+}
 
 /**
  * Holds a list of suggestions generated from the CompletionItem[]
@@ -76,6 +90,7 @@ export default class AutocompleteAdapter {
    * @param onDidConvertCompletionItem An optional function that takes a {CompletionItem},
    *   an {atom$AutocompleteSuggestion} and a {atom$AutocompleteRequest}
    *   allowing you to adjust converted items.
+   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
    * @returns A {Promise} of an {Array} of {atom$AutocompleteSuggestion}s containing the
    *   AutoComplete+ suggestions to display.
    */
@@ -84,6 +99,7 @@ export default class AutocompleteAdapter {
     request: ac.SuggestionsRequestedEvent,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
     minimumWordLength?: number,
+    insertMode: InsertMode = InsertMode.insert,
   ): Promise<ac.AnySuggestion[]> {
     const triggerChars = server.capabilities.completionProvider != null
       ? server.capabilities.completionProvider.triggerCharacters || []
@@ -98,8 +114,8 @@ export default class AutocompleteAdapter {
     }
 
     // Get the suggestions either from the cache or by calling the language server
-    const suggestions = await
-      this.getOrBuildSuggestions(server, request, triggerChar, triggerOnly, onDidConvertCompletionItem);
+    const suggestions = await this.getOrBuildSuggestions(
+      server, request, triggerChar, triggerOnly, insertMode, onDidConvertCompletionItem);
 
     // We must update the replacement prefix as characters are added and removed
     const cache = this._suggestionCache.get(server)!;
@@ -137,6 +153,7 @@ export default class AutocompleteAdapter {
     request: ac.SuggestionsRequestedEvent,
     triggerChar: string,
     triggerOnly: boolean,
+    insertMode: InsertMode,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
   ): Promise<Suggestion[]> {
     const cache = this._suggestionCache.get(server);
@@ -164,8 +181,8 @@ export default class AutocompleteAdapter {
 
     // Setup the cache for subsequent filtered results
     const isComplete = completions === null || Array.isArray(completions) || completions.isIncomplete === false;
-    const suggestionMap =
-      this.completionItemsToSuggestions(completions, request, triggerColumns, onDidConvertCompletionItem);
+    const suggestionMap = this.completionItemsToSuggestions(
+      completions, request, triggerColumns, insertMode, onDidConvertCompletionItem);
     this._suggestionCache.set(server, {
       isIncomplete: !isComplete,
       triggerChar,
@@ -328,6 +345,7 @@ export default class AutocompleteAdapter {
    * @param completionItems An {Array} of {CompletionItem} objects or a {CompletionList} containing completion
    *   items to be converted.
    * @param request The {atom$AutocompleteRequest} to satisfy.
+   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
    * @param onDidConvertCompletionItem A function that takes a {CompletionItem}, an {atom$AutocompleteSuggestion}
    *   and a {atom$AutocompleteRequest} allowing you to adjust converted items.
    * @returns A {Map} of AutoComplete+ suggestions ordered by the CompletionItems sortText.
@@ -336,6 +354,7 @@ export default class AutocompleteAdapter {
     completionItems: CompletionItem[] | CompletionList | null,
     request: ac.SuggestionsRequestedEvent,
     triggerColumns: [number, number],
+    insertMode: InsertMode,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
   ): Map<Suggestion, PossiblyResolvedCompletionItem> {
     const completionsArray = Array.isArray(completionItems)
@@ -346,7 +365,7 @@ export default class AutocompleteAdapter {
       .map<[Suggestion, PossiblyResolvedCompletionItem]>(
         (s) => [
           AutocompleteAdapter.completionItemToSuggestion(
-            s, {} as Suggestion, request, triggerColumns, onDidConvertCompletionItem),
+            s, {} as Suggestion, request, triggerColumns, insertMode, onDidConvertCompletionItem),
           new PossiblyResolvedCompletionItem(s, false),
         ],
       ),
@@ -359,6 +378,7 @@ export default class AutocompleteAdapter {
    * @param item An {CompletionItem} containing a completion item to be converted.
    * @param suggestion A {atom$AutocompleteSuggestion} to have the conversion applied to.
    * @param request The {atom$AutocompleteRequest} to satisfy.
+   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
    * @param onDidConvertCompletionItem A function that takes a {CompletionItem}, an {atom$AutocompleteSuggestion}
    *   and a {atom$AutocompleteRequest} allowing you to adjust converted items.
    * @returns The {atom$AutocompleteSuggestion} passed in as suggestion with the conversion applied.
@@ -368,11 +388,13 @@ export default class AutocompleteAdapter {
     suggestion: Suggestion,
     request: ac.SuggestionsRequestedEvent,
     triggerColumns: [number, number],
+    insertMode: InsertMode,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
   ): Suggestion {
     AutocompleteAdapter.applyCompletionItemToSuggestion(item, suggestion as TextSuggestion);
     AutocompleteAdapter.applyTextEditToSuggestion(
-      item.textEdit, request.editor, triggerColumns, request.bufferPosition, suggestion as TextSuggestion,
+      item.textEdit, request.editor, triggerColumns, request.bufferPosition,
+      suggestion as TextSuggestion, insertMode,
     );
     AutocompleteAdapter.applySnippetToSuggestion(item, suggestion as SnippetSuggestion);
     if (onDidConvertCompletionItem != null) {
@@ -429,18 +451,29 @@ export default class AutocompleteAdapter {
    * @param textEdit A {TextEdit} from a CompletionItem to apply.
    * @param editor An Atom {TextEditor} used to obtain the necessary text replacement.
    * @param suggestion An {atom$AutocompleteSuggestion} to set the replacementPrefix and text properties of.
+   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
    */
   public static applyTextEditToSuggestion(
-    textEdit: TextEdit | undefined,
+    textEdit: TextEdit | InsertReplaceEdit | undefined,
     editor: TextEditor,
     triggerColumns: [number, number],
     originalBufferPosition: Point,
     suggestion: TextSuggestion,
+    insertMode: InsertMode,
   ): void {
     if (!textEdit) { return; }
-    if (textEdit.range.start.character !== triggerColumns[0]) {
-      const range = Convert.lsRangeToAtomRange(textEdit.range);
-      suggestion.customReplacmentPrefix = editor.getTextInBufferRange([range.start, originalBufferPosition]);
+    let range: Range;
+    if ('range' in textEdit) {
+      range = textEdit.range;
+    } else if (insertMode === InsertMode.insert) {
+      range = textEdit.insert;
+    } else {
+      range = textEdit.replace;
+    }
+
+    if (range.start.character !== triggerColumns[0]) {
+      const atomRange = Convert.lsRangeToAtomRange(range);
+      suggestion.customReplacmentPrefix = editor.getTextInBufferRange([atomRange.start, originalBufferPosition]);
     }
     suggestion.text = textEdit.newText;
   }

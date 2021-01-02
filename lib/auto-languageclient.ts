@@ -1,6 +1,7 @@
 import * as cp from 'child_process';
 import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
+import * as rpcNode from 'vscode-jsonrpc/node';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
 import * as linter from 'atom/linter';
@@ -200,6 +201,9 @@ export default class AutoLanguageClient {
           rename: {
             dynamicRegistration: false,
           },
+          moniker: {
+            dynamicRegistration: false,
+          },
 
           // We do not support these features yet.
           // Need to set to undefined to appease TypeScript weak type detection.
@@ -386,16 +390,16 @@ export default class AutoLanguageClient {
     const connectionType = this.getConnectionType();
     switch (connectionType) {
       case 'ipc':
-        reader = new rpc.IPCMessageReader(process as cp.ChildProcess);
-        writer = new rpc.IPCMessageWriter(process as cp.ChildProcess);
+        reader = new rpcNode.IPCMessageReader(process as cp.ChildProcess);
+        writer = new rpcNode.IPCMessageWriter(process as cp.ChildProcess);
         break;
       case 'socket':
-        reader = new rpc.SocketMessageReader(this.socket);
-        writer = new rpc.SocketMessageWriter(this.socket);
+        reader = new rpcNode.SocketMessageReader(this.socket);
+        writer = new rpcNode.SocketMessageWriter(this.socket);
         break;
       case 'stdio':
-        reader = new rpc.StreamMessageReader(process.stdout);
-        writer = new rpc.StreamMessageWriter(process.stdin);
+        reader = new rpcNode.StreamMessageReader(process.stdout);
+        writer = new rpcNode.StreamMessageWriter(process.stdin);
         break;
       default:
         return Utils.assertUnreachable(connectionType);
