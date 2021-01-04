@@ -221,7 +221,16 @@ export default class AutoLanguageClient {
           rename: {
             dynamicRegistration: false,
           },
-          publishDiagnostics: undefined,
+          publishDiagnostics: {
+            relatedInformation: true,
+            tagSupport: {
+              // BLOCKED: on steelbrain/linter supporting ways of denoting useless code and deprecated symbols
+              valueSet: [],
+            },
+            versionSupport: false,
+            codeDescriptionSupport: true,
+            dataSupport: true,
+          },
           foldingRange: undefined,
           selectionRange: undefined,
           linkedEditingRange: undefined,

@@ -7,6 +7,7 @@ import {
   CodeAction,
   CodeActionParams,
   Command,
+  Diagnostic,
   LanguageClientConnection,
   ServerCapabilities,
   WorkspaceEdit,
@@ -109,15 +110,8 @@ export default class CodeActionAdapter {
           // Retrieve the stored diagnostic code if it exists.
           // Until the Linter API provides a place to store the code,
           // there's no real way for the code actions API to give it back to us.
-          const converted = Convert.atomIdeDiagnosticToLSDiagnostic(diagnostic);
-          if (diagnostic.range != null && diagnostic.text != null) {
-            const code = linterAdapter.getDiagnosticCode(editor, diagnostic.range, diagnostic.text);
-            if (code != null) {
-              converted.code = code;
-            }
-          }
-          return converted;
-        }),
+          return linterAdapter.getLSDiagnostic(editor, diagnostic.range, diagnostic.text);
+        }).filter((diagnostic): diagnostic is Diagnostic => diagnostic != null)
       },
     };
   }
