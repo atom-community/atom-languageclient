@@ -141,6 +141,7 @@ export default class AutoLanguageClient {
           didChangeWatchedFiles: {
             dynamicRegistration: false,
           },
+          // BLOCKED: on atom/symbols-view
           symbol: {
             dynamicRegistration: false,
           },
@@ -152,7 +153,14 @@ export default class AutoLanguageClient {
           configuration: false,
           semanticTokens: undefined,  // TODO: support
           codeLens: undefined,
-          fileOperations: undefined,
+          fileOperations: {
+            // BLOCKED: on tree-view not providing hooks for "before file/dir created"
+            willCreate: false,
+            // BLOCKED: on tree-view not providing hooks for "before file/dir renamed"
+            willRename: false,
+            // BLOCKED: on tree-view not providing hooks for "before file/dir deleted"
+            willDelete: false,
+          },
         },
         textDocument: {
           synchronization: {
