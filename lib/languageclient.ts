@@ -18,6 +18,7 @@ export interface KnownNotifications {
 }
 
 export interface KnownRequests {
+  'window/showDocument': [lsp.ShowDocumentParams, lsp.ShowDocumentResult],
   'window/showMessageRequest':
   [lsp.ShowMessageRequestParams, lsp.MessageActionItem | null];
   'workspace/applyEdit':
@@ -150,6 +151,17 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /**
+   * Public: Register a callback for the `window/showDocument` message.
+   *
+   * @param callback The function to be called when the `window/showDocument` message is
+   *   received with {ShowDocumentParams} being passed.
+   */
+  public onShowDocument(callback: (params: lsp.ShowDocumentParams)
+    => Promise<lsp.ShowDocumentResult>): void {
+    this._onRequest({ method: 'window/showDocument' }, callback);
+  }
+
+  /**
    * Public: Register a callback for the `window/logMessage` message.
    *
    * @param callback The function to be called when the `window/logMessage` message is
@@ -272,16 +284,25 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/completion` request.
    *
-   * @param params The {TextDocumentPositionParams} or {CompletionParams} for which
-   *   {CompletionItem}s are desired.
+   * @param params The {CompletionParams} for which {CompletionItem}s are desired.
    * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
    * @returns A {Promise} containing either a {CompletionList} or an {Array} of {CompletionItem}s.
    */
   public completion(
-    params: lsp.TextDocumentPositionParams | CompletionParams,
+    params: lsp.CompletionParams,
     cancellationToken?: jsonrpc.CancellationToken): Promise<lsp.CompletionItem[] | lsp.CompletionList | null> {
     // Cancel prior request if necessary
     return this._sendRequest('textDocument/completion', params, cancellationToken);
+  }
+
+  /**
+   * Public: Send a `textDocument/moniker` request.
+   *
+   * @param params The {MonikerParams} containing information about the position in the document.
+   * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
+   */
+  public moniker(params: lsp.MonikerParams, cancellationToken?: jsonrpc.CancellationToken): Promise<lsp.Moniker[]> {
+    return this._sendRequest('textDocument/moniker', params, cancellationToken);
   }
 
   /**
@@ -379,11 +400,21 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `textDocument/codeAction` request.
    *
    * @param params The {CodeActionParams} identifying the document, range and context for the code action.
-   * @returns A {Promise} containing an {Array} of {Commands}s that can be performed against the given
-   *   documents range.
+   * @returns A {Promise} containing an {Array} of {Command}s or {CodeAction}s that can be performed
+   *   against the given documents range.
    */
   public codeAction(params: lsp.CodeActionParams): Promise<Array<lsp.Command | lsp.CodeAction>> {
     return this._sendRequest('textDocument/codeAction', params);
+  }
+
+  /**
+   * Public: Send a `codeAction/resolve` request.
+   *
+   * @param params The {CodeAction} whose properties (e.g. `edit`) are to be resolved.
+   * @returns A resolved {CodeAction} that can be applied immediately.
+   */
+  public codeActionResolve(params: lsp.CodeAction): Promise<lsp.CodeAction> {
+    return this._sendRequest('codeAction/resolve', params);
   }
 
   /**
@@ -563,16 +594,4 @@ export interface CompletionContext {
    * Is undefined if `triggerKind !== CompletionTriggerKind.TriggerCharacter`
    */
   triggerCharacter?: string;
-}
-
-/**
- * Completion parameters
- */
-export interface CompletionParams extends lsp.TextDocumentPositionParams {
-
-  /**
-   * The completion context. This is only available it the client specifies
-   * to send this using `ClientCapabilities.textDocument.completion.contextSupport === true`
-   */
-  context?: CompletionContext;
 }

@@ -197,6 +197,8 @@ export default class Convert {
   }
 
   public static atomIdeDiagnosticToLSDiagnostic(diagnostic: Diagnostic): ls.Diagnostic {
+    // TODO: support diagnostic codes and codeDescriptions
+    // TODO!: support data
     return {
       range: Convert.atomRangeToLSRange(diagnostic.range),
       severity: Convert.diagnosticTypeToLSSeverity(diagnostic.type),
@@ -237,6 +239,7 @@ export default class Convert {
    * @returns An Atom {TextEdit} object.
    */
   public static convertLsTextEdit(textEdit: ls.TextEdit): TextEdit {
+    // TODO: support annotations
     return {
       oldRange: Convert.lsRangeToAtomRange(textEdit.range),
       newText: textEdit.newText,

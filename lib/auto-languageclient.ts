@@ -20,6 +20,7 @@ import LoggingConsoleAdapter from './adapters/logging-console-adapter';
 import NotificationsAdapter from './adapters/notifications-adapter';
 import OutlineViewAdapter from './adapters/outline-view-adapter';
 import RenameAdapter from './adapters/rename-adapter';
+import ShowDocumentAdapter from './adapters/show-document-adapter';
 import SignatureHelpAdapter from './adapters/signature-help-adapter';
 import * as Utils from './utils';
 import { Socket } from 'net';
@@ -124,15 +125,16 @@ export default class AutoLanguageClient {
       processId: process.pid,
       rootPath: projectPath,
       rootUri: Convert.pathToUri(projectPath),
+      locale: atom.config.get('atom-i18n.locale') || 'en',
       workspaceFolders: null,
       capabilities: {
         workspace: {
           applyEdit: true,
-          configuration: false,
           workspaceEdit: {
             documentChanges: true,
+            normalizesLineEndings: false,  // TODO: support
+            changeAnnotationSupport: undefined,
           },
-          workspaceFolders: false,
           didChangeConfiguration: {
             dynamicRegistration: false,
           },
@@ -145,6 +147,12 @@ export default class AutoLanguageClient {
           executeCommand: {
             dynamicRegistration: false,
           },
+          // TODO: question: seriously?
+          workspaceFolders: false,
+          configuration: false,
+          semanticTokens: undefined,  // TODO: support
+          codeLens: undefined,
+          fileOperations: undefined,
         },
         textDocument: {
           synchronization: {
@@ -167,6 +175,12 @@ export default class AutoLanguageClient {
           signatureHelp: {
             dynamicRegistration: false,
           },
+          declaration: undefined, // TODO: support all this
+          definition: {
+            dynamicRegistration: false,
+          },
+          typeDefinition: undefined,
+          implementation: undefined,
           references: {
             dynamicRegistration: false,
           },
@@ -177,18 +191,6 @@ export default class AutoLanguageClient {
             dynamicRegistration: false,
             hierarchicalDocumentSymbolSupport: true,
           },
-          formatting: {
-            dynamicRegistration: false,
-          },
-          rangeFormatting: {
-            dynamicRegistration: false,
-          },
-          onTypeFormatting: {
-            dynamicRegistration: false,
-          },
-          definition: {
-            dynamicRegistration: false,
-          },
           codeAction: {
             dynamicRegistration: false,
           },
@@ -198,19 +200,36 @@ export default class AutoLanguageClient {
           documentLink: {
             dynamicRegistration: false,
           },
+          colorProvider: undefined,
+          formatting: {
+            dynamicRegistration: false,
+          },
+          rangeFormatting: {
+            dynamicRegistration: false,
+          },
+          onTypeFormatting: {
+            dynamicRegistration: false,
+          },
           rename: {
             dynamicRegistration: false,
           },
-          moniker: {
-            dynamicRegistration: false,
-          },
-
-          // We do not support these features yet.
-          // Need to set to undefined to appease TypeScript weak type detection.
-          implementation: undefined,
-          typeDefinition: undefined,
-          colorProvider: undefined,
+          publishDiagnostics: undefined,
           foldingRange: undefined,
+          selectionRange: undefined,
+          linkedEditingRange: undefined,
+          callHierarchy: undefined,
+          semanticTokens: undefined,
+          // TODO: set this to undefined when they merge my PR
+          moniker: {},
+        },
+        window: {
+          workDoneProgress: false,  // TODO: support
+          showMessage: undefined,
+          showDocument: { support: true },
+        },
+        general: {
+          regularExpressions: undefined,
+          markdown: undefined,  // TODO: support
         },
         experimental: {},
       },
@@ -455,6 +474,8 @@ export default class AutoLanguageClient {
     this._serverAdapters.set(server, {
       linterPushV2, loggingConsole, signatureHelpAdapter,
     });
+
+    ShowDocumentAdapter.attach(server.connection);
   }
 
   public shouldSyncForEditor(editor: TextEditor, projectPath: string): boolean {
