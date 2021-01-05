@@ -1,4 +1,5 @@
 import * as atomIde from 'atom-ide';
+import * as linter from 'atom/linter';
 import LinterPushV2Adapter from './linter-push-v2-adapter';
 import assert = require('assert');
 import Convert from '../convert';
@@ -34,8 +35,8 @@ export default class CodeActionAdapter {
    * @param serverCapabilities The {ServerCapabilities} of the language server that will be used.
    * @param editor The Atom {TextEditor} containing the diagnostics.
    * @param range The Atom {Range} to fetch code actions for.
-   * @param diagnostics An {Array<atomIde$Diagnostic>} to fetch code actions for.
-   *   This is typically a list of diagnostics intersecting `range`.
+   * @param linterMessages An {Array<linter$Message>} to fetch code actions for.
+   *   This is typically a list of messages intersecting `range`.
    * @returns A {Promise} of an {Array} of {atomIde$CodeAction}s to display.
    */
   public static async getCodeActions(
@@ -44,14 +45,16 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter | undefined,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[],
+    linterMessages: linter.Message[],
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return [];
     }
     assert(serverCapabilities.codeActionProvider, 'Must have the textDocument/codeAction capability');
 
-    const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics);
+    const params = CodeActionAdapter.createCodeActionParams(
+      linterAdapter, editor, range, linterMessages
+    );
     const actions = await connection.codeAction(params);
     return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection));
   }
@@ -100,19 +103,15 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[],
+    linterMessages: linter.Message[],
   ): CodeActionParams {
+    const diagnostics = linterMessages
+      .map(linterAdapter.getLSDiagnostic)
+      .filter((diagnostic): diagnostic is Diagnostic => diagnostic != null);
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       range: Convert.atomRangeToLSRange(range),
-      context: {
-        diagnostics: diagnostics.map((diagnostic) => {
-          // Retrieve the stored diagnostic code if it exists.
-          // Until the Linter API provides a place to store the code,
-          // there's no real way for the code actions API to give it back to us.
-          return linterAdapter.getLSDiagnostic(editor, diagnostic.range, diagnostic.text);
-        }).filter((diagnostic): diagnostic is Diagnostic => diagnostic != null)
-      },
+      context: { diagnostics },
     };
   }
 }

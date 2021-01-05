@@ -1,4 +1,3 @@
-
 import * as ls from './languageclient';
 import * as URL from 'url';
 import {
@@ -8,10 +7,9 @@ import {
   TextEditor,
 } from 'atom';
 import {
-  Diagnostic,
-  DiagnosticType,
   TextEdit,
 } from 'atom-ide';
+import { Message } from 'atom/linter';
 
 /**
  * Public: Class that contains a number of helper methods for general conversions
@@ -196,28 +194,46 @@ export default class Convert {
     }
   }
 
-  public static atomIdeDiagnosticToLSDiagnostic(diagnostic: Diagnostic): ls.Diagnostic {
-    // TODO: support diagnostic codes and codeDescriptions
-    // TODO!: support data
+  /**
+   * Public: Convert a single {Diagnostic} received from a language server into a single
+   * {Message} expected by the Linter V2 API.
+   *
+   * @param path A string representing the path of the file the diagnostic belongs to.
+   * @param diagnostics A {Diagnostic} object received from the language server.
+   * @returns A {Message} equivalent to the {Diagnostic} object supplied by the language server.
+   */
+  public static lsDiagnosticToV2Message(path: string, diagnostic: ls.Diagnostic): Message {
     return {
-      range: Convert.atomRangeToLSRange(diagnostic.range),
-      severity: Convert.diagnosticTypeToLSSeverity(diagnostic.type),
-      source: diagnostic.providerName,
-      message: diagnostic.text || '',
+      location: {
+        file: path,
+        position: Convert.lsRangeToAtomRange(diagnostic.range),
+      },
+      reference: Convert.relatedInformationToReference(diagnostic.relatedInformation),
+      url: diagnostic.codeDescription?.href,
+      icon: Convert.iconForLSSeverity(diagnostic.severity ?? ls.DiagnosticSeverity.Error),
+      excerpt: diagnostic.message,
+      linterName: diagnostic.source,
+      severity: Convert.lsSeverityToV2MessageSeverity(
+        diagnostic.severity ?? ls.DiagnosticSeverity.Error
+      ),
+      // BLOCKED: on steelbrain/linter#1722
+      solutions: undefined,
     };
   }
 
-  public static diagnosticTypeToLSSeverity(type: DiagnosticType): ls.DiagnosticSeverity {
-    switch (type) {
-      case 'Error':
-        return ls.DiagnosticSeverity.Error;
-      case 'Warning':
-        return ls.DiagnosticSeverity.Warning;
-      case 'Info':
-        return ls.DiagnosticSeverity.Information;
-      default:
-        throw Error(`Unexpected diagnostic type ${type}`);
-    }
+  /**
+   * Public: Construct an identifier for a Base Linter v2 Message.
+   *
+   * The identifier has the form: ${startRow},${startColumn},${endRow},${endColumn},${message}.
+   *
+   * @param message A {Message} object to serialize.
+   * @returns A string identifier.
+   */
+  public static getV2MessageIdentifier(message: Message): string {
+    return ([] as any[]).concat(
+      ...message.location.position.serialize(),
+      message.excerpt,
+    ).join(',');
   }
 
   /**
@@ -243,6 +259,71 @@ export default class Convert {
     return {
       oldRange: Convert.lsRangeToAtomRange(textEdit.range),
       newText: textEdit.newText,
+    };
+  }
+
+  /**
+   * Convert a severity level of an LSP {Diagnostic} to that of a Base Linter v2 {Message}.
+   * Note: this conversion is lossy due to the v2 Message not being able to represent hints.
+   *
+   * @param severity A severity level of of an LSP {Diagnostic} to be converted.
+   * @returns A severity level a Base Linter v2 {Message}.
+   */
+  private static lsSeverityToV2MessageSeverity(
+    severity: ls.DiagnosticSeverity
+  ): Message['severity'] {
+    switch (severity) {
+      case ls.DiagnosticSeverity.Error:
+        return 'error';
+      case ls.DiagnosticSeverity.Warning:
+        return 'warning';
+      case ls.DiagnosticSeverity.Information:
+      case ls.DiagnosticSeverity.Hint:
+        return 'info';
+      default:
+        throw Error(`Unexpected diagnostic severity '${severity}'`);
+    }
+  }
+
+  /**
+   * Convert a diagnostic severity number obtained from the language server into an Octicon.
+   *
+   * @param severity A number representing the severity of the diagnostic.
+   * @returns An Octicon name.
+   */
+  private static iconForLSSeverity(severity: ls.DiagnosticSeverity): string | undefined {
+    switch (severity) {
+      case ls.DiagnosticSeverity.Error:
+        return 'stop';
+      case ls.DiagnosticSeverity.Warning:
+        return 'warning';
+      case ls.DiagnosticSeverity.Information:
+        return 'info';
+      case ls.DiagnosticSeverity.Hint:
+        return 'light-bulb';
+      default:
+        return undefined;
+    }
+  }
+
+  /**
+   * Convert the related information from a diagnostic into
+   * a reference point for a Linter {V2Message}.
+   *
+   * @param relatedInfo Several related information objects (only the first is used).
+   * @returns A value that is suitable for using as {V2Message}.reference.
+   */
+  private static relatedInformationToReference(
+    relatedInfo: ls.DiagnosticRelatedInformation[] | undefined
+  ): Message['reference'] {
+    if (relatedInfo == null || relatedInfo.length === 0) {
+      return undefined;
+    }
+
+    const location = relatedInfo[0].location;
+    return {
+      file: Convert.uriToPath(location.uri),
+      position: Convert.lsRangeToAtomRange(location.range).start,
     };
   }
 }

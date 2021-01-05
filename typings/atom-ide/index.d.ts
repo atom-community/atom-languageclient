@@ -187,16 +187,6 @@ declare module 'atom-ide' {
     grammarScopes: string[];
   }
 
-  export type DiagnosticType = 'Error' | 'Warning' | 'Info';
-
-  export interface Diagnostic {
-    providerName: string;
-    type: DiagnosticType;
-    filePath: string;
-    text?: string;
-    range: Range;
-  }
-
   export interface CodeAction {
     apply(): Promise<void>;
     getTitle(): Promise<string>;

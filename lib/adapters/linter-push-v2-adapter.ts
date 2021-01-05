@@ -1,10 +1,7 @@
 import * as linter from 'atom/linter';
-import * as atom from 'atom';
 import Convert from '../convert';
 import {
   Diagnostic,
-  DiagnosticSeverity,
-  DiagnosticRelatedInformation,
   LanguageClientConnection,
   PublishDiagnosticsParams,
 } from '../languageclient';
@@ -63,8 +60,8 @@ export default class LinterPushV2Adapter {
     const path = Convert.uriToPath(params.uri);
     const codeMap = new Map<string, Diagnostic>();
     const messages = params.diagnostics.map((d) => {
-      const linterMessage = this.diagnosticToV2Message(path, d);
-      codeMap.set(getCodeKey(linterMessage.location.position, d.message), d);
+      const linterMessage = Convert.lsDiagnosticToV2Message(path, d);
+      codeMap.set(Convert.getV2MessageIdentifier(linterMessage), d);
       return linterMessage;
     });
     this._diagnosticMap.set(path, messages);
@@ -73,114 +70,16 @@ export default class LinterPushV2Adapter {
   }
 
   /**
-   * Public: Convert a single {Diagnostic} received from a language server into a single
-   * {V2Message} expected by the Linter V2 API.
+   * Public: Get the {Diagnostic} that is associated with the given Base Linter v2 {Message}.
    *
-   * @param path A string representing the path of the file the diagnostic belongs to.
-   * @param diagnostics A {Diagnostic} object received from the language server.
-   * @returns A {V2Message} equivalent to the {Diagnostic} object supplied by the language server.
+   * It has to be stored separately because a {Message} object cannot hold all of the information
+   * that a {Diagnostic} provides, thus we store the original {Diagnostic} object.
+   * @param message The {Message} object to fetch the {Diagnostic} for.
+   * @returns The associated {Diagnostic}.
    */
-  public diagnosticToV2Message(path: string, diagnostic: Diagnostic): linter.Message {
-    return {
-      location: {
-        file: path,
-        position: Convert.lsRangeToAtomRange(diagnostic.range),
-      },
-      reference: LinterPushV2Adapter.relatedInformationToReference(diagnostic.relatedInformation),
-      url: diagnostic.codeDescription?.href,
-      icon: LinterPushV2Adapter.diagnosticSeverityToIcon(diagnostic.severity || -1),
-      excerpt: diagnostic.message,
-      linterName: diagnostic.source,
-      severity: LinterPushV2Adapter.diagnosticSeverityToSeverity(diagnostic.severity || -1),
-      // BLOCKED: on steelbrain/linter#1705 adding support for solution callbacks
-      solutions: undefined,
-    };
+  public getLSDiagnostic(message: linter.Message): Diagnostic | undefined {
+    return this._lsDiagnosticMap
+      .get(message.location.file)
+      ?.get(Convert.getV2MessageIdentifier(message));
   }
-
-  /**
-   * Public: Convert a diagnostic severity number obtained from the language server into
-   * the textual equivalent for a Linter {V2Message}.
-   *
-   * @param severity A number representing the severity of the diagnostic.
-   * @returns A string of 'error', 'warning' or 'info' depending on the severity.
-   */
-  public static diagnosticSeverityToSeverity(severity: number): 'error' | 'warning' | 'info' {
-    switch (severity) {
-      case DiagnosticSeverity.Error:
-        return 'error';
-      case DiagnosticSeverity.Warning:
-        return 'warning';
-      case DiagnosticSeverity.Information:
-      case DiagnosticSeverity.Hint:
-      default:
-        return 'info';
-    }
-  }
-
-  /**
-   * Public: Convert a diagnostic severity number obtained from the language server into an Octicon.
-   *
-   * @param severity A number representing the severity of the diagnostic.
-   * @returns An Octicon name.
-   */
-  public static diagnosticSeverityToIcon(severity: number): string | undefined {
-    switch (severity) {
-      case DiagnosticSeverity.Error:
-        return 'stop';
-      case DiagnosticSeverity.Warning:
-        return 'warning';
-      case DiagnosticSeverity.Information:
-        return 'info';
-      case DiagnosticSeverity.Hint:
-        return 'light-bulb';
-      default:
-        return undefined;
-    }
-  }
-
-  /**
-   * Public: Convert the related information from a diagnostic into
-   * a reference point for a Linter {V2Message}.
-   *
-   * @param relatedInfo Several related information objects (only the first is used).
-   * @returns A value that is suitable for using as {V2Message}.reference.
-   */
-  public static relatedInformationToReference(
-    relatedInfo: DiagnosticRelatedInformation[] | undefined
-  ): linter.Message['reference'] {
-    if (relatedInfo == null || relatedInfo.length === 0) {
-      return undefined;
-    }
-
-    const location = relatedInfo[0].location;
-    return {
-      file: Convert.uriToPath(location.uri),
-      position: Convert.lsRangeToAtomRange(location.range).start,
-    };
-  }
-
-  /**
-   * Private: Get the recorded diagnostic code for a range/message.
-   * Diagnostic codes are tricky because there's no suitable place in the Linter API for them.
-   * For now, we'll record the original code for each range/message combination and retrieve it
-   * when needed (e.g. for passing back into code actions)
-   */
-  public getLSDiagnostic(
-    editor: atom.TextEditor,
-    range: atom.Range,
-    text: string | undefined,
-  ): Diagnostic | null {
-    const path = editor.getPath();
-    if (path != null && text != null) {
-      const diagnosticCodes = this._lsDiagnosticMap.get(path);
-      if (diagnosticCodes != null) {
-        return diagnosticCodes.get(getCodeKey(range, text)) || null;
-      }
-    }
-    return null;
-  }
-}
-
-function getCodeKey(range: atom.Range, text: string): string {
-  return ([] as any[]).concat(...range.serialize(), text).join(',');
 }
