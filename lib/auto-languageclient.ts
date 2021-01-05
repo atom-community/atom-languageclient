@@ -174,6 +174,22 @@ export default class AutoLanguageClient {
             completionItem: {
               snippetSupport: true,
               commitCharactersSupport: false,
+              documentationFormat: [],
+              deprecatedSupport: false,
+              preselectSupport: false,
+              tagSupport: {
+                valueSet: [],
+              },
+              insertReplaceSupport: false,
+              resolveSupport: {
+                properties: [],
+              },
+              insertTextModeSupport: {
+                valueSet: [],
+              }
+            },
+            completionItemKind: {
+              valueSet: [],
             },
             contextSupport: true,
           },
@@ -504,14 +520,26 @@ export default class AutoLanguageClient {
   }
 
   // Autocomplete+ via LS completion---------------------------------------
+
+  /**
+   * Return an array of grammar scopes that should not be used for autocompletion.
+   *
+   * Usually that's used for disabling autocomplete inside comments,
+   * so if your grammar scopes are [ '.source.js' ],
+   * you may wanna return [ '.source.js .comment' ] here.
+   */
+  protected getAutocompleteDisabledScopes() {
+    return [];
+  }
+
   public provideAutocomplete(): ac.AutocompleteProvider {
     return {
-      selector: this.getGrammarScopes()
-        .map((g) => g.includes('.') ? '.' + g : g)
-        .join(', '),
-      inclusionPriority: 1,
-      suggestionPriority: 2,
+      selector: this.getGrammarScopes().join(', '),
+      disableForSelector: this.getAutocompleteDisabledScopes().join(', '),
+      inclusionPriority: 10,
       excludeLowerPriority: false,
+      suggestionPriority: 10,
+      filterSuggestions: true,
       getSuggestions: this.getSuggestions.bind(this),
       onDidInsertSuggestion: this.onDidInsertSuggestion.bind(this),
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
