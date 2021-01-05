@@ -1,4 +1,3 @@
-import * as url from 'url';
 import { shell } from 'electron';
 import {
   LanguageClientConnection,
@@ -37,7 +36,7 @@ export default class ShowDocumentAdapter {
       return { success: true };
     }
 
-    shell.openExternal(url, { activate: params.takeFocus })
+    shell.openExternal(params.uri, { activate: params.takeFocus })
     return { success: false };
   }
 }
