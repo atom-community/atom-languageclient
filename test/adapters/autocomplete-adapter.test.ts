@@ -504,6 +504,27 @@ describe('AutoCompleteAdapter', () => {
       result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
       expect(result.replacementPrefix).equals('ba');
     });
+
+    it('includes non trigger character prefix in replacementPrefix', async () => {
+      const customRequest = createRequest({ prefix: 'foo', position: new Point(0, 3) });
+      customRequest.editor.setText('foo');
+      sinon.stub(server.connection, 'completion').resolves([
+        createCompletionItem('foobar'),
+      ]);
+      let result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
+
+      expect(result.replacementPrefix).equals('foo');
+      customRequest.editor.setTextInBufferRange([[0, 3], [0, 3]], 'b');
+      customRequest.prefix = 'foob';
+      customRequest.bufferPosition = new Point(0, 4);
+      result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
+      expect(result.replacementPrefix).equals('foob');
+      customRequest.editor.setTextInBufferRange([[0, 4], [0, 4]], 'a');
+      customRequest.prefix = 'fooba';
+      customRequest.bufferPosition = new Point(0, 5);
+      result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0];
+      expect(result.replacementPrefix).equals('fooba');
+    });
   });
 
   describe('completionKindToSuggestionType', () => {
