@@ -1,3 +1,51 @@
+## [1.0.6](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.5...v1.0.6) (2021-01-06)
+
+
+### Bug Fixes
+
+* fix autocomplete prefix ([bd0576e](https://github.com/atom-ide-community/atom-languageclient/commit/bd0576e15476eb484bb58889fed0e15b6eb896ad))
+
+## [1.0.5](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.4...v1.0.5) (2020-12-20)
+
+
+### Bug Fixes
+
+* update fuzzaldrin-plus-fast ([#109](https://github.com/atom-ide-community/atom-languageclient/issues/109)) ([8c8053b](https://github.com/atom-ide-community/atom-languageclient/commit/8c8053b8b7efebb812b2a773f2d9bfb785695885))
+
+## [1.0.4](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.3...v1.0.4) (2020-12-12)
+
+
+### Bug Fixes
+
+* set workspaceFolders to null when there is no workspace ([5814197](https://github.com/atom-ide-community/atom-languageclient/commit/58141978570ed0ab8736b4d8f28a57425b4f08fb))
+
+## [1.0.3](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.2...v1.0.3) (2020-12-11)
+
+
+### Bug Fixes
+
+* bump deps + devDeps ([#105](https://github.com/atom-ide-community/atom-languageclient/issues/105)) ([f98326c](https://github.com/atom-ide-community/atom-languageclient/commit/f98326c942fa0e9ffa541505f5e5c33cdebb9203))
+
+## [1.0.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.1...v1.0.2) (2020-11-30)
+
+
+### Bug Fixes
+
+* use native fuzzaldrin-plus-fast ([#98](https://github.com/atom-ide-community/atom-languageclient/issues/98)) ([ea835fe](https://github.com/atom-ide-community/atom-languageclient/commit/ea835fe5940973180b6a796fdef6a3c6d569480a))
+
+## [1.0.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.0...v1.0.1) (2020-11-30)
+
+
+### Bug Fixes
+
+* fix removing triggerChar ([5ef25a8](https://github.com/atom-ide-community/atom-languageclient/commit/5ef25a85a26fc0b22cfa1e31f8041c2c0dc5e8f0))
+* kill and on exit signature match child_process ([#103](https://github.com/atom-ide-community/atom-languageclient/issues/103)) ([84f5401](https://github.com/atom-ide-community/atom-languageclient/commit/84f54016247c45c96286107d759cb30907024817))
+
+## v1.0.0
+
+- Repo moved to https://github.com/atom-ide-community/atom-languageclient so the community can take over development.
+- Updated deps
+
 ## v0.9.9
 
 - Fixes (bugs introduced in v0.9.8)

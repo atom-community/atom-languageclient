@@ -1,6 +1,6 @@
 {
   "name": "atom-languageclient",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Integrate Language Servers with Atom",
   "repository": "https://github.com/atom-ide-community/atom-languageclient",
   "license": "MIT",
@@ -16,27 +16,26 @@
   },
   "atomTestRunner": "./test/runner",
   "dependencies": {
-    "fuzzaldrin-plus": "^0.6.0",
+    "fuzzaldrin-plus-fast": "^1.2.4",
     "rimraf": "^3.0.2",
     "vscode-jsonrpc": "5.0.1",
     "vscode-languageserver-protocol": "3.15.3",
     "vscode-languageserver-types": "3.15.1"
   },
   "devDependencies": {
-    "@atom/mocha-test-runner": "^1.6.0",
+    "@atom/mocha-test-runner": "^1.6.1",
     "@types/atom": "^1.40.5",
     "@types/chai": "^4.2.14",
-    "@types/fuzzaldrin-plus": "0.6.1",
-    "@types/mocha": "^8.0.3",
-    "@types/node": "14.14.6",
-    "@types/sinon": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
-    "@typescript-eslint/parser": "^4.6.0",
+    "@types/mocha": "^8.2.0",
+    "@types/node": "14.14.14",
+    "@types/sinon": "^9.0.9",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
     "chai": "^4.2.0",
-    "eslint": "^7.12.1",
-    "mocha": "^8.2.0",
+    "eslint": "^7.16.0",
+    "mocha": "^8.2.1",
     "mocha-appveyor-reporter": "^0.4.2",
-    "sinon": "^9.2.1",
-    "typescript": "~4.0.5"
+    "sinon": "^9.2.2",
+    "typescript": "~4.1.3"
   }
 }
