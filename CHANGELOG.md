@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.5...v1.0.6) (2021-01-06)
+
+
+### Bug Fixes
+
+* fix autocomplete prefix ([bd0576e](https://github.com/atom-ide-community/atom-languageclient/commit/bd0576e15476eb484bb58889fed0e15b6eb896ad))
+
 ## [1.0.5](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.4...v1.0.5) (2020-12-20)
 
 
