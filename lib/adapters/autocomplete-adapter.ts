@@ -113,7 +113,7 @@ export default class AutocompleteAdapter {
     // We must update the replacement prefix as characters are added and removed
     const cache = this._suggestionCache.get(server)!;
     const originalReplacementPrefixMap = cache.originalReplacementPrefixMap;
-    const replacementPrefix = request.editor.getTextInBufferRange([cache.triggerPoint, request.bufferPosition]);
+    const replacementPrefix = request.editor.getTextInBufferRange([[cache.triggerPoint.row, cache.triggerPoint.column + cache.triggerChar.length], request.bufferPosition]);
     for (const suggestion of suggestions) {
       if (suggestion.customReplacmentPrefix) { // having this property means a custom range was provided
         const len = replacementPrefix.length;
