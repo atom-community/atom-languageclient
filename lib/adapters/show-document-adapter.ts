@@ -4,6 +4,7 @@ import {
   ShowDocumentParams,
   ShowDocumentResult,
 } from '../languageclient';
+import { TextEditor } from 'atom';
 import Convert from '../convert';
 
 /** Public: Adapts the window/showDocument command to Atom's text editors or external programs. */
@@ -23,15 +24,15 @@ export default class ShowDocumentAdapter {
    */
   public static async onShowDocument(params: ShowDocumentParams): Promise<ShowDocumentResult> {
     if (!params.external) {
-      const editor = await atom.workspace.open(params.uri, {
+      const view = await atom.workspace.open(params.uri, {
         activateItem: params.takeFocus,
         activatePane: params.takeFocus,
         pending: true,
         initialLine: params.selection?.start.line ?? 0,
         initialColumn: params.selection?.start.character ?? 0,
       });
-      if (params.selection != null) {
-        editor.selectToBufferPosition(Convert.positionToPoint(params.selection.end));
+      if (view instanceof TextEditor && params.selection != null) {
+        view.selectToBufferPosition(Convert.positionToPoint(params.selection.end));
       }
       return { success: true };
     }
