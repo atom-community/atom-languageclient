@@ -15,6 +15,7 @@ import {
   Range,
   TextEditor,
 } from 'atom';
+import CommandExecutionAdapter from './command-execution-adapter';
 
 export default class CodeActionAdapter {
   /**
@@ -88,10 +89,7 @@ export default class CodeActionAdapter {
     connection: LanguageClientConnection,
   ): Promise<void> {
     if (Command.is(command)) {
-      await connection.executeCommand({
-        command: command.command,
-        arguments: command.arguments,
-      });
+      await CommandExecutionAdapter.executeCommand(connection, command.command, command.arguments);
     }
   }
 
