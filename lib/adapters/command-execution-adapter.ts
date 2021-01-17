@@ -6,7 +6,7 @@ export type CommandCustomCallbackFunction = (command: ExecuteCommandParams) => P
 export default class CommandExecutionAdapter {
     private static commandsCustomCallbacks: Map<string, CommandCustomCallbackFunction> = new Map<string, CommandCustomCallbackFunction>();
 
-    public static registerCustomCallbackForCommand(command: string, callback: CommandCustomCallbackFunction) {
+    public static registerCustomCallbackForCommand(command: string, callback: CommandCustomCallbackFunction): void {
         this.commandsCustomCallbacks.set(command, callback);
     }
 
