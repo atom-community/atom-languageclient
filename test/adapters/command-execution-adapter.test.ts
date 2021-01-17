@@ -6,6 +6,20 @@ import { createSpyConnection } from '../helpers.js';
 import { ExecuteCommandParams } from '../../lib/languageclient';
 
 describe('CommandExecutionAdapter', () => {
+    describe('canAdapt', () => {
+      it('returns true if command execution is supported', () => {
+        const result = CommandExecutionAdapter.canAdapt({
+          executeCommandProvider: {commands: []},
+        });
+        expect(result).to.be.true;
+      });
+
+      it('returns false it no formatting supported', () => {
+        const result = CommandExecutionAdapter.canAdapt({});
+        expect(result).to.be.false;
+      });
+    });
+
   describe('executeCommand', () => {
     it('invokes an executeCommand object from given inputs', async () => {
       const connection = createSpyConnection();
