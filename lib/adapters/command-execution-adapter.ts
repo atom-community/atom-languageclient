@@ -1,7 +1,7 @@
-import { Command, ExecuteCommandParams } from "../languageclient";
+import { ExecuteCommandParams } from "../languageclient";
 import { LanguageClientConnection } from "../main";
 
-export type CommandCustomCallbackFunction = (command: ExecuteCommandParams) => Promise<void>;
+export type CommandCustomCallbackFunction = (command: ExecuteCommandParams) => Promise<any | void>;
 
 export default class CommandExecutionAdapter {
     private static commandsCustomCallbacks: Map<string, CommandCustomCallbackFunction> = new Map<string, CommandCustomCallbackFunction>();
@@ -17,7 +17,7 @@ export default class CommandExecutionAdapter {
         return commandCustomCallback != null ? await commandCustomCallback(executeCommandParams) : await connection.executeCommand(executeCommandParams);
     }
 
-    public static createExecuteCommandParams(command: string, commandArgs?: any[] | undefined): ExecuteCommandParams {
+    private static createExecuteCommandParams(command: string, commandArgs?: any[] | undefined): ExecuteCommandParams {
         return {
             command: command,
             arguments: commandArgs
