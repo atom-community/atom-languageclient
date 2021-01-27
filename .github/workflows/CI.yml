@@ -23,8 +23,6 @@ jobs:
       - uses: UziTech/action-setup-atom@v1
         with:
           channel: ${{ matrix.atom_channel }}
-      - name: Versions
-        run: apm -v
       - name: Install APM dependencies
         run: |
           apm install
