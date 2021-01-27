@@ -7,7 +7,7 @@
   "main": "./build/lib/main",
   "types": "./build/lib/main.d.ts",
   "files": [
-    "build",
+    "build/lib",
     "lib",
     "typings"
   ],
