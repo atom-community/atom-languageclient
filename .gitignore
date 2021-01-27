@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 build/
 yarn.lock
+package-lock.json
