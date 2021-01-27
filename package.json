@@ -6,6 +6,11 @@
   "license": "MIT",
   "main": "./build/lib/main",
   "types": "./build/lib/main.d.ts",
+  "files": [
+    "build",
+    "lib",
+    "typings"
+  ],
   "scripts": {
     "clean": "rimraf build",
     "compile": "tsc",

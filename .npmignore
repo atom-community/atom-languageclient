@@ -1,8 +1,0 @@
-.npmignore
-.gitignore
-.travis.yml
-appveyor.yml
-appveyor.ps1
-lib/
-test/
-script/
