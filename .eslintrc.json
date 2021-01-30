@@ -9,6 +9,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
+  "ignorePatterns": ["build/", "node_modules/"],
   "rules": {
     "@typescript-eslint/ban-types": [
       "error",

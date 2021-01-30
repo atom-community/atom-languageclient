@@ -23,11 +23,9 @@ jobs:
       - uses: UziTech/action-setup-atom@v1
         with:
           channel: ${{ matrix.atom_channel }}
-      - name: Versions
-        run: apm -v
       - name: Install APM dependencies
         run: |
-          apm ci  # uses locked module. use `apm install` for non-locked
+          apm install
       - name: Run tests 👩🏾‍💻
         run: npm run test
 
@@ -45,7 +43,7 @@ jobs:
           node-version: "*"
       - name: Install NPM dependencies
         run: |
-          npm ci  # uses locked module. use `npm install` for non-locked
+          npm install
       - name: Lint ✨
         run: npm run lint
 
@@ -61,7 +59,7 @@ jobs:
         with:
           node-version: "*"
       - name: NPM install
-        run: npm ci
+        run: npm install
       # - name: Build and Commit
       #   run: npm run build-commit
       - name: Release 🎉
