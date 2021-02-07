@@ -2,13 +2,6 @@ declare module 'atom-ide' {
   import { Disposable, Grammar, Point, Range, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
 
-  export interface DefinitionProvider {
-    name: string;
-    priority: number;
-    grammarScopes: string[];
-    getDefinition: (editor: TextEditor, position: Point) => Promise<DefinitionQueryResult | null>;
-  }
-
   export type IdeUri = string;
 
   export interface Definition {

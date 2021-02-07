@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline } from 'atom-ide-base'
+import type { OutlineProvider, Outline, DefinitionProvider } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -514,7 +514,7 @@ export default class AutoLanguageClient {
   protected onDidInsertSuggestion(_arg: ac.SuggestionInsertedEvent): void { }
 
   // Definitions via LS documentHighlight and gotoDefinition------------
-  public provideDefinitions(): atomIde.DefinitionProvider {
+  public provideDefinitions(): DefinitionProvider {
     return {
       name: this.name,
       priority: 20,
