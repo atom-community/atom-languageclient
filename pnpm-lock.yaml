@@ -1,8 +1,8 @@
 dependencies:
-  fuzzaldrin-plus-fast: 1.2.4
   vscode-jsonrpc: 5.0.1
   vscode-languageserver-protocol: 3.15.3
   vscode-languageserver-types: 3.15.1
+  zadeh: 2.0.2
 devDependencies:
   '@atom/mocha-test-runner': 1.6.1
   '@types/atom': 1.40.7
@@ -962,15 +962,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
-  /fuzzaldrin-plus-fast/1.2.4:
-    dependencies:
-      bindings: 1.5.0
-      node-addon-api: 3.0.2
-      node-gyp-build: 4.2.3
-    dev: false
-    requiresBuild: true
-    resolution:
-      integrity: sha512-RLJALZdoNGtItWVcm0ROU1E3SZiBT7nRWCew7aPGRzaG4kGA7hxytuEH43+taUjXw/VWSa89nEJu37//bsYIqA==
   /get-caller-file/2.0.5:
     dev: true
     engines:
@@ -1460,10 +1451,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-bTTRUNlemx6deJa+ZyoCUTRvH3liK5+N6VQZ4NIw90AgDXY6iPnsqplNFf6STcj+ePk0H/xqxnP75Lr0J0Fq3A==
-  /node-addon-api/3.0.2:
+  /node-addon-api/3.1.0:
     dev: false
     resolution:
-      integrity: sha512-+D4s2HCnxPd5PjjI0STKwncjXTUKKqm74MDMz9OPXavjsGmjkvwgLtA5yoxJUdmpj52+2u+RrXgPipahKczMKg==
+      integrity: sha512-flmrDNB06LIl5lywUz7YlNGZH/5p0M7W28k8hzd9Lshtdh1wshD2Y+U4h9LD6KObOy1f+fEVdgprPrEymjM5uw==
   /node-gyp-build/4.2.3:
     dev: false
     hasBin: true
@@ -2150,6 +2141,15 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+  /zadeh/2.0.2:
+    dependencies:
+      bindings: 1.5.0
+      node-addon-api: 3.1.0
+      node-gyp-build: 4.2.3
+    dev: false
+    requiresBuild: true
+    resolution:
+      integrity: sha512-20vaD+PTkqYHuvKMDMfFSOYaw4QB6tLQQteHF2mjhnXfeyP0+sCEaord7mI5QdPwrOnR4TAMi9AS2zBL/HA0BQ==
 specifiers:
   '@atom/mocha-test-runner': ^1.6.1
   '@types/atom': ^1.40.7
@@ -2161,7 +2161,6 @@ specifiers:
   '@typescript-eslint/parser': ^4.14.1
   chai: ^4.2.0
   eslint: ^7.18.0
-  fuzzaldrin-plus-fast: ^1.2.4
   mocha: ^8.2.1
   mocha-appveyor-reporter: ^0.4.2
   rimraf: ^3.0.2
@@ -2170,3 +2169,4 @@ specifiers:
   vscode-jsonrpc: 5.0.1
   vscode-languageserver-protocol: 3.15.3
   vscode-languageserver-types: 3.15.1
+  zadeh: ^2.0.2
