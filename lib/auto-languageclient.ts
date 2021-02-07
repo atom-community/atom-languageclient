@@ -3,6 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
+import type { OutlineProvider } from 'atom-ide-base'
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -539,7 +540,7 @@ export default class AutoLanguageClient {
   }
 
   // Outline View via LS documentSymbol---------------------------------
-  public provideOutlines(): atomIde.OutlineProvider {
+  public provideOutlines(): OutlineProvider {
     return {
       name: this.name,
       grammarScopes: this.getGrammarScopes(),

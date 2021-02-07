@@ -2,18 +2,6 @@ declare module 'atom-ide' {
   import { Disposable, Grammar, Point, Range, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
 
-  export interface OutlineProvider {
-    name: string;
-    /**
-     * If there are multiple providers for a given grammar, the one with the highest priority will be
-     * used.
-     */
-    priority: number;
-    grammarScopes: string[];
-    updateOnEdit?: boolean;
-    getOutline: (editor: TextEditor) => Promise<Outline | null>;
-  }
-
   export interface OutlineTree {
     /** from atom$Octicon | atom$OcticonsPrivate (types not allowed over rpc so we use string) */
     icon?: string;
