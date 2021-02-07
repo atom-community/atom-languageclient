@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.6...v1.0.7) (2021-02-07)
+
+
+### Bug Fixes
+
+* use zadeh library ([5d9aeb7](https://github.com/atom-ide-community/atom-languageclient/commit/5d9aeb759d445bc8b309dfe9c00f7d36f6a757cf))
+
 ## [1.0.6](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.5...v1.0.6) (2021-01-06)
 
 
