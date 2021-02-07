@@ -2,25 +2,6 @@ declare module 'atom-ide' {
   import { Disposable, Grammar, Point, Range, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
 
-  export interface OutlineTree {
-    /** from atom$Octicon | atom$OcticonsPrivate (types not allowed over rpc so we use string) */
-    icon?: string;
-
-    /** Must have `plainText` or the `tokenizedText` property. If both are present, `tokenizedText` is preferred. */
-    plainText?: string;
-    /** Must have `plainText` or the `tokenizedText` property. If both are present, `tokenizedText` is preferred. */
-    tokenizedText?: TokenizedText;
-    representativeName?: string;
-
-    startPosition: Point;
-    endPosition?: Point;
-    children: OutlineTree[];
-  }
-
-  export interface Outline {
-    outlineTrees: OutlineTree[];
-  }
-
   export type TokenKind =
     | 'keyword'
     | 'class-name'

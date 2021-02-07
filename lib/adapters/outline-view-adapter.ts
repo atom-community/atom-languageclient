@@ -1,4 +1,5 @@
 import * as atomIde from 'atom-ide';
+import type { OutlineTree, Outline } from 'atom-ide-base'
 import Convert from '../convert';
 import * as Utils from '../utils';
 import { CancellationTokenSource } from 'vscode-jsonrpc';
@@ -43,7 +44,7 @@ export default class OutlineViewAdapter {
    * @param editor The Atom {TextEditor} containing the text the Outline should represent.
    * @returns A {Promise} containing the {Outline} of this document.
    */
-  public async getOutline(connection: LanguageClientConnection, editor: TextEditor): Promise<atomIde.Outline | null> {
+  public async getOutline(connection: LanguageClientConnection, editor: TextEditor): Promise<Outline | null> {
     const results = await Utils.doWithCancellationToken(connection, this._cancellationTokens, (cancellationToken) =>
       connection.documentSymbol({ textDocument: Convert.editorToTextDocumentIdentifier(editor) }, cancellationToken),
     );
@@ -78,7 +79,7 @@ export default class OutlineViewAdapter {
    *   should be converted to an {Array} of {OutlineTree}.
    * @returns An {Array} of {OutlineTree} containing the given symbols that the Outline View can display.
    */
-  public static createHierarchicalOutlineTrees(symbols: DocumentSymbol[]): atomIde.OutlineTree[] {
+  public static createHierarchicalOutlineTrees(symbols: DocumentSymbol[]): OutlineTree[] {
     // Sort all the incoming symbols
     symbols.sort((a, b) => {
       if (a.range.start.line !== b.range.start.line) {
@@ -117,7 +118,7 @@ export default class OutlineViewAdapter {
    *   should be converted to an {OutlineTree}.
    * @returns An {OutlineTree} containing the given symbols that the Outline View can display.
    */
-  public static createOutlineTrees(symbols: SymbolInformation[]): atomIde.OutlineTree[] {
+  public static createOutlineTrees(symbols: SymbolInformation[]): OutlineTree[] {
     symbols.sort(
       (a, b) =>
         (a.location.range.start.line === b.location.range.start.line
@@ -146,7 +147,7 @@ export default class OutlineViewAdapter {
       return map;
     }, new Map());
 
-    const roots: atomIde.OutlineTree[] = [];
+    const roots: OutlineTree[] = [];
 
     // Put each item within its parent and extract out the roots
     for (const item of allItems) {
@@ -180,14 +181,14 @@ export default class OutlineViewAdapter {
   }
 
   private static _getClosestParent(
-    candidates: atomIde.OutlineTree[] | null,
-    child: atomIde.OutlineTree,
-  ): atomIde.OutlineTree | null {
+    candidates: OutlineTree[] | null,
+    child: OutlineTree,
+  ): OutlineTree | null {
     if (candidates == null || candidates.length === 0) {
       return null;
     }
 
-    let parent: atomIde.OutlineTree | undefined;
+    let parent: OutlineTree | undefined;
     for (const candidate of candidates) {
       if (
         candidate !== child &&
@@ -218,7 +219,7 @@ export default class OutlineViewAdapter {
    * @param symbol The {DocumentSymbol} to convert to an {OutlineTree}.
    * @returns The {OutlineTree} corresponding to the given {DocumentSymbol}.
    */
-  public static hierarchicalSymbolToOutline(symbol: DocumentSymbol): atomIde.OutlineTree {
+  public static hierarchicalSymbolToOutline(symbol: DocumentSymbol): OutlineTree {
     const icon = OutlineViewAdapter.symbolKindToEntityKind(symbol.kind);
 
     return {
@@ -243,7 +244,7 @@ export default class OutlineViewAdapter {
    * @param symbol The {SymbolInformation} to convert to an {OutlineTree}.
    * @returns The {OutlineTree} equivalent to the given {SymbolInformation}.
    */
-  public static symbolToOutline(symbol: SymbolInformation): atomIde.OutlineTree {
+  public static symbolToOutline(symbol: SymbolInformation): OutlineTree {
     const icon = OutlineViewAdapter.symbolKindToEntityKind(symbol.kind);
     return {
       tokenizedText: [

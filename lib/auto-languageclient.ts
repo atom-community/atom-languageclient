@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider } from 'atom-ide-base'
+import type { OutlineProvider, Outline } from 'atom-ide-base'
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -549,7 +549,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getOutline(editor: TextEditor): Promise<atomIde.Outline | null> {
+  protected async getOutline(editor: TextEditor): Promise<Outline | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !OutlineViewAdapter.canAdapt(server.capabilities)) {
       return null;
