@@ -4,21 +4,6 @@ declare module 'atom-ide' {
 
   export type IdeUri = string;
 
-  export interface Definition {
-    path: IdeUri;
-    position: Point;
-    range?: Range;
-    id?: string;
-    name?: string;
-    language: string;
-    projectRoot?: IdeUri;
-  }
-
-  export interface DefinitionQueryResult {
-    queryRange: Range[];
-    definitions: Definition[];
-  }
-
   export interface FindReferencesProvider {
     /** Return true if your provider supports finding references for the provided TextEditor. */
     isEditorSupported(editor: TextEditor): boolean | Promise<boolean>;

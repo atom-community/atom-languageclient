@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -523,7 +523,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getDefinition(editor: TextEditor, point: Point): Promise<atomIde.DefinitionQueryResult | null> {
+  protected async getDefinition(editor: TextEditor, point: Point): Promise<DefinitionQueryResult | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !DefinitionAdapter.canAdapt(server.capabilities)) {
       return null;
