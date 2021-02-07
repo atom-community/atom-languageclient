@@ -12,10 +12,13 @@
     "typings"
   ],
   "scripts": {
+    "format": "prettier --write .",
+    "test.format": "prettier . --check",
+    "lint": "eslint . --fix --ext .ts",
+    "test.lint": "eslint . --ext .ts",
     "clean": "rimraf build",
     "compile": "tsc",
     "watch": "tsc -watch",
-    "lint": "eslint . --ext .ts",
     "prepare": "npm run clean && npm run compile",
     "test": "npm run compile && atom --test build/test"
   },
