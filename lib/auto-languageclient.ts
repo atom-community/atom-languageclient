@@ -519,6 +519,7 @@ export default class AutoLanguageClient {
       name: this.name,
       priority: 20,
       grammarScopes: this.getGrammarScopes(),
+      wordRegExp: null, // TODO pass RegExp
       getDefinition: this.getDefinition.bind(this),
     };
   }
