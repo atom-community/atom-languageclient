@@ -2,7 +2,7 @@ import Convert from '../convert';
 import * as Utils from '../utils';
 import { CancellationTokenSource } from 'vscode-jsonrpc';
 import { ActiveServer } from '../server-manager';
-import { filter } from 'fuzzaldrin-plus-fast';
+import { filter } from 'zadeh';
 import {
   CompletionContext,
   CompletionItem,
