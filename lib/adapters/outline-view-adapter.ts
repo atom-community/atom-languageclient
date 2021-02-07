@@ -1,5 +1,4 @@
-import * as atomIde from 'atom-ide';
-import type { OutlineTree, Outline } from 'atom-ide-base'
+import type { OutlineTree, Outline, TokenKind } from 'atom-ide-base';
 import Convert from '../convert';
 import * as Utils from '../utils';
 import { CancellationTokenSource } from 'vscode-jsonrpc';
@@ -322,7 +321,7 @@ export default class OutlineViewAdapter {
    * @param symbol The numeric symbol kind received from the language server.
    * @returns A string representing the equivalent syntax token kind.
    */
-  public static symbolKindToTokenKind(symbol: number): atomIde.TokenKind {
+  public static symbolKindToTokenKind(symbol: number): TokenKind {
     switch (symbol) {
       case SymbolKind.Class:
         return 'type';

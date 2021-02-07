@@ -2,24 +2,6 @@ declare module 'atom-ide' {
   import { Disposable, Grammar, Point, Range, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
 
-  export type TokenKind =
-    | 'keyword'
-    | 'class-name'
-    | 'constructor'
-    | 'method'
-    | 'param'
-    | 'string'
-    | 'whitespace'
-    | 'plain'
-    | 'type';
-
-  export interface TextToken {
-    kind: TokenKind;
-    value: string;
-  }
-
-  export type TokenizedText = TextToken[];
-
   export interface DefinitionProvider {
     name: string;
     priority: number;
