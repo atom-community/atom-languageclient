@@ -2,8 +2,7 @@ import * as cp from 'child_process';
 import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
-import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider, BusySignalService, SignatureHelpRegistry } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider, BusySignalService, SignatureHelpRegistry, ConsoleService } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -64,7 +63,7 @@ export interface ServerAdapters {
 export default class AutoLanguageClient {
   private _disposable!: CompositeDisposable;
   private _serverManager!: ServerManager;
-  private _consoleDelegate?: atomIde.ConsoleService;
+  private _consoleDelegate?: ConsoleService;
   private _linterDelegate?: linter.IndieDelegate;
   private _signatureHelpRegistry?: SignatureHelpRegistry;
   private _lastAutocompleteRequest?: ac.SuggestionsRequestedEvent;
@@ -618,7 +617,7 @@ export default class AutoLanguageClient {
   }
 
   // Console via LS logging---------------------------------------------
-  public consumeConsole(createConsole: atomIde.ConsoleService): Disposable {
+  public consumeConsole(createConsole: ConsoleService): Disposable {
     this._consoleDelegate = createConsole;
 
     for (const server of this._serverManager.getActiveServers()) {

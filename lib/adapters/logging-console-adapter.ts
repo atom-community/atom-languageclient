@@ -1,4 +1,4 @@
-import { ConsoleApi } from 'atom-ide';
+import type { ConsoleApi } from 'atom-ide-base';
 import {
   LanguageClientConnection,
   LogMessageParams,
