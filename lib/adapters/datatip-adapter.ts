@@ -1,5 +1,4 @@
-import * as atomIde from 'atom-ide';
-import type { MarkedString as AtomMarkedString } from 'atom-ide-base'
+import type { MarkedString as AtomMarkedString, Datatip } from 'atom-ide-base'
 import Convert from '../convert';
 import * as Utils from '../utils';
 import {
@@ -45,7 +44,7 @@ export default class DatatipAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     point: Point,
-  ): Promise<atomIde.Datatip | null> {
+  ): Promise<Datatip | null> {
     const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
 
     const hover = await connection.hover(documentPositionParams);
