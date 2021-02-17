@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -762,7 +762,7 @@ export default class AutoLanguageClient {
     );
   }
 
-  public provideRefactor(): atomIde.RefactorProvider {
+  public provideRefactor(): RefactorProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,

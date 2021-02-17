@@ -1,15 +1,8 @@
 declare module 'atom-ide' {
   import { Disposable, Point, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
-  import { TextEdit } from 'atom-ide-base';
 
   export type IdeUri = string;
-
-  export interface RefactorProvider {
-    grammarScopes: string[];
-    priority: number;
-    rename?(editor: TextEditor, position: Point, newName: string): Promise<Map<IdeUri, TextEdit[]> | null>;
-  }
 
   export interface BusySignalOptions {
     /**
