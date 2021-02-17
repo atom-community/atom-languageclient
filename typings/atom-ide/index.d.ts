@@ -4,28 +4,6 @@ declare module 'atom-ide' {
 
   export type IdeUri = string;
 
-  export interface Reference {
-    /** URI of the file path */
-    uri: IdeUri;
-    /** Name of calling method / function / symbol */
-    name: string | null;
-    range: Range;
-  }
-
-  export interface FindReferencesData {
-    type: 'data';
-    baseUri: IdeUri;
-    referencedSymbolName: string;
-    references: Reference[];
-  }
-
-  export interface FindReferencesError {
-    type: 'error';
-    message: string;
-  }
-
-  export type FindReferencesReturn = FindReferencesData | FindReferencesError;
-
   export type MarkedString =
     | {
       type: 'markdown',

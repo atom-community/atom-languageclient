@@ -1,4 +1,4 @@
-import * as atomIde from 'atom-ide';
+import type { Reference, FindReferencesReturn } from 'atom-ide-base';
 import Convert from '../convert';
 import {
   Point,
@@ -44,7 +44,7 @@ export default class FindReferencesAdapter {
     editor: TextEditor,
     point: Point,
     projectRoot: string | null,
-  ): Promise<atomIde.FindReferencesReturn | null> {
+  ): Promise<FindReferencesReturn | null> {
     const locations = await connection.findReferences(
       FindReferencesAdapter.createReferenceParams(editor, point),
     );
@@ -52,7 +52,7 @@ export default class FindReferencesAdapter {
       return null;
     }
 
-    const references: atomIde.Reference[] = locations.map(FindReferencesAdapter.locationToReference);
+    const references: Reference[] = locations.map(FindReferencesAdapter.locationToReference);
     return {
       type: 'data',
       baseUri: projectRoot || '',
@@ -82,7 +82,7 @@ export default class FindReferencesAdapter {
    * @param location A {Location} to convert.
    * @returns A {Reference} equivalent to the given {Location}.
    */
-  public static locationToReference(location: Location): atomIde.Reference {
+  public static locationToReference(location: Location): Reference {
     return {
       uri: Convert.uriToPath(location.uri),
       name: null,
@@ -94,7 +94,7 @@ export default class FindReferencesAdapter {
   public static getReferencedSymbolName(
     editor: TextEditor,
     point: Point,
-    references: atomIde.Reference[],
+    references: Reference[],
   ): string {
     if (references.length === 0) {
       return '';
