@@ -1,35 +1,9 @@
 declare module 'atom-ide' {
-  import { Disposable, Point, Range, TextEditor } from 'atom';
+  import { Disposable, Point, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
   import { TextEdit } from 'atom-ide-base';
 
   export type IdeUri = string;
-
-  export type DiagnosticType = 'Error' | 'Warning' | 'Info';
-
-  export interface Diagnostic {
-    providerName: string;
-    type: DiagnosticType;
-    filePath: string;
-    text?: string;
-    range: Range;
-  }
-
-  export interface CodeAction {
-    apply(): Promise<void>;
-    getTitle(): Promise<string>;
-    dispose(): void;
-  }
-
-  export interface CodeActionProvider {
-    grammarScopes: string[];
-    priority: number;
-    getCodeActions(
-      editor: TextEditor,
-      range: Range,
-      diagnostics: Diagnostic[],
-    ): Promise<CodeAction[] | null>;
-  }
 
   export interface RefactorProvider {
     grammarScopes: string[];

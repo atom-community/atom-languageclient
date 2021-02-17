@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeHighlightProvider } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -42,7 +42,6 @@ import {
   TextEditor,
 } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
-import { CodeAction } from 'atom-ide';
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess };
 export type ConnectionType = 'stdio' | 'socket' | 'ipc';
@@ -733,7 +732,7 @@ export default class AutoLanguageClient {
     return CodeHighlightAdapter.highlight(server.connection, server.capabilities, editor, position);
   }
 
-  public provideCodeActions(): atomIde.CodeActionProvider {
+  public provideCodeActions(): CodeActionProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -746,7 +745,7 @@ export default class AutoLanguageClient {
   protected async getCodeActions(
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[]
+    diagnostics: Diagnostic[]
   ): Promise<CodeAction[] | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !CodeActionAdapter.canAdapt(server.capabilities)) {

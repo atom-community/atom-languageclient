@@ -1,4 +1,4 @@
-import { TextEdit } from 'atom-ide-base';
+import { TextEdit, Diagnostic, DiagnosticType } from 'atom-ide-base';
 import * as ls from './languageclient';
 import * as URL from 'url';
 import {
@@ -7,10 +7,6 @@ import {
   Range,
   TextEditor,
 } from 'atom';
-import {
-  Diagnostic,
-  DiagnosticType,
-} from 'atom-ide';
 
 /**
  * Public: Class that contains a number of helper methods for general conversions
