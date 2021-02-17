@@ -1,4 +1,5 @@
 import * as atomIde from 'atom-ide';
+import type { MarkedString as AtomMarkedString } from 'atom-ide-base'
 import Convert from '../convert';
 import * as Utils from '../utils';
 import {
@@ -72,7 +73,7 @@ export default class DatatipAdapter {
   private static convertMarkedString(
     editor: TextEditor,
     markedString: MarkedString | MarkupContent,
-  ): atomIde.MarkedString {
+  ): AtomMarkedString {
     if (typeof markedString === 'string') {
       return { type: 'markdown', value: markedString };
     }
