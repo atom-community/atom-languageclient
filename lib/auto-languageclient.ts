@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider, BusySignalService } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -72,7 +72,7 @@ export default class AutoLanguageClient {
   private _serverAdapters = new WeakMap<ActiveServer, ServerAdapters>();
 
   /** Available if consumeBusySignal is setup */
-  protected busySignalService?: atomIde.BusySignalService;
+  protected busySignalService?: BusySignalService;
 
   protected processStdErr: string = '';
   protected logger!: Logger;
@@ -801,7 +801,7 @@ export default class AutoLanguageClient {
     });
   }
 
-  public consumeBusySignal(service: atomIde.BusySignalService): Disposable {
+  public consumeBusySignal(service: BusySignalService): Disposable {
     this.busySignalService = service;
     return new Disposable(() => delete this.busySignalService);
   }
