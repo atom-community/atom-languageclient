@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -576,7 +576,7 @@ export default class AutoLanguageClient {
   }
 
   // Find References via LS findReferences------------------------------
-  public provideFindReferences(): atomIde.FindReferencesProvider {
+  public provideFindReferences(): FindReferencesProvider {
     return {
       isEditorSupported: (editor: TextEditor) => this.getGrammarScopes().includes(editor.getGrammar().scopeName),
       findReferences: this.getReferences.bind(this),

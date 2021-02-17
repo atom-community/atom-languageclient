@@ -4,17 +4,6 @@ declare module 'atom-ide' {
 
   export type IdeUri = string;
 
-  export interface FindReferencesProvider {
-    /** Return true if your provider supports finding references for the provided TextEditor. */
-    isEditorSupported(editor: TextEditor): boolean | Promise<boolean>;
-
-    /**
-     * `findReferences` will only be called if `isEditorSupported` previously returned true
-     * for the given TextEditor.
-     */
-    findReferences(editor: TextEditor, position: Point): Promise<FindReferencesReturn | null>;
-  }
-
   export interface Reference {
     /** URI of the file path */
     uri: IdeUri;
