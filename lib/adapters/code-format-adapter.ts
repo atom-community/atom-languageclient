@@ -1,4 +1,4 @@
-import * as atomIde from 'atom-ide';
+import type { TextEdit } from 'atom-ide-base';
 import Convert from '../convert';
 import {
   LanguageClientConnection,
@@ -51,7 +51,7 @@ export default class CodeFormatAdapter {
     serverCapabilities: ServerCapabilities,
     editor: TextEditor,
     range: Range,
-  ): Promise<atomIde.TextEdit[]> {
+  ): Promise<TextEdit[]> {
     if (serverCapabilities.documentRangeFormattingProvider) {
       return CodeFormatAdapter.formatRange(connection, editor, range);
     }
@@ -74,7 +74,7 @@ export default class CodeFormatAdapter {
   public static async formatDocument(
     connection: LanguageClientConnection,
     editor: TextEditor,
-  ): Promise<atomIde.TextEdit[]> {
+  ): Promise<TextEdit[]> {
     const edits = await connection.documentFormatting(CodeFormatAdapter.createDocumentFormattingParams(editor));
     return Convert.convertLsTextEdits(edits);
   }
@@ -107,7 +107,7 @@ export default class CodeFormatAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     range: Range,
-  ): Promise<atomIde.TextEdit[]> {
+  ): Promise<TextEdit[]> {
     const edits = await connection.documentRangeFormatting(
       CodeFormatAdapter.createDocumentRangeFormattingParams(editor, range),
     );
@@ -150,7 +150,7 @@ export default class CodeFormatAdapter {
     editor: TextEditor,
     point: Point,
     character: string,
-  ): Promise<atomIde.TextEdit[]> {
+  ): Promise<TextEdit[]> {
     const edits = await connection.documentOnTypeFormatting(
       CodeFormatAdapter.createDocumentOnTypeFormattingParams(editor, point, character),
     );

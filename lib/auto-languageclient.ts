@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -42,7 +42,7 @@ import {
   TextEditor,
 } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
-import { TextEdit, CodeAction } from 'atom-ide';
+import { CodeAction } from 'atom-ide';
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess };
 export type ConnectionType = 'stdio' | 'socket' | 'ipc';
@@ -634,7 +634,7 @@ export default class AutoLanguageClient {
   }
 
   // Code Format via LS formatDocument & formatDocumentRange------------
-  public provideCodeFormat(): atomIde.RangeCodeFormatProvider {
+  public provideCodeFormat(): RangeCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -642,7 +642,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getCodeFormat(editor: TextEditor, range: Range): Promise<atomIde.TextEdit[]> {
+  protected async getCodeFormat(editor: TextEditor, range: Range): Promise<TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !CodeFormatAdapter.canAdapt(server.capabilities)) {
       return [];
@@ -651,7 +651,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.format(server.connection, server.capabilities, editor, range);
   }
 
-  public provideRangeCodeFormat(): atomIde.RangeCodeFormatProvider {
+  public provideRangeCodeFormat(): RangeCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -659,7 +659,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getRangeCodeFormat(editor: TextEditor, range: Range): Promise<atomIde.TextEdit[]> {
+  protected async getRangeCodeFormat(editor: TextEditor, range: Range): Promise<TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentRangeFormattingProvider) {
       return [];
@@ -668,7 +668,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.formatRange(server.connection, editor, range);
   }
 
-  public provideFileCodeFormat(): atomIde.FileCodeFormatProvider {
+  public provideFileCodeFormat(): FileCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -676,7 +676,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  public provideOnSaveCodeFormat(): atomIde.OnSaveCodeFormatProvider {
+  public provideOnSaveCodeFormat(): OnSaveCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -684,7 +684,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getFileCodeFormat(editor: TextEditor): Promise<atomIde.TextEdit[]> {
+  protected async getFileCodeFormat(editor: TextEditor): Promise<TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentFormattingProvider) {
       return [];
@@ -693,7 +693,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.formatDocument(server.connection, editor);
   }
 
-  public provideOnTypeCodeFormat(): atomIde.OnTypeCodeFormatProvider {
+  public provideOnTypeCodeFormat(): OnTypeCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -705,7 +705,7 @@ export default class AutoLanguageClient {
     editor: TextEditor,
     point: Point,
     character: string,
-  ): Promise<atomIde.TextEdit[]> {
+  ): Promise<TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentOnTypeFormattingProvider) {
       return [];

@@ -1,4 +1,4 @@
-
+import { TextEdit } from 'atom-ide-base';
 import * as ls from './languageclient';
 import * as URL from 'url';
 import {
@@ -10,7 +10,6 @@ import {
 import {
   Diagnostic,
   DiagnosticType,
-  TextEdit,
 } from 'atom-ide';
 
 /**

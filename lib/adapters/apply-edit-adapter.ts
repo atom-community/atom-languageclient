@@ -1,4 +1,4 @@
-import * as atomIde from 'atom-ide';
+import type { TextEdit } from 'atom-ide-base';
 import Convert from '../convert';
 import {
   LanguageClientConnection,
@@ -23,13 +23,13 @@ export default class ApplyEditAdapter {
    */
   public static applyEdits(
     buffer: TextBuffer,
-    edits: atomIde.TextEdit[],
+    edits: TextEdit[],
   ): number {
     const checkpoint = buffer.createCheckpoint();
     try {
       // Sort edits in reverse order to prevent edit conflicts.
       edits.sort((edit1, edit2) => -edit1.oldRange.compare(edit2.oldRange));
-      edits.reduce((previous: atomIde.TextEdit | null, current) => {
+      edits.reduce((previous: TextEdit | null, current) => {
         ApplyEditAdapter.validateEdit(buffer, current, previous);
         buffer.setTextInRange(current.oldRange, current.newText);
         return current;
@@ -97,8 +97,8 @@ export default class ApplyEditAdapter {
   /** Private: Do some basic sanity checking on the edit ranges. */
   private static validateEdit(
     buffer: TextBuffer,
-    edit: atomIde.TextEdit,
-    prevEdit: atomIde.TextEdit | null,
+    edit: TextEdit,
+    prevEdit: TextEdit | null,
   ): void {
     const path = buffer.getPath() || '';
     if (prevEdit && edit.oldRange.end.compare(prevEdit.oldRange.start) > 0) {

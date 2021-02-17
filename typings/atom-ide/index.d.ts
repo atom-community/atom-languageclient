@@ -1,39 +1,9 @@
 declare module 'atom-ide' {
   import { Disposable, Point, Range, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
+  import { TextEdit } from 'atom-ide-base';
 
   export type IdeUri = string;
-
-  export interface FileCodeFormatProvider {
-    formatEntireFile: (editor: TextEditor, range: Range) => Promise<TextEdit[]>;
-    priority: number;
-    grammarScopes: string[];
-  }
-
-  export interface RangeCodeFormatProvider {
-    formatCode: (editor: TextEditor, range: Range) => Promise<TextEdit[]>;
-    priority: number;
-    grammarScopes: string[];
-  }
-
-  export interface OnSaveCodeFormatProvider {
-    formatOnSave: (editor: TextEditor) => Promise<TextEdit[]>;
-    priority: number;
-    grammarScopes: string[];
-  }
-
-  export interface OnTypeCodeFormatProvider {
-    formatAtPosition: (editor: TextEditor, position: Point, character: string) => Promise<TextEdit[]>;
-    priority: number;
-    grammarScopes: string[];
-  }
-
-  export interface TextEdit {
-    oldRange: Range;
-    newText: string;
-    /** If included, this will be used to verify that the edit still applies cleanly. */
-    oldText?: string;
-  }
 
   export interface CodeHighlightProvider {
     highlight(editor: TextEditor, bufferPosition: Point): Promise<Range[] | null>;

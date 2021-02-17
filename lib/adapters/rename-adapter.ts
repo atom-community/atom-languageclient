@@ -1,4 +1,5 @@
 import * as atomIde from 'atom-ide';
+import type { TextEdit as AtomTextEdit } from 'atom-ide-base';
 import Convert from '../convert';
 import {
   Point,
@@ -22,7 +23,7 @@ export default class RenameAdapter {
     editor: TextEditor,
     point: Point,
     newName: string,
-  ): Promise<Map<atomIde.IdeUri, atomIde.TextEdit[]> | null> {
+  ): Promise<Map<atomIde.IdeUri, AtomTextEdit[]> | null> {
     const edit = await connection.rename(
       RenameAdapter.createRenameParams(editor, point, newName),
     );
@@ -49,7 +50,7 @@ export default class RenameAdapter {
 
   public static convertChanges(
     changes: { [uri: string]: TextEdit[] },
-  ): Map<atomIde.IdeUri, atomIde.TextEdit[]> {
+  ): Map<atomIde.IdeUri, AtomTextEdit[]> {
     const result = new Map();
     Object.keys(changes).forEach((uri) => {
       result.set(
@@ -62,7 +63,7 @@ export default class RenameAdapter {
 
   public static convertDocumentChanges(
     documentChanges: TextDocumentEdit[],
-  ): Map<atomIde.IdeUri, atomIde.TextEdit[]> {
+  ): Map<atomIde.IdeUri, AtomTextEdit[]> {
     const result = new Map();
     documentChanges.forEach((documentEdit) => {
       result.set(
