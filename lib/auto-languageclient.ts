@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -594,7 +594,7 @@ export default class AutoLanguageClient {
   }
 
   // Datatip via LS textDocument/hover----------------------------------
-  public consumeDatatip(service: atomIde.DatatipService): void {
+  public consumeDatatip(service: DatatipService): void {
     this._disposable.add(
       service.addProvider({
         providerName: this.name,
