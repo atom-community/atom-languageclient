@@ -1,50 +1,8 @@
 declare module 'atom-ide' {
-  import { Disposable, Grammar, Point, Range, TextEditor } from 'atom';
+  import { Disposable, Point, Range, TextEditor } from 'atom';
   import * as ac from 'atom/autocomplete-plus';
 
   export type IdeUri = string;
-
-  export type MarkedString =
-    | {
-      type: 'markdown',
-      value: string,
-    }
-    | {
-      type: 'snippet',
-      grammar: Grammar,
-      value: string,
-    };
-
-  // This omits the React variant.
-  export interface Datatip {
-    markedStrings: MarkedString[];
-    range: Range;
-    pinnable?: boolean;
-  }
-
-  export interface DatatipProvider {
-    datatip(
-      editor: TextEditor,
-      bufferPosition: Point,
-      /**
-       * The mouse event that triggered the datatip.
-       * This is null for manually toggled datatips.
-       */
-      mouseEvent: MouseEvent | null,
-    ): Promise<Datatip | null>;
-    validForScope(scopeName: string): boolean;
-    /**
-     * A unique name for the provider to be used for analytics.
-     * It is recommended that it be the name of the provider's package.
-     */
-    providerName: string;
-    priority: number;
-    grammarScopes: string[];
-  }
-
-  export interface DatatipService {
-    addProvider(provider: DatatipProvider): Disposable;
-  }
 
   export interface FileCodeFormatProvider {
     formatEntireFile: (editor: TextEditor, range: Range) => Promise<TextEdit[]>;
