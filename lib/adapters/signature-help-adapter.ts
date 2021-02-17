@@ -1,4 +1,4 @@
-import * as atomIde from 'atom-ide';
+import type { SignatureHelpRegistry } from "atom-ide-base";
 import assert = require('assert');
 import Convert from '../convert';
 import { ActiveServer } from '../server-manager';
@@ -37,7 +37,7 @@ export default class SignatureHelpAdapter {
     this._disposables.dispose();
   }
 
-  public attach(register: atomIde.SignatureHelpRegistry): void {
+  public attach(register: SignatureHelpRegistry): void {
     const { signatureHelpProvider } = this._capabilities;
     assert(signatureHelpProvider != null);
 

@@ -3,7 +3,7 @@ import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
 import * as atomIde from 'atom-ide';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider, BusySignalService } from 'atom-ide-base';
+import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider, BusySignalService, SignatureHelpRegistry } from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -66,7 +66,7 @@ export default class AutoLanguageClient {
   private _serverManager!: ServerManager;
   private _consoleDelegate?: atomIde.ConsoleService;
   private _linterDelegate?: linter.IndieDelegate;
-  private _signatureHelpRegistry?: atomIde.SignatureHelpRegistry;
+  private _signatureHelpRegistry?: SignatureHelpRegistry;
   private _lastAutocompleteRequest?: ac.SuggestionsRequestedEvent;
   private _isDeactivating: boolean = false;
   private _serverAdapters = new WeakMap<ActiveServer, ServerAdapters>();
@@ -788,7 +788,7 @@ export default class AutoLanguageClient {
     );
   }
 
-  public consumeSignatureHelp(registry: atomIde.SignatureHelpRegistry): Disposable {
+  public consumeSignatureHelp(registry: SignatureHelpRegistry): Disposable {
     this._signatureHelpRegistry = registry;
     for (const server of this._serverManager.getActiveServers()) {
       const signatureHelpAdapter = this.getServerAdapter(server, 'signatureHelpAdapter');
