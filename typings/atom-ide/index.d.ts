@@ -5,12 +5,6 @@ declare module 'atom-ide' {
 
   export type IdeUri = string;
 
-  export interface CodeHighlightProvider {
-    highlight(editor: TextEditor, bufferPosition: Point): Promise<Range[] | null>;
-    priority: number;
-    grammarScopes: string[];
-  }
-
   export type DiagnosticType = 'Error' | 'Warning' | 'Info';
 
   export interface Diagnostic {
