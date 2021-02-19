@@ -1,4 +1,4 @@
-import { CodeAction as AtomCodeAction, Diagnostic } from 'atom-ide-base';
+import type * as atomIde from 'atom-ide-base';
 import LinterPushV2Adapter from './linter-push-v2-adapter';
 import assert = require('assert');
 import Convert from '../convert';
@@ -43,8 +43,8 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter | undefined,
     editor: TextEditor,
     range: Range,
-    diagnostics: Diagnostic[],
-  ): Promise<AtomCodeAction[]> {
+    diagnostics: atomIde.Diagnostic[],
+  ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return [];
     }
@@ -58,7 +58,7 @@ export default class CodeActionAdapter {
   private static createCodeAction(
     action: Command | CodeAction,
     connection: LanguageClientConnection,
-  ): AtomCodeAction {
+  ): atomIde.CodeAction {
     return {
       async apply() {
         if (CodeAction.is(action)) {
@@ -99,7 +99,7 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter,
     editor: TextEditor,
     range: Range,
-    diagnostics: Diagnostic[],
+    diagnostics: atomIde.Diagnostic[],
   ): CodeActionParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),

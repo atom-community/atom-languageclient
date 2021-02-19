@@ -1,4 +1,4 @@
-import type { MarkedString as AtomMarkedString, Datatip } from 'atom-ide-base'
+import type * as atomIde from 'atom-ide-base';
 import Convert from '../convert';
 import * as Utils from '../utils';
 import {
@@ -44,7 +44,7 @@ export default class DatatipAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     point: Point,
-  ): Promise<Datatip | null> {
+  ): Promise<atomIde.Datatip | null> {
     const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
 
     const hover = await connection.hover(documentPositionParams);
@@ -72,7 +72,7 @@ export default class DatatipAdapter {
   private static convertMarkedString(
     editor: TextEditor,
     markedString: MarkedString | MarkupContent,
-  ): AtomMarkedString {
+  ): atomIde.MarkedString {
     if (typeof markedString === 'string') {
       return { type: 'markdown', value: markedString };
     }

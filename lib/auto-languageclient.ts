@@ -2,7 +2,7 @@ import * as cp from 'child_process';
 import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
-import type { OutlineProvider, Outline, DefinitionProvider, DefinitionQueryResult, FindReferencesProvider, FindReferencesReturn, Datatip, DatatipService, TextEdit, RangeCodeFormatProvider, FileCodeFormatProvider, OnSaveCodeFormatProvider, OnTypeCodeFormatProvider, CodeAction, CodeHighlightProvider, CodeActionProvider, Diagnostic, RefactorProvider, BusySignalService, SignatureHelpRegistry, ConsoleService } from 'atom-ide-base';
+import type * as atomIde from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -63,15 +63,15 @@ export interface ServerAdapters {
 export default class AutoLanguageClient {
   private _disposable!: CompositeDisposable;
   private _serverManager!: ServerManager;
-  private _consoleDelegate?: ConsoleService;
+  private _consoleDelegate?: atomIde.ConsoleService;
   private _linterDelegate?: linter.IndieDelegate;
-  private _signatureHelpRegistry?: SignatureHelpRegistry;
+  private _signatureHelpRegistry?: atomIde.SignatureHelpRegistry;
   private _lastAutocompleteRequest?: ac.SuggestionsRequestedEvent;
   private _isDeactivating: boolean = false;
   private _serverAdapters = new WeakMap<ActiveServer, ServerAdapters>();
 
   /** Available if consumeBusySignal is setup */
-  protected busySignalService?: BusySignalService;
+  protected busySignalService?: atomIde.BusySignalService;
 
   protected processStdErr: string = '';
   protected logger!: Logger;
@@ -512,7 +512,7 @@ export default class AutoLanguageClient {
   protected onDidInsertSuggestion(_arg: ac.SuggestionInsertedEvent): void { }
 
   // Definitions via LS documentHighlight and gotoDefinition------------
-  public provideDefinitions(): DefinitionProvider {
+  public provideDefinitions(): atomIde.DefinitionProvider {
     return {
       name: this.name,
       priority: 20,
@@ -522,7 +522,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getDefinition(editor: TextEditor, point: Point): Promise<DefinitionQueryResult | null> {
+  protected async getDefinition(editor: TextEditor, point: Point): Promise<atomIde.DefinitionQueryResult | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !DefinitionAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -539,7 +539,7 @@ export default class AutoLanguageClient {
   }
 
   // Outline View via LS documentSymbol---------------------------------
-  public provideOutlines(): OutlineProvider {
+  public provideOutlines(): atomIde.OutlineProvider {
     return {
       name: this.name,
       grammarScopes: this.getGrammarScopes(),
@@ -548,7 +548,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getOutline(editor: TextEditor): Promise<Outline | null> {
+  protected async getOutline(editor: TextEditor): Promise<atomIde.Outline | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !OutlineViewAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -574,14 +574,14 @@ export default class AutoLanguageClient {
   }
 
   // Find References via LS findReferences------------------------------
-  public provideFindReferences(): FindReferencesProvider {
+  public provideFindReferences(): atomIde.FindReferencesProvider {
     return {
       isEditorSupported: (editor: TextEditor) => this.getGrammarScopes().includes(editor.getGrammar().scopeName),
       findReferences: this.getReferences.bind(this),
     };
   }
 
-  protected async getReferences(editor: TextEditor, point: Point): Promise<FindReferencesReturn | null> {
+  protected async getReferences(editor: TextEditor, point: Point): Promise<atomIde.FindReferencesReturn | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !FindReferencesAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -592,7 +592,7 @@ export default class AutoLanguageClient {
   }
 
   // Datatip via LS textDocument/hover----------------------------------
-  public consumeDatatip(service: DatatipService): void {
+  public consumeDatatip(service: atomIde.DatatipService): void {
     this._disposable.add(
       service.addProvider({
         providerName: this.name,
@@ -606,7 +606,7 @@ export default class AutoLanguageClient {
     );
   }
 
-  protected async getDatatip(editor: TextEditor, point: Point): Promise<Datatip | null> {
+  protected async getDatatip(editor: TextEditor, point: Point): Promise<atomIde.Datatip | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !DatatipAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -617,7 +617,7 @@ export default class AutoLanguageClient {
   }
 
   // Console via LS logging---------------------------------------------
-  public consumeConsole(createConsole: ConsoleService): Disposable {
+  public consumeConsole(createConsole: atomIde.ConsoleService): Disposable {
     this._consoleDelegate = createConsole;
 
     for (const server of this._serverManager.getActiveServers()) {
@@ -632,7 +632,7 @@ export default class AutoLanguageClient {
   }
 
   // Code Format via LS formatDocument & formatDocumentRange------------
-  public provideCodeFormat(): RangeCodeFormatProvider {
+  public provideCodeFormat(): atomIde.RangeCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -640,7 +640,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getCodeFormat(editor: TextEditor, range: Range): Promise<TextEdit[]> {
+  protected async getCodeFormat(editor: TextEditor, range: Range): Promise<atomIde.TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !CodeFormatAdapter.canAdapt(server.capabilities)) {
       return [];
@@ -649,7 +649,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.format(server.connection, server.capabilities, editor, range);
   }
 
-  public provideRangeCodeFormat(): RangeCodeFormatProvider {
+  public provideRangeCodeFormat(): atomIde.RangeCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -657,7 +657,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getRangeCodeFormat(editor: TextEditor, range: Range): Promise<TextEdit[]> {
+  protected async getRangeCodeFormat(editor: TextEditor, range: Range): Promise<atomIde.TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentRangeFormattingProvider) {
       return [];
@@ -666,7 +666,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.formatRange(server.connection, editor, range);
   }
 
-  public provideFileCodeFormat(): FileCodeFormatProvider {
+  public provideFileCodeFormat(): atomIde.FileCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -674,7 +674,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  public provideOnSaveCodeFormat(): OnSaveCodeFormatProvider {
+  public provideOnSaveCodeFormat(): atomIde.OnSaveCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -682,7 +682,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getFileCodeFormat(editor: TextEditor): Promise<TextEdit[]> {
+  protected async getFileCodeFormat(editor: TextEditor): Promise<atomIde.TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentFormattingProvider) {
       return [];
@@ -691,7 +691,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.formatDocument(server.connection, editor);
   }
 
-  public provideOnTypeCodeFormat(): OnTypeCodeFormatProvider {
+  public provideOnTypeCodeFormat(): atomIde.OnTypeCodeFormatProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -703,7 +703,7 @@ export default class AutoLanguageClient {
     editor: TextEditor,
     point: Point,
     character: string,
-  ): Promise<TextEdit[]> {
+  ): Promise<atomIde.TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentOnTypeFormattingProvider) {
       return [];
@@ -712,7 +712,7 @@ export default class AutoLanguageClient {
     return CodeFormatAdapter.formatOnType(server.connection, editor, point, character);
   }
 
-  public provideCodeHighlight(): CodeHighlightProvider {
+  public provideCodeHighlight(): atomIde.CodeHighlightProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -731,7 +731,7 @@ export default class AutoLanguageClient {
     return CodeHighlightAdapter.highlight(server.connection, server.capabilities, editor, position);
   }
 
-  public provideCodeActions(): CodeActionProvider {
+  public provideCodeActions(): atomIde.CodeActionProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -744,8 +744,8 @@ export default class AutoLanguageClient {
   protected async getCodeActions(
     editor: TextEditor,
     range: Range,
-    diagnostics: Diagnostic[]
-  ): Promise<CodeAction[] | null> {
+    diagnostics: atomIde.Diagnostic[]
+  ): Promise<atomIde.CodeAction[] | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !CodeActionAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -761,7 +761,7 @@ export default class AutoLanguageClient {
     );
   }
 
-  public provideRefactor(): RefactorProvider {
+  public provideRefactor(): atomIde.RefactorProvider {
     return {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
@@ -773,7 +773,7 @@ export default class AutoLanguageClient {
     editor: TextEditor,
     position: Point,
     newName: string
-  ): Promise<Map<string, TextEdit[]> | null> {
+  ): Promise<Map<string, atomIde.TextEdit[]> | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !RenameAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -787,7 +787,7 @@ export default class AutoLanguageClient {
     );
   }
 
-  public consumeSignatureHelp(registry: SignatureHelpRegistry): Disposable {
+  public consumeSignatureHelp(registry: atomIde.SignatureHelpRegistry): Disposable {
     this._signatureHelpRegistry = registry;
     for (const server of this._serverManager.getActiveServers()) {
       const signatureHelpAdapter = this.getServerAdapter(server, 'signatureHelpAdapter');
@@ -800,7 +800,7 @@ export default class AutoLanguageClient {
     });
   }
 
-  public consumeBusySignal(service: BusySignalService): Disposable {
+  public consumeBusySignal(service: atomIde.BusySignalService): Disposable {
     this.busySignalService = service;
     return new Disposable(() => delete this.busySignalService);
   }

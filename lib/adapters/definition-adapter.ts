@@ -1,4 +1,4 @@
-import type { Definition, DefinitionQueryResult } from 'atom-ide-base';
+import type * as atomIde from 'atom-ide-base';
 import Convert from '../convert';
 import * as Utils from '../utils';
 import {
@@ -49,7 +49,7 @@ export default class DefinitionAdapter {
     languageName: string,
     editor: TextEditor,
     point: Point,
-  ): Promise<DefinitionQueryResult | null> {
+  ): Promise<atomIde.DefinitionQueryResult | null> {
     const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
     const definitionLocations = DefinitionAdapter.normalizeLocations(
       await connection.gotoDefinition(documentPositionParams),
@@ -93,7 +93,7 @@ export default class DefinitionAdapter {
    * @param languageName The name of the language these objects are written in.
    * @returns An {Array} of {Definition}s that represented the converted {Location}s.
    */
-  public static convertLocationsToDefinitions(locations: Location[], languageName: string): Definition[] {
+  public static convertLocationsToDefinitions(locations: Location[], languageName: string): atomIde.Definition[] {
     return locations.map((d) => ({
       path: Convert.uriToPath(d.uri),
       position: Convert.positionToPoint(d.range.start),

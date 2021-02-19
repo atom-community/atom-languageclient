@@ -1,4 +1,4 @@
-import type { ConsoleApi } from 'atom-ide-base';
+import type * as atomIde from 'atom-ide-base';
 import {
   LanguageClientConnection,
   LogMessageParams,
@@ -7,7 +7,7 @@ import {
 
 /** Adapts Atom's user notifications to those of the language server protocol. */
 export default class LoggingConsoleAdapter {
-  private _consoles: Set<ConsoleApi> = new Set();
+  private _consoles: Set<atomIde.ConsoleApi> = new Set();
 
   /**
    * Create a new {LoggingConsoleAdapter} that will listen for log messages
@@ -25,15 +25,15 @@ export default class LoggingConsoleAdapter {
   }
 
   /**
-   * Public: Attach this {LoggingConsoleAdapter} to a given {ConsoleApi}.
+   * Public: Attach this {LoggingConsoleAdapter} to a given {atomIde.ConsoleApi}.
    *
-   * @param console A {ConsoleApi} that wants to receive messages.
+   * @param console A {atomIde.ConsoleApi} that wants to receive messages.
    */
-  public attach(console: ConsoleApi): void {
+  public attach(console: atomIde.ConsoleApi): void {
     this._consoles.add(console);
   }
 
-  /** Public: Remove all {ConsoleApi}'s attached to this adapter. */
+  /** Public: Remove all {atomIde.ConsoleApi}'s attached to this adapter. */
   public detachAll(): void {
     this._consoles.clear();
   }

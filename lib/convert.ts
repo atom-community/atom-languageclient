@@ -1,4 +1,4 @@
-import { TextEdit, Diagnostic, DiagnosticType } from 'atom-ide-base';
+import type * as atomIde from 'atom-ide-base';
 import * as ls from './languageclient';
 import * as URL from 'url';
 import {
@@ -191,7 +191,7 @@ export default class Convert {
     }
   }
 
-  public static atomIdeDiagnosticToLSDiagnostic(diagnostic: Diagnostic): ls.Diagnostic {
+  public static atomIdeDiagnosticToLSDiagnostic(diagnostic: atomIde.Diagnostic): ls.Diagnostic {
     return {
       range: Convert.atomRangeToLSRange(diagnostic.range),
       severity: Convert.diagnosticTypeToLSSeverity(diagnostic.type),
@@ -200,7 +200,7 @@ export default class Convert {
     };
   }
 
-  public static diagnosticTypeToLSSeverity(type: DiagnosticType): ls.DiagnosticSeverity {
+  public static diagnosticTypeToLSSeverity(type: atomIde.DiagnosticType): ls.DiagnosticSeverity {
     switch (type) {
       case 'Error':
         return ls.DiagnosticSeverity.Error;
@@ -214,24 +214,24 @@ export default class Convert {
   }
 
   /**
-   * Public: Convert an array of language server protocol {TextEdit} objects to an
-   * equivalent array of Atom {TextEdit} objects.
+   * Public: Convert an array of language server protocol {atomIde.TextEdit} objects to an
+   * equivalent array of Atom {atomIde.TextEdit} objects.
    *
-   * @param textEdits The language server protocol {TextEdit} objects to convert.
-   * @returns An {Array} of Atom {TextEdit} objects.
+   * @param textEdits The language server protocol {atomIde.TextEdit} objects to convert.
+   * @returns An {Array} of Atom {atomIde.TextEdit} objects.
    */
-  public static convertLsTextEdits(textEdits: ls.TextEdit[] | null): TextEdit[] {
+  public static convertLsTextEdits(textEdits: ls.TextEdit[] | null): atomIde.TextEdit[] {
     return (textEdits || []).map(Convert.convertLsTextEdit);
   }
 
   /**
-   * Public: Convert a language server protocol {TextEdit} object to the
-   * Atom equivalent {TextEdit}.
+   * Public: Convert a language server protocol {atomIde.TextEdit} object to the
+   * Atom equivalent {atomIde.TextEdit}.
    *
-   * @param textEdits The language server protocol {TextEdit} objects to convert.
-   * @returns An Atom {TextEdit} object.
+   * @param textEdits The language server protocol {atomIde.TextEdit} objects to convert.
+   * @returns An Atom {atomIde.TextEdit} object.
    */
-  public static convertLsTextEdit(textEdit: ls.TextEdit): TextEdit {
+  public static convertLsTextEdit(textEdit: ls.TextEdit): atomIde.TextEdit {
     return {
       oldRange: Convert.lsRangeToAtomRange(textEdit.range),
       newText: textEdit.newText,
