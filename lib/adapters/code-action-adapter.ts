@@ -1,4 +1,4 @@
-import * as atomIde from 'atom-ide';
+import type * as atomIde from 'atom-ide-base';
 import LinterPushV2Adapter from './linter-push-v2-adapter';
 import assert = require('assert');
 import Convert from '../convert';

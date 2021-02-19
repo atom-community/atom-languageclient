@@ -50,14 +50,17 @@ describe('DatatipAdapter', () => {
         expect(datatip.range.end.row).equal(0);
         expect(datatip.range.end.column).equal(2);
 
-        expect(datatip.markedStrings).to.have.lengthOf(2);
-        expect(datatip.markedStrings[0]).eql({ type: 'markdown', value: 'test' });
+        if ("markedStrings" in datatip) {
+          expect(datatip.markedStrings).to.have.lengthOf(2);
+          expect(datatip.markedStrings[0]).eql({ type: 'markdown', value: 'test' });
 
-        const snippet = datatip.markedStrings[1];
-        expect(snippet.type).equal('snippet');
-        invariant(snippet.type === 'snippet');
-        expect((snippet as any).grammar.scopeName).equal('text.plain.null-grammar');
-        expect(snippet.value).equal('test snippet');
+          const snippet = datatip.markedStrings[1];
+          expect(snippet.type).equal('snippet');
+          invariant(snippet.type === 'snippet');
+          expect((snippet as any).grammar.scopeName).equal('text.plain.null-grammar');
+          expect(snippet.value).equal('test snippet');
+        }
+        // else the React variant
 
         expect(grammarSpy.calledWith('source.testlang')).to.be.true;
       }

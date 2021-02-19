@@ -2,7 +2,7 @@ import * as cp from 'child_process';
 import * as ls from './languageclient';
 import * as rpc from 'vscode-jsonrpc';
 import * as path from 'path';
-import * as atomIde from 'atom-ide';
+import type * as atomIde from 'atom-ide-base';
 import * as linter from 'atom/linter';
 import Convert from './convert.js';
 import ApplyEditAdapter from './adapters/apply-edit-adapter';
@@ -41,7 +41,6 @@ import {
   TextEditor,
 } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
-import { TextEdit, CodeAction } from 'atom-ide';
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess };
 export type ConnectionType = 'stdio' | 'socket' | 'ipc';
@@ -518,6 +517,7 @@ export default class AutoLanguageClient {
       name: this.name,
       priority: 20,
       grammarScopes: this.getGrammarScopes(),
+      wordRegExp: null, // TODO pass RegExp
       getDefinition: this.getDefinition.bind(this),
     };
   }
@@ -745,7 +745,7 @@ export default class AutoLanguageClient {
     editor: TextEditor,
     range: Range,
     diagnostics: atomIde.Diagnostic[]
-  ): Promise<CodeAction[] | null> {
+  ): Promise<atomIde.CodeAction[] | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !CodeActionAdapter.canAdapt(server.capabilities)) {
       return null;
@@ -773,7 +773,7 @@ export default class AutoLanguageClient {
     editor: TextEditor,
     position: Point,
     newName: string
-  ): Promise<Map<string, TextEdit[]> | null> {
+  ): Promise<Map<string, atomIde.TextEdit[]> | null> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !RenameAdapter.canAdapt(server.capabilities)) {
       return null;

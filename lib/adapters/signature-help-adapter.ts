@@ -1,4 +1,4 @@
-import * as atomIde from 'atom-ide';
+import type * as atomIde from 'atom-ide-base';
 import assert = require('assert');
 import Convert from '../convert';
 import { ActiveServer } from '../server-manager';
