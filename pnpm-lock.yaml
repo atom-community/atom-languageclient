@@ -1,5 +1,5 @@
 dependencies:
-  atom-ide-base: 2.3.4
+  atom-ide-base: 2.4.0
   vscode-jsonrpc: 5.0.1
   vscode-languageserver-protocol: 3.15.3
   vscode-languageserver-types: 3.15.1
@@ -380,10 +380,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=
-  /atom-ide-base/2.3.4:
+  /atom-ide-base/2.4.0:
     dependencies:
       atom-ide-markdown-service: 2.0.0
-      atom-package-deps: 7.2.0
+      atom-package-deps: 7.2.2
       classnames: 2.2.6
       dompurify: 2.2.6
       etch: 0.14.1
@@ -395,7 +395,7 @@ packages:
       atom: '>=0.174.0 <2.0.0'
       pnpm: '>=5.12'
     resolution:
-      integrity: sha512-S1rZCccqf3TKku7/oHBDPElImFq9zVkg/+pSv/YW4/xAmCw8rPLUQSdfhm+BaiB5/zbO0d1F9xKI3KK4ygXXpw==
+      integrity: sha512-wMx+oi6T9cOqTy/k23W72tg2fX8ZqBA5NPrka7VBOzicbAkMYl6dbTv11AmXSTHHQs3qJ0SSPTWjX3pq/CoWsQ==
   /atom-ide-markdown-service/2.0.0:
     dependencies:
       dompurify: 2.2.6
@@ -405,11 +405,11 @@ packages:
       atom: '>=1.0.0 <2.0.0'
     resolution:
       integrity: sha512-j7S7QS/G1Fgnl+wDU/ssfp5MxFE9YAcwpZCCmMUbLpOANEJ0+46aTOdHY2HJt5+F76/zGQCv7JwO3Ef1QEQUDA==
-  /atom-package-deps/7.2.0:
+  /atom-package-deps/7.2.2:
     dev: false
     hasBin: true
     resolution:
-      integrity: sha512-P7XnvYv+qYjFrdWWOuRCJ2oOe6Ps0DinwUhJ+h4Zwk/VGStO/x23A/tBDCWyvsZFwEfgGnnhTY+jZ7/pCxxYng==
+      integrity: sha512-xV4l1Ll987zluBjMiYGtDbZbdM5PF/hOECgaI2mv2+dNzbuugd2M+A2liw1JUenuGrngGw/wcpPqXpAVMGFeDw==
   /aws-sign2/0.7.0:
     dev: true
     resolution:
@@ -2250,7 +2250,7 @@ specifiers:
   '@types/sinon': ^9.0.10
   '@typescript-eslint/eslint-plugin': ^4.14.1
   '@typescript-eslint/parser': ^4.14.1
-  atom-ide-base: ^2.3.4
+  atom-ide-base: ^2.4.0
   chai: ^4.2.0
   eslint: ^7.18.0
   mocha: ^8.2.1
