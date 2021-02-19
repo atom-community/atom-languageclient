@@ -1,3 +1,13 @@
+## [1.0.8](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.7...v1.0.8) (2021-02-19)
+
+
+### Bug Fixes
+
+* bump atom-ide-base ([dc2941b](https://github.com/atom-ide-community/atom-languageclient/commit/dc2941b4160171c7d6ca5ad95b625b9d789a3a4f))
+* bump atom-ide-base - fixes JSX error ([dcee038](https://github.com/atom-ide-community/atom-languageclient/commit/dcee038b6a73bdcadb9fb84635b1354212091e00))
+* install atom-ide-base ([a617e05](https://github.com/atom-ide-community/atom-languageclient/commit/a617e0508b4dcbc38a22ce8319f879c66582c2fc))
+* temporary - pass null wordRegExp ([254b94c](https://github.com/atom-ide-community/atom-languageclient/commit/254b94ca7a9e28c5d13a71a2923449a29a26c9cd))
+
 ## [1.0.7](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.6...v1.0.7) (2021-02-07)
 
 
