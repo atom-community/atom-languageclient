@@ -20,6 +20,7 @@ import {
   TextEditor,
 } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
+import { Suggestion, TextSuggestion, SnippetSuggestion } from 'atom-ide';
 
 /**
  * Holds a list of suggestions generated from the CompletionItem[]
@@ -35,7 +36,7 @@ interface SuggestionCacheEntry {
   originalBufferPoint: Point;
   /** The trigger string that caused the autocomplete (if any) */
   triggerChar: string;
-  suggestionMap: Map<ac.Suggestion, PossiblyResolvedCompletionItem>;
+  suggestionMap: Map<Suggestion, PossiblyResolvedCompletionItem>;
 }
 
 type CompletionItemAdjuster =
@@ -137,7 +138,7 @@ export default class AutocompleteAdapter {
     triggerChar: string,
     triggerOnly: boolean,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
-  ): Promise<ac.Suggestion[]> {
+  ): Promise<Suggestion[]> {
     const cache = this._suggestionCache.get(server);
 
     const triggerColumn = (triggerChar !== '' && triggerOnly)
@@ -336,16 +337,16 @@ export default class AutocompleteAdapter {
     request: ac.SuggestionsRequestedEvent,
     triggerColumns: [number, number],
     onDidConvertCompletionItem?: CompletionItemAdjuster,
-  ): Map<ac.Suggestion, PossiblyResolvedCompletionItem> {
+  ): Map<Suggestion, PossiblyResolvedCompletionItem> {
     const completionsArray = Array.isArray(completionItems)
       ? completionItems
       : (completionItems && completionItems.items) || [];
     return new Map(completionsArray
       .sort((a, b) => (a.sortText || a.label).localeCompare(b.sortText || b.label))
-      .map<[ac.Suggestion, PossiblyResolvedCompletionItem]>(
+      .map<[Suggestion, PossiblyResolvedCompletionItem]>(
         (s) => [
           AutocompleteAdapter.completionItemToSuggestion(
-            s, {} as ac.Suggestion, request, triggerColumns, onDidConvertCompletionItem),
+            s, {} as Suggestion, request, triggerColumns, onDidConvertCompletionItem),
           new PossiblyResolvedCompletionItem(s, false),
         ],
       ),
@@ -364,16 +365,16 @@ export default class AutocompleteAdapter {
    */
   public static completionItemToSuggestion(
     item: CompletionItem,
-    suggestion: ac.Suggestion,
+    suggestion: Suggestion,
     request: ac.SuggestionsRequestedEvent,
     triggerColumns: [number, number],
     onDidConvertCompletionItem?: CompletionItemAdjuster,
-  ): ac.Suggestion {
-    AutocompleteAdapter.applyCompletionItemToSuggestion(item, suggestion as ac.TextSuggestion);
+  ): Suggestion {
+    AutocompleteAdapter.applyCompletionItemToSuggestion(item, suggestion as TextSuggestion);
     AutocompleteAdapter.applyTextEditToSuggestion(
-      item.textEdit, request.editor, triggerColumns, request.bufferPosition, suggestion as ac.TextSuggestion,
+      item.textEdit, request.editor, triggerColumns, request.bufferPosition, suggestion as TextSuggestion,
     );
-    AutocompleteAdapter.applySnippetToSuggestion(item, suggestion as ac.SnippetSuggestion);
+    AutocompleteAdapter.applySnippetToSuggestion(item, suggestion as SnippetSuggestion);
     if (onDidConvertCompletionItem != null) {
       onDidConvertCompletionItem(item, suggestion as ac.AnySuggestion, request);
     }
@@ -385,12 +386,12 @@ export default class AutocompleteAdapter {
    * Public: Convert the primary parts of a language server protocol CompletionItem to an AutoComplete+ suggestion.
    *
    * @param item An {CompletionItem} containing the completion items to be merged into.
-   * @param suggestion The {ac.Suggestion} to merge the conversion into.
-   * @returns The {ac.Suggestion} with details added from the {CompletionItem}.
+   * @param suggestion The {Suggestion} to merge the conversion into.
+   * @returns The {Suggestion} with details added from the {CompletionItem}.
    */
   public static applyCompletionItemToSuggestion(
     item: CompletionItem,
-    suggestion: ac.TextSuggestion,
+    suggestion: TextSuggestion,
   ): void {
     suggestion.text = item.insertText || item.label;
     suggestion.filterText = item.filterText || item.label;
@@ -401,7 +402,7 @@ export default class AutocompleteAdapter {
 
   public static applyDetailsToSuggestion(
     item: CompletionItem,
-    suggestion: ac.Suggestion,
+    suggestion: Suggestion,
   ): void {
     suggestion.rightLabel = item.detail;
 
@@ -434,7 +435,7 @@ export default class AutocompleteAdapter {
     editor: TextEditor,
     triggerColumns: [number, number],
     originalBufferPosition: Point,
-    suggestion: ac.TextSuggestion,
+    suggestion: TextSuggestion,
   ): void {
     if (!textEdit) { return; }
     if (textEdit.range.start.character !== triggerColumns[0]) {
@@ -451,7 +452,7 @@ export default class AutocompleteAdapter {
    * @param item An {CompletionItem} containing the completion items to be merged into.
    * @param suggestion The {atom$AutocompleteSuggestion} to merge the conversion into.
    */
-  public static applySnippetToSuggestion(item: CompletionItem, suggestion: ac.SnippetSuggestion): void {
+  public static applySnippetToSuggestion(item: CompletionItem, suggestion: SnippetSuggestion): void {
     if (item.insertTextFormat === InsertTextFormat.Snippet) {
       suggestion.snippet = item.textEdit != null ? item.textEdit.newText : (item.insertText || '');
     }

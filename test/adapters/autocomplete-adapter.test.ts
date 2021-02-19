@@ -9,6 +9,7 @@ import {
 import * as ac from 'atom/autocomplete-plus';
 import { expect } from 'chai';
 import { createSpyConnection, createFakeEditor } from '../helpers.js';
+import { TextSuggestion, SnippetSuggestion } from 'atom-ide';
 import { CompletionItem, MarkupContent, InsertTextFormat, TextEdit, Command } from '../../lib/languageclient';
 
 function createRequest({
@@ -244,21 +245,21 @@ describe('AutoCompleteAdapter', () => {
 
       expect(results.length).equals(items.length);
       expect(results[0].displayText).equals('align');
-      expect((results[0] as ac.TextSuggestion).text).equals('hello world');
+      expect((results[0] as TextSuggestion).text).equals('hello world');
       expect(results[0].replacementPrefix).equals('#align');
       expect(results[0].type).equals('snippet');
 
       expect(results[1].displayText).equals('list');
-      expect((results[1] as ac.TextSuggestion).text).equals('shifted');
+      expect((results[1] as TextSuggestion).text).equals('shifted');
       expect(results[1].replacementPrefix).equals('gn'); // TODO: support post replacement too
       expect(results[1].type).equals('constant');
 
       expect(results[2].displayText).equals('minimal');
-      expect((results[2] as ac.TextSuggestion).text).equals('minimal');
+      expect((results[2] as TextSuggestion).text).equals('minimal');
       expect(results[2].replacementPrefix).equals(''); // we sent an empty prefix
 
       expect(results[3].displayText).equals('old');
-      expect((results[3] as ac.SnippetSuggestion).snippet).equals('inserted');
+      expect((results[3] as SnippetSuggestion).snippet).equals('inserted');
       expect(results[3].description).equals('doc string');
       expect(results[3].descriptionMarkdown).equals('doc string');
 
@@ -297,7 +298,7 @@ describe('AutoCompleteAdapter', () => {
        }),
       ]);
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0];
-      expect((result as ac.TextSuggestion).text).equals('insert');
+      expect((result as TextSuggestion).text).equals('insert');
       expect(result.displayText).equals('label');
       expect(result.type).equals('keyword');
       expect(result.rightLabel).equals('keyword');
@@ -333,7 +334,7 @@ describe('AutoCompleteAdapter', () => {
       expect(result.description).equals('a truly useful variable');
       expect(result.descriptionMarkdown).equals('a truly useful variable');
       expect(result.replacementPrefix).equals('#label');
-      expect((result as ac.TextSuggestion).text).equals('newText');
+      expect((result as TextSuggestion).text).equals('newText');
     });
 
     it('converts LSP CompletionItem with insertText and filterText to AutoComplete Suggestion', async () => {
@@ -354,7 +355,7 @@ describe('AutoCompleteAdapter', () => {
       expect(results.length).equals(1);
 
       const result = results[0];
-      expect((result as ac.TextSuggestion).text).equals('insert');
+      expect((result as TextSuggestion).text).equals('insert');
       expect(result.displayText).equals('label');
       expect(result.type).equals('keyword');
       expect(result.rightLabel).equals('detail');
@@ -413,7 +414,7 @@ describe('AutoCompleteAdapter', () => {
       ]);
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0];
-      expect((result as ac.TextSuggestion).text).equals('label');
+      expect((result as TextSuggestion).text).equals('label');
       expect(result.displayText).equals('label');
       expect(result.type).equals('keyword');
       expect(result.rightLabel).equals('detail');
@@ -427,7 +428,7 @@ describe('AutoCompleteAdapter', () => {
       ]);
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({prefix: 'rep'})))[0];
-      expect((result as ac.TextSuggestion).text).equals('');
+      expect((result as TextSuggestion).text).equals('');
       expect(result.displayText).equals('');
       expect(result.replacementPrefix).equals('');
     });
@@ -447,7 +448,7 @@ describe('AutoCompleteAdapter', () => {
       const results = await autoCompleteAdapter.getSuggestions(server, customRequest);
 
       expect(results[0].displayText).equals('align');
-      expect((results[0] as ac.TextSuggestion).text).equals('hello world');
+      expect((results[0] as TextSuggestion).text).equals('hello world');
       expect(results[0].replacementPrefix).equals('#align');
     });
 
