@@ -18,7 +18,7 @@ export default class CommandExecutionAdapter {
         const executeCommandParams = CommandExecutionAdapter.createExecuteCommandParams(command, commandArgs);
         const commandCustomCallback = this.commandsCustomCallbacks.get(command);
 
-        return commandCustomCallback != null ? await commandCustomCallback(executeCommandParams) : await connection.executeCommand(executeCommandParams);
+        return commandCustomCallback !== undefined ? await commandCustomCallback(executeCommandParams) : await connection.executeCommand(executeCommandParams);
     }
 
     private static createExecuteCommandParams(command: string, commandArgs?: any[]): ExecuteCommandParams {
