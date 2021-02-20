@@ -18,8 +18,8 @@
         ]
     },
     "include": [
-        "typings/**/*.ts",
-        "lib/**/*.ts",
-        "test/**/*.ts"
+        "typings",
+        "lib",
+        "test"
     ]
 }
