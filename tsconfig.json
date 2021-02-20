@@ -12,11 +12,14 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
-        "baseUrl": "./"
+        "typeRoots": [
+            "./node_modules/@types",
+            "./typings"
+        ]
     },
     "include": [
-        "typings/**/*.ts",
-        "lib/**/*.ts",
-        "test/**/*.ts"
+        "typings",
+        "lib",
+        "test"
     ]
 }
