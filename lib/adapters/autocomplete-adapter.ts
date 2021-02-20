@@ -20,7 +20,7 @@ import {
   TextEditor,
 } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
-import { Suggestion, TextSuggestion, SnippetSuggestion } from 'atom-ide';
+import { Suggestion, TextSuggestion, SnippetSuggestion } from '../types/autocomplete-extended';
 
 /**
  * Holds a list of suggestions generated from the CompletionItem[]

@@ -9,7 +9,7 @@ import {
 import * as ac from 'atom/autocomplete-plus';
 import { expect } from 'chai';
 import { createSpyConnection, createFakeEditor } from '../helpers.js';
-import { TextSuggestion, SnippetSuggestion } from 'atom-ide';
+import { TextSuggestion, SnippetSuggestion } from '../../lib/types/autocomplete-extended';
 import { CompletionItem, MarkupContent, InsertTextFormat, TextEdit, Command } from '../../lib/languageclient';
 
 function createRequest({
