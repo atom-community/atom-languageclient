@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.8...v1.1.0) (2021-02-20)
+
+
+### Features
+
+* added canAdapt & tests, exposed CommandExecutionAdapter ([eb1cc74](https://github.com/atom-ide-community/atom-languageclient/commit/eb1cc74709ed65925bc8b15b4636c96f5982e1b2))
+* introduce an Adapter for `executeCommand` that also allows registering custom callbacks ([fc6e182](https://github.com/atom-ide-community/atom-languageclient/commit/fc6e182bcc86af5ae59840d5b374ea40992140d4))
+
 ## [1.0.8](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.7...v1.0.8) (2021-02-19)
 
 
