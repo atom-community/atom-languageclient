@@ -1,3 +1,13 @@
+## [1.1.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.1.0...v1.1.1) (2021-02-20)
+
+
+### Bug Fixes
+
+* autocomplete-extended types  ([a46f99c](https://github.com/atom-ide-community/atom-languageclient/commit/a46f99c4453b083d87c056eee493540454bf1b2e))
+* copy typings to build directory ([900957a](https://github.com/atom-ide-community/atom-languageclient/commit/900957a817eeafd99a8a1603faccb5b7ec1d9d75))
+* remove baseUrl ([686df00](https://github.com/atom-ide-community/atom-languageclient/commit/686df00bb9eedd2520a030e5e1230253e68f7c95))
+* tsconfig include all files ([c69fd77](https://github.com/atom-ide-community/atom-languageclient/commit/c69fd778e00c7bb16e6e65a677666beb211aa64e))
+
 # [1.1.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.0.8...v1.1.0) (2021-02-20)
 
 
