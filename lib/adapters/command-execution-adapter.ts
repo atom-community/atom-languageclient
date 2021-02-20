@@ -4,7 +4,7 @@ import { LanguageClientConnection } from "../main";
 export type CommandCustomCallbackFunction = (command: ExecuteCommandParams) => Promise<any | void>;
 
 export default class CommandExecutionAdapter {
-    private static commandsCustomCallbacks: Map<string, CommandCustomCallbackFunction> = new Map<string, CommandCustomCallbackFunction>();
+    private static commandsCustomCallbacks = new Map<string, CommandCustomCallbackFunction>();
 
     public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
       return serverCapabilities.executeCommandProvider != null;
@@ -14,14 +14,14 @@ export default class CommandExecutionAdapter {
         this.commandsCustomCallbacks.set(command, callback);
     }
 
-    public static async executeCommand(connection: LanguageClientConnection, command: string, commandArgs?: any[] | undefined): Promise<any | void> {
+    public static async executeCommand(connection: LanguageClientConnection, command: string, commandArgs?: any[]): Promise<any | void> {
         const executeCommandParams = CommandExecutionAdapter.createExecuteCommandParams(command, commandArgs);
         const commandCustomCallback = this.commandsCustomCallbacks.get(command);
 
         return commandCustomCallback != null ? await commandCustomCallback(executeCommandParams) : await connection.executeCommand(executeCommandParams);
     }
 
-    private static createExecuteCommandParams(command: string, commandArgs?: any[] | undefined): ExecuteCommandParams {
+    private static createExecuteCommandParams(command: string, commandArgs?: any[]): ExecuteCommandParams {
         return {
             command: command,
             arguments: commandArgs
