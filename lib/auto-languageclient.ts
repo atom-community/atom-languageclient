@@ -381,22 +381,17 @@ export default class AutoLanguageClient {
   }
 
   private captureServerErrors(lsProcess: LanguageServerProcess, projectPath: string): void {
-    lsProcess.on('error', (err) => this.handleSpawnFailure(err));
-    lsProcess.on("close", (...args) => this.handleCloseFailure(...args));
-    lsProcess.on('exit', (code, signal) => this.logger.debug(`exit: code ${code} signal ${signal}`));
+    lsProcess.on('error', (err) => this.onSpawnError(err));
+    lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal));
+    lsProcess.on('exit', (code, signal) => this.onSpawnExit(code, signal));
     lsProcess.stderr?.setEncoding('utf8');
-    lsProcess.stderr?.on('data', (chunk: Buffer) => {
-      const errorString = chunk.toString();
-      this.handleServerStderr(errorString, projectPath);
-      // Keep the last 5 lines for packages to use in messages
-      this.processStdErr = (this.processStdErr + errorString)
-        .split('\n')
-        .slice(-5)
-        .join('\n');
-    });
+    lsProcess.stderr?.on('data', (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath));
   }
 
-  private handleSpawnFailure(err: any): void {
+  /** The function called whenever the spawned server `error`s.
+   *  Extend (call super.onSpawnError) or override this if you need custom error handling
+   */
+  protected onSpawnError(err: Error): void {
     atom.notifications.addError(
       `${this.getServerName()} language server for ${this.getLanguageName()} unable to start`,
       {
@@ -406,12 +401,36 @@ export default class AutoLanguageClient {
     );
   }
 
-  private handleCloseFailure(code: number | null, signal: NodeJS.Signals | null): void {
+  /** The function called whenever the spawned server `close`s.
+   *  Extend (call super.onSpawnClose) or override this if you need custom close handling
+   */
+  protected onSpawnClose(code: number | null, signal: NodeJS.Signals | null): void {
     if (code !== 0 && signal === null) {
       atom.notifications.addError(
         `${this.getServerName()} language server for ${this.getLanguageName()} was closed with code: ${code}.`
       );
     }
+  }
+
+
+  /** The function called whenever the spawned server `exit`s.
+   *  Extend (call super.onSpawnExit) or override this if you need custom exit handling
+   */
+  protected onSpawnExit(code: number | null, signal: NodeJS.Signals | null): void {
+    this.logger.debug(`exit: code ${code} signal ${signal}`);
+  }
+
+  /** The function called whenever the spawned server returns `data` in `stderr`
+   *  Extend (call super.onSpawnStdErrData) or override this if you need custom stderr data handling
+   */
+  protected onSpawnStdErrData(chunk: Buffer, projectPath: string): void {
+    const errorString = chunk.toString();
+    this.handleServerStderr(errorString, projectPath);
+    // Keep the last 5 lines for packages to use in messages
+    this.processStdErr = (this.processStdErr + errorString)
+      .split('\n')
+      .slice(-5)
+      .join('\n');
   }
 
   /** Creates the RPC connection which can be ipc, socket or stdio */
