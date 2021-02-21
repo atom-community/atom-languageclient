@@ -368,6 +368,7 @@ export default class AutoLanguageClient {
 
   private captureServerErrors(lsProcess: LanguageServerProcess, projectPath: string): void {
     lsProcess.on('error', (err) => this.handleSpawnFailure(err));
+    lsProcess.on("close", (...args) => this.handleCloseFailure(...args));
     lsProcess.on('exit', (code, signal) => this.logger.debug(`exit: code ${code} signal ${signal}`));
     lsProcess.stderr.setEncoding('utf8');
     lsProcess.stderr.on('data', (chunk: Buffer) => {
@@ -389,6 +390,14 @@ export default class AutoLanguageClient {
         description: err.toString(),
       },
     );
+  }
+
+  private handleCloseFailure(code: number | null, signal: NodeJS.Signals | null): void {
+    if (code !== 0 && signal === null) {
+      atom.notifications.addError(
+        `${this.getServerName()} language server for ${this.getLanguageName()} was closed with code: ${code}.`
+      );
+    }
   }
 
   /** Creates the RPC connection which can be ipc, socket or stdio */
