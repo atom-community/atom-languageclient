@@ -25,13 +25,10 @@ import { Suggestion, TextSuggestion, SnippetSuggestion } from "../types/autocomp
  * Defines the behavior of suggestion acceptance.
  * Assume you have "cons|ole" in the editor (`|` is the cursor position)
  * and the autocomplete suggestion is `const`.
- * - insert mode: const|ole
- * - replace mode: const|
+ * - if `false` -> the edits are inserted : const|ole
+ * - if `true`` -> the edits are replaced: const|
  */
-enum InsertMode {
-  insert = 'insert',
-  replace = 'replace',
-}
+type ShouldReplace = boolean;
 
 /**
  * Holds a list of suggestions generated from the CompletionItem[]
@@ -87,7 +84,7 @@ export default class AutocompleteAdapter {
    * @param onDidConvertCompletionItem An optional function that takes a {CompletionItem},
    *   an {atom$AutocompleteSuggestion} and a {atom$AutocompleteRequest}
    *   allowing you to adjust converted items.
-   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
+   * @param shouldReplace The behavior of suggestion acceptance (see {ShouldReplace}).
    * @returns A {Promise} of an {Array} of {atom$AutocompleteSuggestion}s containing the
    *   AutoComplete+ suggestions to display.
    */
@@ -96,7 +93,7 @@ export default class AutocompleteAdapter {
     request: ac.SuggestionsRequestedEvent,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
     minimumWordLength?: number,
-    insertMode: InsertMode = InsertMode.insert
+    shouldReplace: ShouldReplace = false,
   ): Promise<ac.AnySuggestion[]> {
     const triggerChars =
       server.capabilities.completionProvider != null
@@ -117,7 +114,7 @@ export default class AutocompleteAdapter {
       request,
       triggerChar,
       triggerOnly,
-      insertMode,
+      shouldReplace,
       onDidConvertCompletionItem
     )
 
@@ -157,7 +154,7 @@ export default class AutocompleteAdapter {
     request: ac.SuggestionsRequestedEvent,
     triggerChar: string,
     triggerOnly: boolean,
-    insertMode: InsertMode,
+    shouldReplace: ShouldReplace,
     onDidConvertCompletionItem?: CompletionItemAdjuster
   ): Promise<Suggestion[]> {
     const cache = this._suggestionCache.get(server)
@@ -199,7 +196,7 @@ export default class AutocompleteAdapter {
       completions,
       request,
       triggerColumns,
-      insertMode,
+      shouldReplace,
       onDidConvertCompletionItem
     )
     this._suggestionCache.set(server, {
@@ -358,7 +355,7 @@ export default class AutocompleteAdapter {
    * @param completionItems An {Array} of {CompletionItem} objects or a {CompletionList} containing completion
    *   items to be converted.
    * @param request The {atom$AutocompleteRequest} to satisfy.
-   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
+   * @param shouldReplace The behavior of suggestion acceptance (see {ShouldReplace}).
    * @param onDidConvertCompletionItem A function that takes a {CompletionItem}, an {atom$AutocompleteSuggestion}
    *   and a {atom$AutocompleteRequest} allowing you to adjust converted items.
    * @returns A {Map} of AutoComplete+ suggestions ordered by the CompletionItems sortText.
@@ -367,7 +364,7 @@ export default class AutocompleteAdapter {
     completionItems: CompletionItem[] | CompletionList | null,
     request: ac.SuggestionsRequestedEvent,
     triggerColumns: [number, number],
-    insertMode: InsertMode,
+    shouldReplace: ShouldReplace,
     onDidConvertCompletionItem?: CompletionItemAdjuster
   ): Map<Suggestion, PossiblyResolvedCompletionItem> {
     const completionsArray = Array.isArray(completionItems)
@@ -382,7 +379,7 @@ export default class AutocompleteAdapter {
             {} as Suggestion,
             request,
             triggerColumns,
-            insertMode,
+            shouldReplace,
             onDidConvertCompletionItem
           ),
           new PossiblyResolvedCompletionItem(s, false),
@@ -396,7 +393,7 @@ export default class AutocompleteAdapter {
    * @param item An {CompletionItem} containing a completion item to be converted.
    * @param suggestion A {atom$AutocompleteSuggestion} to have the conversion applied to.
    * @param request The {atom$AutocompleteRequest} to satisfy.
-   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
+   * @param shouldReplace The behavior of suggestion acceptance (see {ShouldReplace}).
    * @param onDidConvertCompletionItem A function that takes a {CompletionItem}, an {atom$AutocompleteSuggestion}
    *   and a {atom$AutocompleteRequest} allowing you to adjust converted items.
    * @returns The {atom$AutocompleteSuggestion} passed in as suggestion with the conversion applied.
@@ -406,7 +403,7 @@ export default class AutocompleteAdapter {
     suggestion: Suggestion,
     request: ac.SuggestionsRequestedEvent,
     triggerColumns: [number, number],
-    insertMode: InsertMode,
+    shouldReplace: ShouldReplace,
     onDidConvertCompletionItem?: CompletionItemAdjuster
   ): Suggestion {
     AutocompleteAdapter.applyCompletionItemToSuggestion(item, suggestion as TextSuggestion)
@@ -416,7 +413,7 @@ export default class AutocompleteAdapter {
       triggerColumns,
       request.bufferPosition,
       suggestion as TextSuggestion,
-      insertMode
+      shouldReplace
     )
     AutocompleteAdapter.applySnippetToSuggestion(item, suggestion as SnippetSuggestion)
     if (onDidConvertCompletionItem != null) {
@@ -467,7 +464,7 @@ export default class AutocompleteAdapter {
    * @param textEdit A {TextEdit} from a CompletionItem to apply.
    * @param editor An Atom {TextEditor} used to obtain the necessary text replacement.
    * @param suggestion An {atom$AutocompleteSuggestion} to set the replacementPrefix and text properties of.
-   * @param insertMode The behavior of suggestion acceptance (see {InsertMode}).
+   * @param shouldReplace The behavior of suggestion acceptance (see {ShouldReplace}).
    */
   public static applyTextEditToSuggestion(
     textEdit: TextEdit | InsertReplaceEdit | undefined,
@@ -475,16 +472,16 @@ export default class AutocompleteAdapter {
     triggerColumns: [number, number],
     originalBufferPosition: Point,
     suggestion: TextSuggestion,
-    insertMode: InsertMode,
+    shouldReplace: ShouldReplace,
   ): void {
     if (!textEdit) { return; }
     let range: Range;
     if ('range' in textEdit) {
       range = textEdit.range;
-    } else if (insertMode === InsertMode.insert) {
-      range = textEdit.insert;
-    } else {
+    } else if (shouldReplace) {
       range = textEdit.replace;
+    } else {
+      range = textEdit.insert;
     }
 
     if (range.start.character !== triggerColumns[0]) {
