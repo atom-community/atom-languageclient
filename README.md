@@ -87,9 +87,10 @@ Note that you will also need to add various entries to the `providedServices` an
 
 If the LSP is a general executable (not a JavaScript file), you should use `spawn` inside `startServerProcess`.
 
+`getExePath` is a cross-platform utility function to get the exe path for the given exe name (under the `bin` folder by default).
+
 ```javascript
-const {AutoLanguageClient} = require('atom-languageclient')
-const {resolve} = require('path')
+const {AutoLanguageClient, getExePath} = require('atom-languageclient')
 
 class DLanguageClient extends AutoLanguageClient {
   getGrammarScopes () { return [ 'source.d' ] }
@@ -98,8 +99,8 @@ class DLanguageClient extends AutoLanguageClient {
 
   startServerProcess (projectPath) {
     return super.spawn(
-      resolve('./bin/serve-d'), // path to the LSP executable
-      [],                       // args used for spawning
+      getExePath('serve-d'),    // path to the LSP executable.
+      [],                       // args passed to spawn the exe
       { cwd: projectPath }      // child process spawn options
     )
   }

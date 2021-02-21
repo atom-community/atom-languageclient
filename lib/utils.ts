@@ -1,3 +1,4 @@
+import { join, resolve } from 'path';
 import {
   Point,
   TextBuffer,
@@ -110,4 +111,19 @@ export function promiseWithTimeout<T>(ms: number, promise: Promise<T>): Promise<
       reject(err);
     });
   });
+}
+
+
+/** Finds an exe file in the package assuming it is placed under `rootPath/platform/exe`
+ * For example on Windows, if the `exeName` is `serve-d`, it returns the absolute path to `bin/win32/exeName.exe`
+ * @param exeName name of the exe file
+ * @param rootPath the path of the folder of the exe file. Defaults to 'bin'
+ * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
+ */
+export function getExePath(
+ exeName: string,
+ rootPath = "bin",
+ exeExtention = process.platform === "win32" ? ".exe" : ""
+): string {
+ return resolve(join(rootPath, process.platform, `${exeName}${exeExtention}`));
 }
