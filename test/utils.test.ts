@@ -2,6 +2,7 @@ import * as Utils from '../lib/utils';
 import { createFakeEditor } from './helpers';
 import { expect } from 'chai';
 import { Point } from 'atom';
+import { join, dirname } from 'path'
 
 describe('Utils', () => {
   describe('getWordAtPosition', () => {
@@ -30,4 +31,23 @@ describe('Utils', () => {
       expect(range.serialize()).eql([[0, 4], [0, 4]]);
     });
   });
+
+  describe('getExePath', () => {
+    it('returns the exe path under bin folder by default', () => {
+      const exePath = Utils.getExePath('serve-d');
+      let expectedExe = join(dirname(dirname(__dirname)), 'bin', process.platform, 'serve-d');
+      if (process.platform === 'win32') {
+        expectedExe = expectedExe + '.exe';
+      }
+      expect(exePath).eq(expectedExe);
+    })
+    it('returns the exe path for the given root', () => {
+      const exePath = Utils.getExePath('serve-d', __dirname);
+      let expectedExe = join(__dirname, process.platform, 'serve-d');
+      if (process.platform === 'win32') {
+        expectedExe = expectedExe + '.exe';
+      }
+      expect(exePath).eq(expectedExe);
+    })
+  })
 });
