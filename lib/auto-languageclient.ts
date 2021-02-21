@@ -117,9 +117,9 @@ export default class AutoLanguageClient {
   }
 
   /** (Optional) Return the parameters used to initialize a client - you may want to extend capabilities */
-  protected getInitializeParams(projectPath: string, process: LanguageServerProcess): ls.InitializeParams {
+  protected getInitializeParams(projectPath: string, lsProcess: LanguageServerProcess): ls.InitializeParams {
     return {
-      processId: process.pid,
+      processId: lsProcess.pid,
       rootPath: projectPath,
       rootUri: Convert.pathToUri(projectPath),
       workspaceFolders: null,
@@ -312,14 +312,14 @@ export default class AutoLanguageClient {
 
   /** Starts the server by starting the process, then initializing the language server and starting adapters */
   private async startServer(projectPath: string): Promise<ActiveServer> {
-    const process = await this.reportBusyWhile(
+    const lsProcess = await this.reportBusyWhile(
       `Starting ${this.getServerName()} for ${path.basename(projectPath)}`,
       async () => this.startServerProcess(projectPath),
     );
-    this.captureServerErrors(process, projectPath);
-    const connection = new LanguageClientConnection(this.createRpcConnection(process), this.logger);
+    this.captureServerErrors(lsProcess, projectPath);
+    const connection = new LanguageClientConnection(this.createRpcConnection(lsProcess), this.logger);
     this.preInitialization(connection);
-    const initializeParams = this.getInitializeParams(projectPath, process);
+    const initializeParams = this.getInitializeParams(projectPath, lsProcess);
     const initialization = connection.initialize(initializeParams);
     this.reportBusyWhile(
       `${this.getServerName()} initializing for ${path.basename(projectPath)}`,
@@ -328,7 +328,7 @@ export default class AutoLanguageClient {
     const initializeResponse = await initialization;
     const newServer = {
       projectPath,
-      process,
+      process: lsProcess,
       connection,
       capabilities: initializeResponse.capabilities,
       disposable: new CompositeDisposable(),
@@ -366,11 +366,11 @@ export default class AutoLanguageClient {
     return newServer;
   }
 
-  private captureServerErrors(childProcess: LanguageServerProcess, projectPath: string): void {
-    childProcess.on('error', (err) => this.handleSpawnFailure(err));
-    childProcess.on('exit', (code, signal) => this.logger.debug(`exit: code ${code} signal ${signal}`));
-    childProcess.stderr.setEncoding('utf8');
-    childProcess.stderr.on('data', (chunk: Buffer) => {
+  private captureServerErrors(lsProcess: LanguageServerProcess, projectPath: string): void {
+    lsProcess.on('error', (err) => this.handleSpawnFailure(err));
+    lsProcess.on('exit', (code, signal) => this.logger.debug(`exit: code ${code} signal ${signal}`));
+    lsProcess.stderr.setEncoding('utf8');
+    lsProcess.stderr.on('data', (chunk: Buffer) => {
       const errorString = chunk.toString();
       this.handleServerStderr(errorString, projectPath);
       // Keep the last 5 lines for packages to use in messages
@@ -392,22 +392,22 @@ export default class AutoLanguageClient {
   }
 
   /** Creates the RPC connection which can be ipc, socket or stdio */
-  private createRpcConnection(process: LanguageServerProcess): rpc.MessageConnection {
+  private createRpcConnection(lsProcess: LanguageServerProcess): rpc.MessageConnection {
     let reader: rpc.MessageReader;
     let writer: rpc.MessageWriter;
     const connectionType = this.getConnectionType();
     switch (connectionType) {
       case 'ipc':
-        reader = new rpc.IPCMessageReader(process as cp.ChildProcess);
-        writer = new rpc.IPCMessageWriter(process as cp.ChildProcess);
+        reader = new rpc.IPCMessageReader(lsProcess as cp.ChildProcess);
+        writer = new rpc.IPCMessageWriter(lsProcess as cp.ChildProcess);
         break;
       case 'socket':
         reader = new rpc.SocketMessageReader(this.socket);
         writer = new rpc.SocketMessageWriter(this.socket);
         break;
       case 'stdio':
-        reader = new rpc.StreamMessageReader(process.stdout);
-        writer = new rpc.StreamMessageWriter(process.stdin);
+        reader = new rpc.StreamMessageReader(lsProcess.stdout);
+        writer = new rpc.StreamMessageWriter(lsProcess.stdin);
         break;
       default:
         return Utils.assertUnreachable(connectionType);
