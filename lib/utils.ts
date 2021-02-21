@@ -115,6 +115,9 @@ export function promiseWithTimeout<T>(ms: number, promise: Promise<T>): Promise<
 }
 
 
+export const rootPathDefault = join("bin", `${process.platform}-${process.arch}`);
+export const exeExtentionDefault = process.platform === "win32" ? ".exe" : "";
+
 /** Finds an exe file in the package assuming it is placed under `rootPath/platform-arch/exe`. If the exe file did not exist,
  * the given name is returned.
  * For example on Windows x64, if the `exeName` is `serve-d`, it returns the absolute path to `./bin/win32-x64/exeName.exe`, and
@@ -123,11 +126,7 @@ export function promiseWithTimeout<T>(ms: number, promise: Promise<T>): Promise<
  * @param rootPath the path of the folder of the exe file. Defaults to 'join("bin", `${process.platform}-${process.arch}`)'
  * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
  */
-export function getExePath(
- exeName: string,
- rootPath = join("bin", `${process.platform}-${process.arch}`),
- exeExtention = process.platform === "win32" ? ".exe" : ""
-): string {
+export function getExePath(exeName: string, rootPath = rootPathDefault, exeExtention = exeExtentionDefault): string {
  const exePath = resolve(join(rootPath, `${exeName}${exeExtention}`));
  if (existsSync(exePath)) {
    return exePath

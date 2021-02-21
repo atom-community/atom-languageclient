@@ -279,13 +279,27 @@ export default class AutoLanguageClient {
     await this._serverManager.stopAllServers();
   }
 
-  /** Spawn a general language server
-   *  Use this inside the `startServerProcess` override if the language server is a general executable
-   *  Also see the `spawnChildNode` method
+  /**
+   * Spawn a general language server.
+   * Use this inside the `startServerProcess` override if the language server is a general executable.
+   * Also see the `spawnChildNode` method.
+   * If the name is provided as the first argument, it checks `bin/platform-arch/exeName` by default, and if doesn't exists uses the exe on PATH.
+   * For example on Windows x64, by passing `serve-d`, `bin/win32-x64/exeName.exe` is spawned by default.
+   * @param exe the `name` or `path` of the executable
+   * @param args args passed to spawn the exe. Defaults to `[]`.
+   * @param options: child process spawn options. Defaults to `{}`.
+   * @param rootPath the path of the folder of the exe file. Defaults to `join("bin", `${process.platform}-${process.arch}`)`.
+   * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
    */
-  protected spawn(exe: string, args: string[], options: cp.SpawnOptions = {}): LanguageServerProcess {
+  protected spawn(
+    exe: string,
+    args: string[] = [],
+    options: cp.SpawnOptions = {},
+    rootPath = Utils.rootPathDefault,
+    exeExtention = Utils.exeExtentionDefault
+  ): LanguageServerProcess {
     this.logger.debug(`starting "${exe} ${args.join(' ')}"`);
-    return cp.spawn(exe, args, options);
+    return cp.spawn(Utils.getExePath(exe, rootPath, exeExtention), args, options);
   }
 
   /** Spawn a language server using Atom's Nodejs process
