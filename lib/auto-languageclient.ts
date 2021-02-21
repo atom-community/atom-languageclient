@@ -283,7 +283,7 @@ export default class AutoLanguageClient {
    *  Use this inside the `startServerProcess` override if the language server is a general executable
    *  Also see the `spawnChildNode` method
    */
-  protected spawn(exe: string, args: string[], options: cp.SpawnOptions = {}): cp.ChildProcess {
+  protected spawn(exe: string, args: string[], options: cp.SpawnOptions = {}): LanguageServerProcess {
     this.logger.debug(`starting "${exe} ${args.join(' ')}"`);
     return cp.spawn(exe, args, options);
   }
@@ -292,7 +292,7 @@ export default class AutoLanguageClient {
    *  Use this inside the `startServerProcess` override if the language server is a JavaScript file.
    *  Also see the `spawn` method
    */
-  protected spawnChildNode(args: string[], options: cp.SpawnOptions = {}): cp.ChildProcess {
+  protected spawnChildNode(args: string[], options: cp.SpawnOptions = {}): LanguageServerProcess {
     this.logger.debug(`starting child Node "${args.join(' ')}"`);
     options.env = options.env || Object.create(process.env);
     if (options.env) {
@@ -370,8 +370,8 @@ export default class AutoLanguageClient {
     lsProcess.on('error', (err) => this.handleSpawnFailure(err));
     lsProcess.on("close", (...args) => this.handleCloseFailure(...args));
     lsProcess.on('exit', (code, signal) => this.logger.debug(`exit: code ${code} signal ${signal}`));
-    lsProcess.stderr.setEncoding('utf8');
-    lsProcess.stderr.on('data', (chunk: Buffer) => {
+    lsProcess.stderr?.setEncoding('utf8');
+    lsProcess.stderr?.on('data', (chunk: Buffer) => {
       const errorString = chunk.toString();
       this.handleServerStderr(errorString, projectPath);
       // Keep the last 5 lines for packages to use in messages
@@ -415,8 +415,13 @@ export default class AutoLanguageClient {
         writer = new rpc.SocketMessageWriter(this.socket);
         break;
       case 'stdio':
-        reader = new rpc.StreamMessageReader(lsProcess.stdout);
-        writer = new rpc.StreamMessageWriter(lsProcess.stdin);
+        if (lsProcess.stdin !== null && lsProcess.stdout !== null) {
+          reader = new rpc.StreamMessageReader(lsProcess.stdout);
+          writer = new rpc.StreamMessageWriter(lsProcess.stdin);
+        } else {
+          this.logger.error(`The language server process for ${this.getLanguageName()} does not have a valid stdin and stdout`);
+          return Utils.assertUnreachable('stdio' as never)
+        }
         break;
       default:
         return Utils.assertUnreachable(connectionType);
