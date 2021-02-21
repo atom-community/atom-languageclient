@@ -283,9 +283,9 @@ export default class AutoLanguageClient {
    *  Use this inside the `startServerProcess` override if the language server is a general executable
    *  Also see the `spawnChildNode` method
    */
-  protected spawn(lspPath: string, args: string[], options: cp.SpawnOptions = {}): cp.ChildProcess {
-    this.logger.debug(`starting "${lspPath} ${args.join(' ')}"`);
-    return cp.spawn(lspPath, args, options);
+  protected spawn(exe: string, args: string[], options: cp.SpawnOptions = {}): cp.ChildProcess {
+    this.logger.debug(`starting "${exe} ${args.join(' ')}"`);
+    return cp.spawn(exe, args, options);
   }
 
   /** Spawn a language server using Atom's Nodejs process

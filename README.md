@@ -99,7 +99,7 @@ class DLanguageClient extends AutoLanguageClient {
 
   startServerProcess (projectPath) {
     return super.spawn(
-      getExePath('serve-d'),    // path to the LSP executable.
+      getExePath('serve-d'),    // path to the LSP executable (or the exe name if it is on the PATH)
       [],                       // args passed to spawn the exe
       { cwd: projectPath }      // child process spawn options
     )
