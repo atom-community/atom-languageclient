@@ -42,8 +42,9 @@ describe('Utils', () => {
       expect(exePath).eq(expectedExe);
     })
     it('returns the exe path for the given root', () => {
-      const exePath = Utils.getExePath('serve-d', __dirname);
-      let expectedExe = join(__dirname, `${process.platform}-${process.arch}`, 'serve-d');
+      const rootPath = join(__dirname, `${process.platform}-${process.arch}`);
+      const exePath = Utils.getExePath('serve-d', rootPath);
+      let expectedExe = join(rootPath, 'serve-d');
       if (process.platform === 'win32') {
         expectedExe = expectedExe + '.exe';
       }
