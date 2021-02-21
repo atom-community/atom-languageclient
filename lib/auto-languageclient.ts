@@ -383,6 +383,7 @@ export default class AutoLanguageClient {
   private captureServerErrors(lsProcess: LanguageServerProcess, projectPath: string): void {
     lsProcess.on('error', (err) => this.onSpawnError(err));
     lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal));
+    lsProcess.on("disconnect", () => this.onSpawnDisconnect());
     lsProcess.on('exit', (code, signal) => this.onSpawnExit(code, signal));
     lsProcess.stderr?.setEncoding('utf8');
     lsProcess.stderr?.on('data', (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath));
@@ -412,6 +413,12 @@ export default class AutoLanguageClient {
     }
   }
 
+  /** The function called whenever the spawned server `disconnect`s.
+   *  Extend (call super.onSpawnDisconnect) or override this if you need custom disconnect handling
+   */
+  protected onSpawnDisconnect(): void {
+    this.logger.debug(`${this.getServerName()} language server for ${this.getLanguageName()} got disconnected.`);
+  }
 
   /** The function called whenever the spawned server `exit`s.
    *  Extend (call super.onSpawnExit) or override this if you need custom exit handling
