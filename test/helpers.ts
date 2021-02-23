@@ -19,7 +19,8 @@ export function createSpyConnection(): rpc.MessageConnection {
     sendProgress: sinon.spy(),
     trace: sinon.spy(),
     inspect: sinon.spy(),
-  }
+    end: sinon.spy(),
+  };
 }
 
 export function createFakeEditor(path?: string): TextEditor {

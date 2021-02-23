@@ -26,9 +26,9 @@
   "atomTestRunner": "./test/runner",
   "dependencies": {
     "atom-ide-base": "^2.4.0",
-    "vscode-jsonrpc": "5.0.1",
-    "vscode-languageserver-protocol": "3.15.3",
-    "vscode-languageserver-types": "3.15.1",
+    "vscode-jsonrpc": "6.0.0",
+    "vscode-languageserver-protocol": "3.16.0",
+    "vscode-languageserver-types": "3.16.0",
     "zadeh": "^2.0.2"
   },
   "devDependencies": {

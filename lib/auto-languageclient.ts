@@ -1,35 +1,50 @@
-import * as cp from "child_process"
-import * as ls from "./languageclient"
-import * as rpc from "vscode-jsonrpc"
-import * as path from "path"
-import type * as atomIde from "atom-ide-base"
-import * as linter from "atom/linter"
-import Convert from "./convert.js"
-import ApplyEditAdapter from "./adapters/apply-edit-adapter"
-import AutocompleteAdapter from "./adapters/autocomplete-adapter"
-import CodeActionAdapter from "./adapters/code-action-adapter"
-import CodeFormatAdapter from "./adapters/code-format-adapter"
-import CodeHighlightAdapter from "./adapters/code-highlight-adapter"
-import DatatipAdapter from "./adapters/datatip-adapter"
-import DefinitionAdapter from "./adapters/definition-adapter"
-import DocumentSyncAdapter from "./adapters/document-sync-adapter"
-import FindReferencesAdapter from "./adapters/find-references-adapter"
-import LinterPushV2Adapter from "./adapters/linter-push-v2-adapter"
-import LoggingConsoleAdapter from "./adapters/logging-console-adapter"
-import NotificationsAdapter from "./adapters/notifications-adapter"
-import OutlineViewAdapter from "./adapters/outline-view-adapter"
-import RenameAdapter from "./adapters/rename-adapter"
-import SignatureHelpAdapter from "./adapters/signature-help-adapter"
-import * as Utils from "./utils"
-import { Socket } from "net"
-import { LanguageClientConnection } from "./languageclient"
-import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
-import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
-import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
-import * as ac from "atom/autocomplete-plus"
+import * as cp from 'child_process';
+import * as ls from './languageclient';
+import * as rpc from 'vscode-jsonrpc';
+import * as rpcNode from 'vscode-jsonrpc/node';
+import * as path from 'path';
+import * as atomIde from 'atom-ide';
+import * as linter from 'atom/linter';
+import Convert from './convert.js';
+import ApplyEditAdapter from './adapters/apply-edit-adapter';
+import AutocompleteAdapter from './adapters/autocomplete-adapter';
+import CodeActionAdapter from './adapters/code-action-adapter';
+import CodeFormatAdapter from './adapters/code-format-adapter';
+import CodeHighlightAdapter from './adapters/code-highlight-adapter';
+import DatatipAdapter from './adapters/datatip-adapter';
+import DefinitionAdapter from './adapters/definition-adapter';
+import DocumentSyncAdapter from './adapters/document-sync-adapter';
+import FindReferencesAdapter from './adapters/find-references-adapter';
+import LinterPushV2Adapter from './adapters/linter-push-v2-adapter';
+import LoggingConsoleAdapter from './adapters/logging-console-adapter';
+import NotificationsAdapter from './adapters/notifications-adapter';
+import OutlineViewAdapter from './adapters/outline-view-adapter';
+import RenameAdapter from './adapters/rename-adapter';
+import SignatureHelpAdapter from './adapters/signature-help-adapter';
+import * as Utils from './utils';
+import { Socket } from 'net';
+import { LanguageClientConnection } from './languageclient';
+import {
+  ConsoleLogger,
+  FilteredLogger,
+  Logger,
+} from './logger';
+import {
+  LanguageServerProcess,
+  ServerManager,
+  ActiveServer,
+} from './server-manager.js';
+import {
+  Disposable,
+  CompositeDisposable,
+  Point,
+  Range,
+  TextEditor,
+} from 'atom';
+import * as ac from 'atom/autocomplete-plus';
 
-export { ActiveServer, LanguageClientConnection, LanguageServerProcess }
-export type ConnectionType = "stdio" | "socket" | "ipc"
+export { ActiveServer, LanguageClientConnection, LanguageServerProcess };
+export type ConnectionType = 'stdio' | 'socket' | 'ipc';
 
 export interface ServerAdapters {
   linterPushV2: LinterPushV2Adapter
@@ -183,6 +198,9 @@ export default class AutoLanguageClient {
             dynamicRegistration: false,
           },
           rename: {
+            dynamicRegistration: false,
+          },
+          moniker: {
             dynamicRegistration: false,
           },
 
@@ -429,17 +447,17 @@ export default class AutoLanguageClient {
     const connectionType = this.getConnectionType()
     switch (connectionType) {
       case "ipc":
-        reader = new rpc.IPCMessageReader(lsProcess as cp.ChildProcess)
-        writer = new rpc.IPCMessageWriter(lsProcess as cp.ChildProcess)
+        reader = new rpcNode.IPCMessageReader(lsProcess as cp.ChildProcess)
+        writer = new rpcNode.IPCMessageWriter(lsProcess as cp.ChildProcess)
         break
       case "socket":
-        reader = new rpc.SocketMessageReader(this.socket)
-        writer = new rpc.SocketMessageWriter(this.socket)
+        reader = new rpcNode.SocketMessageReader(this.socket)
+        writer = new rpcNode.SocketMessageWriter(this.socket)
         break
       case "stdio":
         if (lsProcess.stdin !== null && lsProcess.stdout !== null) {
-          reader = new rpc.StreamMessageReader(lsProcess.stdout)
-          writer = new rpc.StreamMessageWriter(lsProcess.stdin)
+          reader = new rpcNode.StreamMessageReader(lsProcess.stdout)
+          writer = new rpcNode.StreamMessageWriter(lsProcess.stdin)
         } else {
           this.logger.error(
             `The language server process for ${this.getLanguageName()} does not have a valid stdin and stdout`
