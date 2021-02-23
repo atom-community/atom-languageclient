@@ -15,8 +15,8 @@ Provide integration support for adding Language Server Protocol servers to Atom.
 This npm package can be used by Atom package authors wanting to integrate LSP-compatible language servers with Atom. It provides:
 
 * Conversion routines between Atom and LSP types
-* A FlowTyped wrapper around JSON-RPC for **v3** of the LSP protocol
-* All necessary FlowTyped input and return structures for LSP, notifications etc.
+* A TypeScript wrapper around JSON-RPC for **v3** of the LSP protocol
+* All necessary TypeScript input and return structures for LSP, notifications etc.
 * A number of adapters to translate communication between Atom/Atom-IDE and the LSP's capabilities
 * Automatic wiring up of adapters based on the negotiated capabilities of the language server
 * Helper functions for downloading additional non-npm dependencies
@@ -59,9 +59,9 @@ The language server protocol consists of a number of capabilities. Some of these
 
 The underlying JSON-RPC communication is handled by the [vscode-jsonrpc npm module](https://www.npmjs.com/package/vscode-jsonrpc).
 
-### Minimal example
+### Minimal example (Nodejs-compatible LSP exe)
 
-A minimal implementation can be illustrated by the Omnisharp package here which has only npm-managed dependencies.  You simply provide the scope name, language name and server name as well as start your process and AutoLanguageClient takes care of interrogating your language server capabilities and wiring up the appropriate services within Atom to expose them.
+A minimal implementation can be illustrated by the Omnisharp package here which has only npm-managed dependencies, and the LSP is a JavaScript file.  You simply provide the scope name, language name and server name as well as start your process and `AutoLanguageClient` takes care of interrogating your language server capabilities and wiring up the appropriate services within Atom to expose them.
 
 ```javascript
 const {AutoLanguageClient} = require('atom-languageclient')
@@ -82,6 +82,32 @@ module.exports = new CSharpLanguageClient()
 You can get this code packaged up with the necessary package.json etc. from the [ide-csharp](https://github.com/atom/ide-csharp) provides C# support via [Omnisharp (node-omnisharp)](https://github.com/OmniSharp/omnisharp-node-client) repo.
 
 Note that you will also need to add various entries to the `providedServices` and `consumedServices` section of your package.json (for now).  You can [obtain these entries here](https://github.com/atom/ide-csharp/tree/master/package.json).
+
+### Minimal example (General LSP exe)
+
+If the LSP is a general executable (not a JavaScript file), you should use `spawn` inside `startServerProcess`.
+
+```javascript
+const {AutoLanguageClient} = require('atom-languageclient')
+
+class DLanguageClient extends AutoLanguageClient {
+  getGrammarScopes () { return [ 'source.d' ] }
+  getLanguageName () { return 'D' }
+  getServerName () { return 'serve-d' }
+
+  startServerProcess (projectPath) {
+    return super.spawn(
+      'serve-d',                // the `name` or `path` of the executable
+                                // if the `name` is provided it checks `bin/platform-arch/exeName` by default, and if doesn't exists uses the `exeName` on the PATH
+      [],                       // args passed to spawn the exe
+      { cwd: projectPath }      // child process spawn options
+    )
+  }
+}
+
+module.exports = new DLanguageClient()
+```
+
 
 ### Using other connection types
 

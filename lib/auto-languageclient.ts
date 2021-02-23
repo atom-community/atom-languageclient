@@ -117,9 +117,9 @@ export default class AutoLanguageClient {
   }
 
   /** (Optional) Return the parameters used to initialize a client - you may want to extend capabilities */
-  protected getInitializeParams(projectPath: string, process: LanguageServerProcess): ls.InitializeParams {
+  protected getInitializeParams(projectPath: string, lsProcess: LanguageServerProcess): ls.InitializeParams {
     return {
-      processId: process.pid,
+      processId: lsProcess.pid,
       rootPath: projectPath,
       rootUri: Convert.pathToUri(projectPath),
       workspaceFolders: null,
@@ -279,7 +279,34 @@ export default class AutoLanguageClient {
     await this._serverManager.stopAllServers();
   }
 
-  protected spawnChildNode(args: string[], options: cp.SpawnOptions = {}): cp.ChildProcess {
+  /**
+   * Spawn a general language server.
+   * Use this inside the `startServerProcess` override if the language server is a general executable.
+   * Also see the `spawnChildNode` method.
+   * If the name is provided as the first argument, it checks `bin/platform-arch/exeName` by default, and if doesn't exists uses the exe on PATH.
+   * For example on Windows x64, by passing `serve-d`, `bin/win32-x64/exeName.exe` is spawned by default.
+   * @param exe the `name` or `path` of the executable
+   * @param args args passed to spawn the exe. Defaults to `[]`.
+   * @param options: child process spawn options. Defaults to `{}`.
+   * @param rootPath the path of the folder of the exe file. Defaults to `join("bin", `${process.platform}-${process.arch}`)`.
+   * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
+   */
+  protected spawn(
+    exe: string,
+    args: string[] = [],
+    options: cp.SpawnOptions = {},
+    rootPath = Utils.rootPathDefault,
+    exeExtention = Utils.exeExtentionDefault
+  ): LanguageServerProcess {
+    this.logger.debug(`starting "${exe} ${args.join(' ')}"`);
+    return cp.spawn(Utils.getExePath(exe, rootPath, exeExtention), args, options);
+  }
+
+  /** Spawn a language server using Atom's Nodejs process
+   *  Use this inside the `startServerProcess` override if the language server is a JavaScript file.
+   *  Also see the `spawn` method
+   */
+  protected spawnChildNode(args: string[], options: cp.SpawnOptions = {}): LanguageServerProcess {
     this.logger.debug(`starting child Node "${args.join(' ')}"`);
     options.env = options.env || Object.create(process.env);
     if (options.env) {
@@ -299,14 +326,14 @@ export default class AutoLanguageClient {
 
   /** Starts the server by starting the process, then initializing the language server and starting adapters */
   private async startServer(projectPath: string): Promise<ActiveServer> {
-    const process = await this.reportBusyWhile(
+    const lsProcess = await this.reportBusyWhile(
       `Starting ${this.getServerName()} for ${path.basename(projectPath)}`,
       async () => this.startServerProcess(projectPath),
     );
-    this.captureServerErrors(process, projectPath);
-    const connection = new LanguageClientConnection(this.createRpcConnection(process), this.logger);
+    this.captureServerErrors(lsProcess, projectPath);
+    const connection = new LanguageClientConnection(this.createRpcConnection(lsProcess), this.logger);
     this.preInitialization(connection);
-    const initializeParams = this.getInitializeParams(projectPath, process);
+    const initializeParams = this.getInitializeParams(projectPath, lsProcess);
     const initialization = connection.initialize(initializeParams);
     this.reportBusyWhile(
       `${this.getServerName()} initializing for ${path.basename(projectPath)}`,
@@ -315,7 +342,7 @@ export default class AutoLanguageClient {
     const initializeResponse = await initialization;
     const newServer = {
       projectPath,
-      process,
+      process: lsProcess,
       connection,
       capabilities: initializeResponse.capabilities,
       disposable: new CompositeDisposable(),
@@ -353,22 +380,19 @@ export default class AutoLanguageClient {
     return newServer;
   }
 
-  private captureServerErrors(childProcess: LanguageServerProcess, projectPath: string): void {
-    childProcess.on('error', (err) => this.handleSpawnFailure(err));
-    childProcess.on('exit', (code, signal) => this.logger.debug(`exit: code ${code} signal ${signal}`));
-    childProcess.stderr.setEncoding('utf8');
-    childProcess.stderr.on('data', (chunk: Buffer) => {
-      const errorString = chunk.toString();
-      this.handleServerStderr(errorString, projectPath);
-      // Keep the last 5 lines for packages to use in messages
-      this.processStdErr = (this.processStdErr + errorString)
-        .split('\n')
-        .slice(-5)
-        .join('\n');
-    });
+  private captureServerErrors(lsProcess: LanguageServerProcess, projectPath: string): void {
+    lsProcess.on('error', (err) => this.onSpawnError(err));
+    lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal));
+    lsProcess.on("disconnect", () => this.onSpawnDisconnect());
+    lsProcess.on('exit', (code, signal) => this.onSpawnExit(code, signal));
+    lsProcess.stderr?.setEncoding('utf8');
+    lsProcess.stderr?.on('data', (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath));
   }
 
-  private handleSpawnFailure(err: any): void {
+  /** The function called whenever the spawned server `error`s.
+   *  Extend (call super.onSpawnError) or override this if you need custom error handling
+   */
+  protected onSpawnError(err: Error): void {
     atom.notifications.addError(
       `${this.getServerName()} language server for ${this.getLanguageName()} unable to start`,
       {
@@ -378,23 +402,66 @@ export default class AutoLanguageClient {
     );
   }
 
+  /** The function called whenever the spawned server `close`s.
+   *  Extend (call super.onSpawnClose) or override this if you need custom close handling
+   */
+  protected onSpawnClose(code: number | null, signal: NodeJS.Signals | null): void {
+    if (code !== 0 && signal === null) {
+      atom.notifications.addError(
+        `${this.getServerName()} language server for ${this.getLanguageName()} was closed with code: ${code}.`
+      );
+    }
+  }
+
+  /** The function called whenever the spawned server `disconnect`s.
+   *  Extend (call super.onSpawnDisconnect) or override this if you need custom disconnect handling
+   */
+  protected onSpawnDisconnect(): void {
+    this.logger.debug(`${this.getServerName()} language server for ${this.getLanguageName()} got disconnected.`);
+  }
+
+  /** The function called whenever the spawned server `exit`s.
+   *  Extend (call super.onSpawnExit) or override this if you need custom exit handling
+   */
+  protected onSpawnExit(code: number | null, signal: NodeJS.Signals | null): void {
+    this.logger.debug(`exit: code ${code} signal ${signal}`);
+  }
+
+  /** The function called whenever the spawned server returns `data` in `stderr`
+   *  Extend (call super.onSpawnStdErrData) or override this if you need custom stderr data handling
+   */
+  protected onSpawnStdErrData(chunk: Buffer, projectPath: string): void {
+    const errorString = chunk.toString();
+    this.handleServerStderr(errorString, projectPath);
+    // Keep the last 5 lines for packages to use in messages
+    this.processStdErr = (this.processStdErr + errorString)
+      .split('\n')
+      .slice(-5)
+      .join('\n');
+  }
+
   /** Creates the RPC connection which can be ipc, socket or stdio */
-  private createRpcConnection(process: LanguageServerProcess): rpc.MessageConnection {
+  private createRpcConnection(lsProcess: LanguageServerProcess): rpc.MessageConnection {
     let reader: rpc.MessageReader;
     let writer: rpc.MessageWriter;
     const connectionType = this.getConnectionType();
     switch (connectionType) {
       case 'ipc':
-        reader = new rpc.IPCMessageReader(process as cp.ChildProcess);
-        writer = new rpc.IPCMessageWriter(process as cp.ChildProcess);
+        reader = new rpc.IPCMessageReader(lsProcess as cp.ChildProcess);
+        writer = new rpc.IPCMessageWriter(lsProcess as cp.ChildProcess);
         break;
       case 'socket':
         reader = new rpc.SocketMessageReader(this.socket);
         writer = new rpc.SocketMessageWriter(this.socket);
         break;
       case 'stdio':
-        reader = new rpc.StreamMessageReader(process.stdout);
-        writer = new rpc.StreamMessageWriter(process.stdin);
+        if (lsProcess.stdin !== null && lsProcess.stdout !== null) {
+          reader = new rpc.StreamMessageReader(lsProcess.stdout);
+          writer = new rpc.StreamMessageWriter(lsProcess.stdin);
+        } else {
+          this.logger.error(`The language server process for ${this.getLanguageName()} does not have a valid stdin and stdout`);
+          return Utils.assertUnreachable('stdio' as never)
+        }
         break;
       default:
         return Utils.assertUnreachable(connectionType);

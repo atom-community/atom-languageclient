@@ -1,8 +1,7 @@
 import Convert from './convert';
 import * as path from 'path';
-import * as stream from 'stream';
 import * as ls from './languageclient';
-import { EventEmitter } from 'events';
+import { ChildProcess } from 'child_process'
 import { Logger } from './logger';
 import {
   CompositeDisposable,
@@ -11,22 +10,16 @@ import {
 } from 'atom';
 import { ReportBusyWhile } from './utils';
 
-/**
- * Public: Defines the minimum surface area for an object that resembles a
- * ChildProcess.  This is used so that language packages with alternative
- * language server process hosting strategies can return something compatible
- * with AutoLanguageClient.startServerProcess.
- */
-export interface LanguageServerProcess extends EventEmitter {
-  stdin: stream.Writable;
-  stdout: stream.Readable;
-  stderr: stream.Readable;
-  pid: number;
 
-  kill(signal?: NodeJS.Signals | number): void;
-  on(event: 'error', listener: (err: Error) => void): this;
-  on(event: 'exit', listener: (code: number, signal: NodeJS.Signals | number) => void): this;
-}
+type MinimalLanguageServerProcess = Pick<ChildProcess, 'stdin' | 'stdout' | 'stderr' | 'pid' | 'kill' | 'on'>
+
+/**
+ * Public: Defines a language server process which is either a ChildProcess, or it is a minimal object that resembles a
+ * ChildProcess.
+ * `MinimalLanguageServerProcess` is used so that language packages with alternative language server process hosting strategies
+ * can return something compatible with `AutoLanguageClient.startServerProcess`.
+ */
+export type LanguageServerProcess = ChildProcess | MinimalLanguageServerProcess
 
 /** The necessary elements for a server that has started or is starting. */
 export interface ActiveServer {
