@@ -19,7 +19,7 @@ export default class Convert {
     if (newPath[0] !== '/') {
       newPath = `/${newPath}`;
     }
-    return encodeURI(`file://${newPath}`).replace(/[?#]/g, encodeURIComponent);
+    return encodeURI(`file://${newPath}`).replace(/[#?]/g, encodeURIComponent);
   }
 
   /**
@@ -148,7 +148,7 @@ export default class Convert {
       '"': '&quot;',
       "'": '&apos;',
     };
-    return s.replace(/[&<>'"]/g, (c) => attributeMap[c]);
+    return s.replace(/["&'<>]/g, (c) => attributeMap[c]);
   }
 
   /**

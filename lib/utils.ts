@@ -24,7 +24,7 @@ export function getWordAtPosition(editor: TextEditor, position: Point): Range {
 
 export function escapeRegExp(string: string): string {
   // From atom/underscore-plus.
-  return string.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  return string.replace(/[$()*+./?[\\\]^{|}-]/g, '\\$&');
 }
 
 function _getRegexpRangeAtPosition(buffer: TextBuffer, position: Point, wordRegex: RegExp): Range | null {
