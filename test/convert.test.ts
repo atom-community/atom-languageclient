@@ -66,7 +66,7 @@ describe("Convert", () => {
 
     it("decodes Windows drive specifiers", () => {
       setProcessPlatform("win32")
-      expect(Convert.uriToPath("file:///d:/ee/ff.txt")).equals("d:\\ee\\ff.txt")
+      expect(Convert.uriToPath("file:///d:/ee/ff.txt").toLowerCase()).equals("d:\\ee\\ff.txt")
     })
 
     it("URI decodes special characters", () => {
@@ -81,7 +81,7 @@ describe("Convert", () => {
 
     it("parses URI without double slash in the beginning on Windows", () => {
       setProcessPlatform("win32")
-      expect(Convert.uriToPath("file:/x:/a/b/c/d.txt")).equals("x:\\a\\b\\c\\d.txt")
+      expect(Convert.uriToPath("file:/x:/a/b/c/d.txt").toLowerCase()).equals("x:\\a\\b\\c\\d.txt")
     })
   })
 
