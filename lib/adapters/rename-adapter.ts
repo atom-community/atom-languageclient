@@ -1,9 +1,6 @@
 import type * as atomIde from 'atom-ide-base';
 import Convert from '../convert';
-import {
-  Point,
-  TextEditor,
-} from 'atom';
+import { Point, TextEditor } from 'atom';
 import {
   LanguageClientConnection,
   RenameParams,
@@ -21,11 +18,9 @@ export default class RenameAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     point: Point,
-    newName: string,
+    newName: string
   ): Promise<Map<atomIde.IdeUri, atomIde.TextEdit[]> | null> {
-    const edit = await connection.rename(
-      RenameAdapter.createRenameParams(editor, point, newName),
-    );
+    const edit = await connection.rename(RenameAdapter.createRenameParams(editor, point, newName));
     if (edit === null) {
       return null;
     }
@@ -47,28 +42,18 @@ export default class RenameAdapter {
     };
   }
 
-  public static convertChanges(
-    changes: { [uri: string]: TextEdit[] },
-  ): Map<atomIde.IdeUri, atomIde.TextEdit[]> {
+  public static convertChanges(changes: { [uri: string]: TextEdit[] }): Map<atomIde.IdeUri, atomIde.TextEdit[]> {
     const result = new Map();
     Object.keys(changes).forEach((uri) => {
-      result.set(
-        Convert.uriToPath(uri),
-        Convert.convertLsTextEdits(changes[uri]),
-      );
+      result.set(Convert.uriToPath(uri), Convert.convertLsTextEdits(changes[uri]));
     });
     return result;
   }
 
-  public static convertDocumentChanges(
-    documentChanges: TextDocumentEdit[],
-  ): Map<atomIde.IdeUri, atomIde.TextEdit[]> {
+  public static convertDocumentChanges(documentChanges: TextDocumentEdit[]): Map<atomIde.IdeUri, atomIde.TextEdit[]> {
     const result = new Map();
     documentChanges.forEach((documentEdit) => {
-      result.set(
-        Convert.uriToPath(documentEdit.textDocument.uri),
-        Convert.convertLsTextEdits(documentEdit.edits),
-      );
+      result.set(Convert.uriToPath(documentEdit.textDocument.uri), Convert.convertLsTextEdits(documentEdit.edits));
     });
     return result;
   }

@@ -31,7 +31,7 @@ describe('LinterPushV2Adapter', () => {
         severity: ls.DiagnosticSeverity.Information,
       };
 
-      const connection: any = { onPublishDiagnostics() { } };
+      const connection: any = { onPublishDiagnostics() {} };
       const adapter = new LinterPushV2Adapter(connection);
       const result = adapter.diagnosticToV2Message(filePath, diagnostic);
 

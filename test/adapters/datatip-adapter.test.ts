@@ -50,7 +50,7 @@ describe('DatatipAdapter', () => {
         expect(datatip.range.end.row).equal(0);
         expect(datatip.range.end.column).equal(2);
 
-        if ("markedStrings" in datatip) {
+        if ('markedStrings' in datatip) {
           expect(datatip.markedStrings).to.have.lengthOf(2);
           expect(datatip.markedStrings[0]).eql({ type: 'markdown', value: 'test' });
 

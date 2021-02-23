@@ -26,7 +26,7 @@ describe('SignatureHelpAdapter', () => {
             },
           },
         } as any,
-        ['source.js'],
+        ['source.js']
       );
       const spy = sinon.stub().returns(new Disposable());
       adapter.attach(spy);

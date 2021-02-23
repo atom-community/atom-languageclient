@@ -1,10 +1,7 @@
 import * as jsonrpc from 'vscode-jsonrpc';
 import * as lsp from 'vscode-languageserver-protocol';
 import { EventEmitter } from 'events';
-import {
-  NullLogger,
-  Logger,
-} from './logger';
+import { NullLogger, Logger } from './logger';
 
 export * from 'vscode-languageserver-protocol';
 
@@ -18,16 +15,13 @@ export interface KnownNotifications {
 }
 
 export interface KnownRequests {
-  'window/showMessageRequest':
-  [lsp.ShowMessageRequestParams, lsp.MessageActionItem | null];
-  'workspace/applyEdit':
-  [lsp.ApplyWorkspaceEditParams, lsp.ApplyWorkspaceEditResponse];
+  'window/showMessageRequest': [lsp.ShowMessageRequestParams, lsp.MessageActionItem | null];
+  'workspace/applyEdit': [lsp.ApplyWorkspaceEditParams, lsp.ApplyWorkspaceEditResponse];
 }
 
-export type RequestCallback<T extends keyof KnownRequests> =
-  KnownRequests[T] extends [infer U, infer V] ?
-  (param: U) => Promise<V> :
-  never;
+export type RequestCallback<T extends keyof KnownRequests> = KnownRequests[T] extends [infer U, infer V]
+  ? (param: U) => Promise<V>
+  : never;
 
 /**
  * TypeScript wrapper around JSONRPC to implement Microsoft Language Server Protocol v3
@@ -144,8 +138,9 @@ export class LanguageClientConnection extends EventEmitter {
    *   received with {ShowMessageRequestParam}' being passed.
    * @returns A {Promise} containing the {MessageActionItem}.
    */
-  public onShowMessageRequest(callback: (params: lsp.ShowMessageRequestParams)
-    => Promise<lsp.MessageActionItem | null>): void {
+  public onShowMessageRequest(
+    callback: (params: lsp.ShowMessageRequestParams) => Promise<lsp.MessageActionItem | null>
+  ): void {
     this._onRequest({ method: 'window/showMessageRequest' }, callback);
   }
 
@@ -176,8 +171,9 @@ export class LanguageClientConnection extends EventEmitter {
    *   received with {ApplyWorkspaceEditParams} being passed.
    * @returns A {Promise} containing the {ApplyWorkspaceEditResponse}.
    */
-  public onApplyEdit(callback: (params: lsp.ApplyWorkspaceEditParams) =>
-    Promise<lsp.ApplyWorkspaceEditResponse>): void {
+  public onApplyEdit(
+    callback: (params: lsp.ApplyWorkspaceEditParams) => Promise<lsp.ApplyWorkspaceEditResponse>
+  ): void {
     this._onRequest({ method: 'workspace/applyEdit' }, callback);
   }
 
@@ -279,7 +275,8 @@ export class LanguageClientConnection extends EventEmitter {
    */
   public completion(
     params: lsp.TextDocumentPositionParams | CompletionParams,
-    cancellationToken?: jsonrpc.CancellationToken): Promise<lsp.CompletionItem[] | lsp.CompletionList | null> {
+    cancellationToken?: jsonrpc.CancellationToken
+  ): Promise<lsp.CompletionItem[] | lsp.CompletionList | null> {
     // Cancel prior request if necessary
     return this._sendRequest('textDocument/completion', params, cancellationToken);
   }
@@ -359,7 +356,7 @@ export class LanguageClientConnection extends EventEmitter {
    */
   public documentSymbol(
     params: lsp.DocumentSymbolParams,
-    _cancellationToken?: jsonrpc.CancellationToken,
+    _cancellationToken?: jsonrpc.CancellationToken
   ): Promise<lsp.SymbolInformation[] | lsp.DocumentSymbol[]> {
     return this._sendRequest('textDocument/documentSymbol', params);
   }
@@ -490,7 +487,8 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   private _onRequest<T extends Extract<keyof KnownRequests, string>>(
-    type: { method: T }, callback: RequestCallback<T>,
+    type: { method: T },
+    callback: RequestCallback<T>
   ): void {
     this._rpc.onRequest(type.method, (value) => {
       this._log.debug(`rpc.onRequest ${type.method}`, value);
@@ -499,7 +497,8 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   private _onNotification<T extends Extract<keyof KnownNotifications, string>>(
-    type: { method: T }, callback: (obj: KnownNotifications[T]) => void,
+    type: { method: T },
+    callback: (obj: KnownNotifications[T]) => void
   ): void {
     this._rpc.onNotification(type.method, (value: any) => {
       this._log.debug(`rpc.onNotification ${type.method}`, value);
@@ -515,7 +514,7 @@ export class LanguageClientConnection extends EventEmitter {
   private async _sendRequest(
     method: string,
     args?: object,
-    cancellationToken?: jsonrpc.CancellationToken,
+    cancellationToken?: jsonrpc.CancellationToken
   ): Promise<any> {
     this._log.debug(`rpc.sendRequest ${method} sending`, args);
     try {
@@ -537,8 +536,7 @@ export class LanguageClientConnection extends EventEmitter {
       const responseError = e as jsonrpc.ResponseError<any>;
       if (cancellationToken && responseError.code === jsonrpc.ErrorCodes.RequestCancelled) {
         this._log.debug(`rpc.sendRequest ${method} was cancelled`);
-      }
-      else {
+      } else {
         this._log.error(`rpc.sendRequest ${method} threw`, e);
       }
 
@@ -569,7 +567,6 @@ export interface CompletionContext {
  * Completion parameters
  */
 export interface CompletionParams extends lsp.TextDocumentPositionParams {
-
   /**
    * The completion context. This is only available it the client specifies
    * to send this using `ClientCapabilities.textDocument.completion.contextSupport === true`

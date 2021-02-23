@@ -29,7 +29,7 @@ describe('ApplyEditAdapter', () => {
     });
 
     it('works for open files', async () => {
-      const editor = await atom.workspace.open(TEST_PATH1) as TextEditor;
+      const editor = (await atom.workspace.open(TEST_PATH1)) as TextEditor;
       editor.setText('abc\ndef\n');
 
       const result = await ApplyEditAdapter.onApplyEdit({
@@ -64,33 +64,35 @@ describe('ApplyEditAdapter', () => {
     });
 
     it('works with TextDocumentEdits', async () => {
-      const editor = await atom.workspace.open(TEST_PATH1) as TextEditor;
+      const editor = (await atom.workspace.open(TEST_PATH1)) as TextEditor;
       editor.setText('abc\ndef\n');
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
-          documentChanges: [{
-            textDocument: {
-              version: 1,
-              uri: Convert.pathToUri(TEST_PATH1),
+          documentChanges: [
+            {
+              textDocument: {
+                version: 1,
+                uri: Convert.pathToUri(TEST_PATH1),
+              },
+              edits: [
+                {
+                  range: {
+                    start: { line: 0, character: 0 },
+                    end: { line: 0, character: 3 },
+                  },
+                  newText: 'def',
+                },
+                {
+                  range: {
+                    start: { line: 1, character: 0 },
+                    end: { line: 1, character: 3 },
+                  },
+                  newText: 'ghi',
+                },
+              ],
             },
-            edits: [
-              {
-                range: {
-                  start: { line: 0, character: 0 },
-                  end: { line: 0, character: 3 },
-                },
-                newText: 'def',
-              },
-              {
-                range: {
-                  start: { line: 1, character: 0 },
-                  end: { line: 1, character: 3 },
-                },
-                newText: 'ghi',
-              },
-            ],
-          }],
+          ],
         },
       });
 
@@ -120,12 +122,12 @@ describe('ApplyEditAdapter', () => {
       });
 
       expect(result.applied).to.equal(true);
-      const editor = await atom.workspace.open(TEST_PATH2) as TextEditor;
+      const editor = (await atom.workspace.open(TEST_PATH2)) as TextEditor;
       expect(editor.getText()).to.equal('abc');
     });
 
     it('fails with overlapping edits', async () => {
-      const editor = await atom.workspace.open(TEST_PATH3) as TextEditor;
+      const editor = (await atom.workspace.open(TEST_PATH3)) as TextEditor;
       editor.setText('abcdef\n');
 
       const result = await ApplyEditAdapter.onApplyEdit({
@@ -156,7 +158,7 @@ describe('ApplyEditAdapter', () => {
         (atom as any).notifications.addError.calledWith('workspace/applyEdits failed', {
           description: 'Failed to apply edits.',
           detail: `Found overlapping edit ranges in ${TEST_PATH3}`,
-        }),
+        })
       ).to.equal(true);
       // No changes.
       expect(editor.getText()).to.equal('abcdef\n');

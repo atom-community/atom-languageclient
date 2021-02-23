@@ -4,9 +4,10 @@ import { expect } from 'chai';
 import { Point } from 'atom';
 
 describe('OutlineViewAdapter', () => {
-  const createRange = (a: any, b: any, c: any, d: any) => (
-    { start: { line: a, character: b }, end: { line: c, character: d } }
-  );
+  const createRange = (a: any, b: any, c: any, d: any) => ({
+    start: { line: a, character: b },
+    end: { line: c, character: d },
+  });
 
   const createLocation = (a: any, b: any, c: any, d: any) => ({
     uri: '',
@@ -80,10 +81,7 @@ describe('OutlineViewAdapter', () => {
         OutlineViewAdapter.hierarchicalSymbolToOutline(sourceA),
       ];
 
-      const result = OutlineViewAdapter.createHierarchicalOutlineTrees([
-        sourceA,
-        sourceB,
-      ]);
+      const result = OutlineViewAdapter.createHierarchicalOutlineTrees([sourceA, sourceB]);
 
       expect(result).to.deep.equal(expected);
     });
@@ -111,17 +109,14 @@ describe('OutlineViewAdapter', () => {
         children: [sourceChildA, sourceChildB],
       };
 
-      const expectedParent = OutlineViewAdapter.hierarchicalSymbolToOutline(
-        sourceParent);
+      const expectedParent = OutlineViewAdapter.hierarchicalSymbolToOutline(sourceParent);
 
       expectedParent.children = [
         OutlineViewAdapter.hierarchicalSymbolToOutline(sourceChildB),
         OutlineViewAdapter.hierarchicalSymbolToOutline(sourceChildA),
       ];
 
-      const result = OutlineViewAdapter.createHierarchicalOutlineTrees([
-        sourceParent,
-      ]);
+      const result = OutlineViewAdapter.createHierarchicalOutlineTrees([sourceParent]);
 
       expect(result).to.deep.equal([expectedParent]);
     });

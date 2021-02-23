@@ -51,7 +51,7 @@ describe('CodeActionAdapter', () => {
             range: new Range([1, 2], [3, 3]),
             providerName: 'test linter',
           },
-        ],
+        ]
       );
 
       expect((languageClient as any).codeAction.called).to.be.true;

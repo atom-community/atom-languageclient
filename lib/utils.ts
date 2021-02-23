@@ -1,21 +1,9 @@
 import { join, resolve } from 'path';
-import  { existsSync } from 'fs';
-import {
-  Point,
-  TextBuffer,
-  TextEditor,
-  Range,
-  BufferScanResult,
-} from 'atom';
-import {
-  CancellationToken,
-  CancellationTokenSource,
-} from 'vscode-jsonrpc';
+import { existsSync } from 'fs';
+import { Point, TextBuffer, TextEditor, Range, BufferScanResult } from 'atom';
+import { CancellationToken, CancellationTokenSource } from 'vscode-jsonrpc';
 
-export type ReportBusyWhile = <T>(
-  title: string,
-  f: () => Promise<T>,
-) => Promise<T>;
+export type ReportBusyWhile = <T>(title: string, f: () => Promise<T>) => Promise<T>;
 
 /**
  * Obtain the range of the word at the given editor position.
@@ -26,7 +14,7 @@ export function getWordAtPosition(editor: TextEditor, position: Point): Range {
   const range = _getRegexpRangeAtPosition(
     editor.getBuffer(),
     position,
-    new RegExp(`^[\t ]*$|[^\\s${nonWordCharacters}]+`, 'g'),
+    new RegExp(`^[\t ]*$|[^\\s${nonWordCharacters}]+`, 'g')
   );
   if (range == null) {
     return new Range(position, position);
@@ -70,8 +58,8 @@ function _getRegexpRangeAtPosition(buffer: TextBuffer, position: Point, wordRege
  */
 export function cancelAndRefreshCancellationToken<T extends object>(
   key: T,
-  cancellationTokens: WeakMap<T, CancellationTokenSource>): CancellationToken {
-
+  cancellationTokens: WeakMap<T, CancellationTokenSource>
+): CancellationToken {
   let cancellationToken = cancellationTokens.get(key);
   if (cancellationToken !== undefined && !cancellationToken.token.isCancellationRequested) {
     cancellationToken.cancel();
@@ -85,7 +73,7 @@ export function cancelAndRefreshCancellationToken<T extends object>(
 export async function doWithCancellationToken<T1 extends object, T2>(
   key: T1,
   cancellationTokens: WeakMap<T1, CancellationTokenSource>,
-  work: (token: CancellationToken) => Promise<T2>,
+  work: (token: CancellationToken) => Promise<T2>
 ): Promise<T2> {
   const token = cancelAndRefreshCancellationToken(key, cancellationTokens);
   const result: T2 = await work(token);
@@ -104,19 +92,20 @@ export function promiseWithTimeout<T>(ms: number, promise: Promise<T>): Promise<
       reject(new Error(`Timeout after ${ms}ms`));
     }, ms);
 
-    promise.then((res) => {
-      clearTimeout(timer);
-      resolve(res);
-    }).catch((err) => {
-      clearTimeout(timer);
-      reject(err);
-    });
+    promise
+      .then((res) => {
+        clearTimeout(timer);
+        resolve(res);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
   });
 }
 
-
-export const rootPathDefault = join("bin", `${process.platform}-${process.arch}`);
-export const exeExtentionDefault = process.platform === "win32" ? ".exe" : "";
+export const rootPathDefault = join('bin', `${process.platform}-${process.arch}`);
+export const exeExtentionDefault = process.platform === 'win32' ? '.exe' : '';
 
 /** Finds an exe file in the package assuming it is placed under `rootPath/platform-arch/exe`. If the exe file did not exist,
  * the given name is returned.
@@ -127,10 +116,10 @@ export const exeExtentionDefault = process.platform === "win32" ? ".exe" : "";
  * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
  */
 export function getExePath(exeName: string, rootPath = rootPathDefault, exeExtention = exeExtentionDefault): string {
- const exePath = resolve(join(rootPath, `${exeName}${exeExtention}`));
- if (existsSync(exePath)) {
-   return exePath
- } else {
-   return exeName
- }
+  const exePath = resolve(join(rootPath, `${exeName}${exeExtention}`));
+  if (existsSync(exePath)) {
+    return exePath;
+  } else {
+    return exeName;
+  }
 }

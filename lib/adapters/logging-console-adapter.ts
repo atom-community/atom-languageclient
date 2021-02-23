@@ -1,9 +1,5 @@
 import type * as atomIde from 'atom-ide-base';
-import {
-  LanguageClientConnection,
-  LogMessageParams,
-  MessageType,
-} from '../languageclient';
+import { LanguageClientConnection, LogMessageParams, MessageType } from '../languageclient';
 
 /** Adapts Atom's user notifications to those of the language server protocol. */
 export default class LoggingConsoleAdapter {

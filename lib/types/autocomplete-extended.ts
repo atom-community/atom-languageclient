@@ -22,4 +22,4 @@ interface SuggestionBase extends ac.SuggestionBase {
 }
 export type TextSuggestion = SuggestionBase & ac.TextSuggestion;
 export type SnippetSuggestion = SuggestionBase & ac.SnippetSuggestion;
-export type Suggestion =  TextSuggestion | SnippetSuggestion;
+export type Suggestion = TextSuggestion | SnippetSuggestion;

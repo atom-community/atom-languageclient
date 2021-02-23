@@ -1,12 +1,7 @@
 import * as ls from '../lib/languageclient';
 import Convert from '../lib/convert';
 import { expect } from 'chai';
-import {
-  Point,
-  Range,
-  TextEditor,
-  FilesystemChange,
-} from 'atom';
+import { Point, Range, TextEditor, FilesystemChange } from 'atom';
 
 let originalPlatform: NodeJS.Platform;
 const setProcessPlatform = (platform: any) => {
@@ -173,7 +168,7 @@ describe('Convert', () => {
       const grammarScopes = ['abc.def', 'ghi.jkl'];
       const textEditorScopes = Convert.grammarScopesToTextEditorScopes(grammarScopes);
       expect(textEditorScopes).equals(
-        'atom-text-editor[data-grammar="abc def"], atom-text-editor[data-grammar="ghi jkl"]',
+        'atom-text-editor[data-grammar="abc def"], atom-text-editor[data-grammar="ghi jkl"]'
       );
     });
 
@@ -181,7 +176,7 @@ describe('Convert', () => {
       const grammarScopes = ['abc<def', 'ghi"jkl'];
       const textEditorScopes = Convert.grammarScopesToTextEditorScopes(grammarScopes);
       expect(textEditorScopes).equals(
-        'atom-text-editor[data-grammar="abc&lt;def"], atom-text-editor[data-grammar="ghi&quot;jkl"]',
+        'atom-text-editor[data-grammar="abc&lt;def"], atom-text-editor[data-grammar="ghi&quot;jkl"]'
       );
     });
   });

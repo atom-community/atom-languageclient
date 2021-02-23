@@ -1,14 +1,7 @@
 import assert = require('assert');
 import Convert from '../convert';
-import {
-  Point,
-  TextEditor,
-  Range,
-} from 'atom';
-import {
-  LanguageClientConnection,
-  ServerCapabilities,
-} from '../languageclient';
+import { Point, TextEditor, Range } from 'atom';
+import { LanguageClientConnection, ServerCapabilities } from '../languageclient';
 
 export default class CodeHighlightAdapter {
   /**
@@ -33,7 +26,7 @@ export default class CodeHighlightAdapter {
     connection: LanguageClientConnection,
     serverCapabilities: ServerCapabilities,
     editor: TextEditor,
-    position: Point,
+    position: Point
   ): Promise<Range[] | null> {
     assert(serverCapabilities.documentHighlightProvider, 'Must have the documentHighlight capability');
     const highlights = await connection.documentHighlight(Convert.editorToTextDocumentPositionParams(editor, position));

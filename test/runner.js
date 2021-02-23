@@ -1,7 +1,8 @@
-const { TestRunnerParams } = require("atom");
+const { TestRunnerParams } = require('atom');
 const { createRunner } = require('@atom/mocha-test-runner');
 
-module.exports = createRunner({
+module.exports = createRunner(
+  {
     htmlTitle: `atom-languageclient Tests - pid ${process.pid}`,
     reporter: process.env.MOCHA_REPORTER || 'list',
   },
@@ -10,5 +11,5 @@ module.exports = createRunner({
     if (process.env.APPVEYOR_API_URL) {
       mocha.reporter(require('mocha-appveyor-reporter'));
     }
-  },
+  }
 );

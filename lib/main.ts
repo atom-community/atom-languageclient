@@ -9,7 +9,7 @@ import { Logger, ConsoleLogger, FilteredLogger } from './logger';
 import DownloadFile from './download-file';
 import LinterPushV2Adapter from './adapters/linter-push-v2-adapter';
 import CommandExecutionAdapter from './adapters/command-execution-adapter';
-export { getExePath } from "./utils"
+export { getExePath } from './utils';
 
 export * from './auto-languageclient';
 export {
@@ -20,5 +20,5 @@ export {
   FilteredLogger,
   DownloadFile,
   LinterPushV2Adapter,
-  CommandExecutionAdapter
+  CommandExecutionAdapter,
 };

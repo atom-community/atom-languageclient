@@ -1,15 +1,7 @@
 import type * as atomIde from 'atom-ide-base';
 import Convert from '../convert';
-import {
-  Point,
-  TextEditor,
-} from 'atom';
-import {
-  LanguageClientConnection,
-  Location,
-  ServerCapabilities,
-  ReferenceParams,
-} from '../languageclient';
+import { Point, TextEditor } from 'atom';
+import { LanguageClientConnection, Location, ServerCapabilities, ReferenceParams } from '../languageclient';
 
 /**
  * Public: Adapts the language server definition provider to the
@@ -43,11 +35,9 @@ export default class FindReferencesAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     point: Point,
-    projectRoot: string | null,
+    projectRoot: string | null
   ): Promise<atomIde.FindReferencesReturn | null> {
-    const locations = await connection.findReferences(
-      FindReferencesAdapter.createReferenceParams(editor, point),
-    );
+    const locations = await connection.findReferences(FindReferencesAdapter.createReferenceParams(editor, point));
     if (locations == null) {
       return null;
     }
@@ -91,11 +81,7 @@ export default class FindReferencesAdapter {
   }
 
   /** Public: Get a symbol name from a {TextEditor} for a specific {Point} in the document. */
-  public static getReferencedSymbolName(
-    editor: TextEditor,
-    point: Point,
-    references: atomIde.Reference[],
-  ): string {
+  public static getReferencedSymbolName(editor: TextEditor, point: Point, references: atomIde.Reference[]): string {
     if (references.length === 0) {
       return '';
     }

@@ -11,13 +11,7 @@ import {
   DidSaveTextDocumentParams,
 } from '../languageclient';
 import ApplyEditAdapter from './apply-edit-adapter';
-import {
-  CompositeDisposable,
-  Disposable,
-  TextEditor,
-  BufferStoppedChangingEvent,
-  TextChange,
-} from 'atom';
+import { CompositeDisposable, Disposable, TextEditor, BufferStoppedChangingEvent, TextChange } from 'atom';
 import * as Utils from '../utils';
 
 /**
@@ -72,7 +66,7 @@ export default class DocumentSyncAdapter {
     private _connection: LanguageClientConnection,
     private _editorSelector: (editor: TextEditor) => boolean,
     documentSync: TextDocumentSyncOptions | TextDocumentSyncKind | undefined,
-    private _reportBusyWhile: Utils.ReportBusyWhile,
+    private _reportBusyWhile: Utils.ReportBusyWhile
   ) {
     if (typeof documentSync === 'object') {
       this._documentSync = documentSync;
@@ -101,7 +95,7 @@ export default class DocumentSyncAdapter {
       editor.onDidDestroy(() => {
         this._disposable.remove(listener);
         listener.dispose();
-      }),
+      })
     );
     this._disposable.add(listener);
     if (!this._editors.has(editor) && this._editorSelector(editor)) {
@@ -127,7 +121,7 @@ export default class DocumentSyncAdapter {
       this._connection,
       this._documentSync,
       this._versions,
-      this._reportBusyWhile,
+      this._reportBusyWhile
     );
     this._editors.set(editor, sync);
     this._disposable.add(sync);
@@ -139,7 +133,7 @@ export default class DocumentSyncAdapter {
           this._disposable.remove(destroyedSync);
           destroyedSync.dispose();
         }
-      }),
+      })
     );
   }
 
@@ -166,7 +160,7 @@ export class TextEditorSyncAdapter {
     private _connection: LanguageClientConnection,
     private _documentSync: TextDocumentSyncOptions,
     private _versions: Map<string, number>,
-    private _reportBusyWhile: Utils.ReportBusyWhile,
+    private _reportBusyWhile: Utils.ReportBusyWhile
   ) {
     this._fakeDidChangeWatchedFiles = atom.project.onDidChangeFiles == null;
 
@@ -188,7 +182,7 @@ export class TextEditorSyncAdapter {
     }
     this._disposable.add(
       _editor.onDidSave(this.didSave.bind(this)),
-      _editor.onDidChangePath(this.didRename.bind(this)),
+      _editor.onDidChangePath(this.didRename.bind(this))
     );
 
     this._currentUri = this.getEditorUri();
@@ -241,7 +235,9 @@ export class TextEditorSyncAdapter {
    * operating in Full (1) sync mode.
    */
   public sendFullChanges(): void {
-    if (!this._isPrimaryAdapter()) { return; } // Multiple editors, we are not first
+    if (!this._isPrimaryAdapter()) {
+      return;
+    } // Multiple editors, we are not first
 
     this._bumpVersion();
     this._connection.didChangeTextDocument({
@@ -262,7 +258,9 @@ export class TextEditorSyncAdapter {
    */
   public sendIncrementalChanges(event: BufferStoppedChangingEvent): void {
     if (event.changes.length > 0) {
-      if (!this._isPrimaryAdapter()) { return; } // Multiple editors, we are not first
+      if (!this._isPrimaryAdapter()) {
+        return;
+      } // Multiple editors, we are not first
 
       this._bumpVersion();
       this._connection.didChangeTextDocument({
@@ -291,14 +289,16 @@ export class TextEditorSyncAdapter {
       ...atom.workspace
         .getTextEditors()
         .filter((t) => t.getBuffer() === this._editor.getBuffer())
-        .map((t) => t.id),
+        .map((t) => t.id)
     );
     return lowestIdForBuffer === this._editor.id;
   }
 
   private _bumpVersion(): void {
     const filePath = this._editor.getPath();
-    if (filePath == null) { return; }
+    if (filePath == null) {
+      return;
+    }
     this._versions.set(filePath, this._getVersion(filePath) + 1);
   }
 
@@ -308,9 +308,13 @@ export class TextEditorSyncAdapter {
    */
   private didOpen(): void {
     const filePath = this._editor.getPath();
-    if (filePath == null) { return; } // Not yet saved
+    if (filePath == null) {
+      return;
+    } // Not yet saved
 
-    if (!this._isPrimaryAdapter()) { return; } // Multiple editors, we are not first
+    if (!this._isPrimaryAdapter()) {
+      return;
+    } // Multiple editors, we are not first
 
     this._connection.didOpenTextDocument({
       textDocument: {
@@ -331,7 +335,9 @@ export class TextEditorSyncAdapter {
    * the connected language server.
    */
   public didClose(): void {
-    if (this._editor.getPath() == null) { return; } // Not yet saved
+    if (this._editor.getPath() == null) {
+      return;
+    } // Not yet saved
 
     const fileStillOpen = atom.workspace.getTextEditors().find((t) => t.getBuffer() === this._editor.getBuffer());
     if (fileStillOpen) {
@@ -346,7 +352,9 @@ export class TextEditorSyncAdapter {
    * the connected language server.
    */
   public willSave(): void {
-    if (!this._isPrimaryAdapter()) { return; }
+    if (!this._isPrimaryAdapter()) {
+      return;
+    }
 
     const uri = this.getEditorUri();
     this._connection.willSaveTextDocument({
@@ -360,7 +368,9 @@ export class TextEditorSyncAdapter {
    * the connected language server and waits for the response before saving the buffer.
    */
   public async willSaveWaitUntil(): Promise<void> {
-    if (!this._isPrimaryAdapter()) { return Promise.resolve(); }
+    if (!this._isPrimaryAdapter()) {
+      return Promise.resolve();
+    }
 
     const buffer = this._editor.getBuffer();
     const uri = this.getEditorUri();
@@ -371,24 +381,22 @@ export class TextEditorSyncAdapter {
       this._connection.willSaveWaitUntilTextDocument({
         textDocument: { uri },
         reason: TextDocumentSaveReason.Manual,
-      }),
-    ).then((edits) => {
-      const cursor = this._editor.getCursorBufferPosition();
-      ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(edits));
-      this._editor.setCursorBufferPosition(cursor);
-    }).catch((err) => {
-      atom.notifications.addError('On-save action failed', {
-        description: `Failed to apply edits to ${title}`,
-        detail: err.message,
+      })
+    )
+      .then((edits) => {
+        const cursor = this._editor.getCursorBufferPosition();
+        ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(edits));
+        this._editor.setCursorBufferPosition(cursor);
+      })
+      .catch((err) => {
+        atom.notifications.addError('On-save action failed', {
+          description: `Failed to apply edits to ${title}`,
+          detail: err.message,
+        });
+        return;
       });
-      return;
-    });
 
-    const withBusySignal =
-      this._reportBusyWhile(
-        `Applying on-save edits for ${title}`,
-        () => applyEditsOrTimeout,
-      );
+    const withBusySignal = this._reportBusyWhile(`Applying on-save edits for ${title}`, () => applyEditsOrTimeout);
     return withBusySignal || applyEditsOrTimeout;
   }
 
@@ -399,11 +407,13 @@ export class TextEditorSyncAdapter {
    * will be sent from elsewhere soon.
    */
   public didSave(): void {
-    if (!this._isPrimaryAdapter()) { return; }
+    if (!this._isPrimaryAdapter()) {
+      return;
+    }
 
     const uri = this.getEditorUri();
     const didSaveNotification = {
-      textDocument: { uri, version: this._getVersion((uri)) },
+      textDocument: { uri, version: this._getVersion(uri) },
     } as DidSaveTextDocumentParams;
     if (this._documentSync.save && this._documentSync.save.includeText) {
       didSaveNotification.text = this._editor.getText();
@@ -417,7 +427,9 @@ export class TextEditorSyncAdapter {
   }
 
   public didRename(): void {
-    if (!this._isPrimaryAdapter()) { return; }
+    if (!this._isPrimaryAdapter()) {
+      return;
+    }
 
     const oldUri = this._currentUri;
     this._currentUri = this.getEditorUri();

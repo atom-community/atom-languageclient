@@ -16,7 +16,7 @@ export default (async function downloadFile(
   sourceUrl: string,
   targetFile: string,
   progressCallback?: ByteProgressCallback,
-  length?: number,
+  length?: number
 ): Promise<void> {
   const request = new Request(sourceUrl, {
     headers: new Headers({ 'Content-Type': 'application/octet-stream' }),
@@ -54,7 +54,7 @@ async function streamWithProgress(
   length: number,
   reader: ReadableStreamReader,
   writer: fs.WriteStream,
-  progressCallback?: ByteProgressCallback,
+  progressCallback?: ByteProgressCallback
 ): Promise<void> {
   let bytesDone = 0;
 
@@ -75,7 +75,7 @@ async function streamWithProgress(
       writer.write(Buffer.from(chunk));
       if (progressCallback != null) {
         bytesDone += chunk.byteLength;
-        const percent: number | undefined = length === 0 ? undefined : Math.floor(bytesDone / length * 100);
+        const percent: number | undefined = length === 0 ? undefined : Math.floor((bytesDone / length) * 100);
         progressCallback(bytesDone, percent);
       }
     }

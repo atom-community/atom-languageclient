@@ -9,17 +9,13 @@ import {
   SymbolInformation,
   DocumentSymbol,
 } from '../languageclient';
-import {
-  Point,
-  TextEditor,
-} from 'atom';
+import { Point, TextEditor } from 'atom';
 
 /**
  * Public: Adapts the documentSymbolProvider of the language server to the Outline View
  * supplied by Atom IDE UI.
  */
 export default class OutlineViewAdapter {
-
   private _cancellationTokens: WeakMap<LanguageClientConnection, CancellationTokenSource> = new WeakMap();
 
   /**
@@ -45,7 +41,7 @@ export default class OutlineViewAdapter {
    */
   public async getOutline(connection: LanguageClientConnection, editor: TextEditor): Promise<atomIde.Outline | null> {
     const results = await Utils.doWithCancellationToken(connection, this._cancellationTokens, (cancellationToken) =>
-      connection.documentSymbol({ textDocument: Convert.editorToTextDocumentIdentifier(editor) }, cancellationToken),
+      connection.documentSymbol({ textDocument: Convert.editorToTextDocumentIdentifier(editor) }, cancellationToken)
     );
 
     if (results.length === 0) {
@@ -57,14 +53,12 @@ export default class OutlineViewAdapter {
     if ((results[0] as DocumentSymbol).selectionRange !== undefined) {
       // If the server is giving back the newer DocumentSymbol format.
       return {
-        outlineTrees: OutlineViewAdapter.createHierarchicalOutlineTrees(
-          results as DocumentSymbol[]),
+        outlineTrees: OutlineViewAdapter.createHierarchicalOutlineTrees(results as DocumentSymbol[]),
       };
     } else {
       // If the server is giving back the original SymbolInformation format.
       return {
-        outlineTrees: OutlineViewAdapter.createOutlineTrees(
-          results as SymbolInformation[]),
+        outlineTrees: OutlineViewAdapter.createOutlineTrees(results as SymbolInformation[]),
       };
     }
   }
@@ -100,8 +94,7 @@ export default class OutlineViewAdapter {
       const tree = OutlineViewAdapter.hierarchicalSymbolToOutline(symbol);
 
       if (symbol.children != null) {
-        tree.children = OutlineViewAdapter.createHierarchicalOutlineTrees(
-          symbol.children);
+        tree.children = OutlineViewAdapter.createHierarchicalOutlineTrees(symbol.children);
       }
 
       return tree;
@@ -118,19 +111,20 @@ export default class OutlineViewAdapter {
    * @returns An {OutlineTree} containing the given symbols that the Outline View can display.
    */
   public static createOutlineTrees(symbols: SymbolInformation[]): atomIde.OutlineTree[] {
-    symbols.sort(
-      (a, b) =>
-        (a.location.range.start.line === b.location.range.start.line
-          ? a.location.range.start.character - b.location.range.start.character
-          : a.location.range.start.line - b.location.range.start.line),
+    symbols.sort((a, b) =>
+      a.location.range.start.line === b.location.range.start.line
+        ? a.location.range.start.character - b.location.range.start.character
+        : a.location.range.start.line - b.location.range.start.line
     );
 
     // Temporarily keep containerName through the conversion process
     // Also filter out symbols without a name - it's part of the spec but some don't include it
-    const allItems = symbols.filter((symbol) => symbol.name).map((symbol) => ({
-      containerName: symbol.containerName,
-      outline: OutlineViewAdapter.symbolToOutline(symbol),
-    }));
+    const allItems = symbols
+      .filter((symbol) => symbol.name)
+      .map((symbol) => ({
+        containerName: symbol.containerName,
+        outline: OutlineViewAdapter.symbolToOutline(symbol),
+      }));
 
     // Create a map of containers by name with all items that have that name
     const containers = allItems.reduce((map, item) => {
@@ -181,7 +175,7 @@ export default class OutlineViewAdapter {
 
   private static _getClosestParent(
     candidates: atomIde.OutlineTree[] | null,
-    child: atomIde.OutlineTree,
+    child: atomIde.OutlineTree
   ): atomIde.OutlineTree | null {
     if (candidates == null || candidates.length === 0) {
       return null;
@@ -197,10 +191,10 @@ export default class OutlineViewAdapter {
       ) {
         if (
           parent === undefined ||
-          (parent.startPosition.isLessThanOrEqual(candidate.startPosition) ||
-            (parent.endPosition != null &&
-              candidate.endPosition &&
-              parent.endPosition.isGreaterThanOrEqual(candidate.endPosition)))
+          parent.startPosition.isLessThanOrEqual(candidate.startPosition) ||
+          (parent.endPosition != null &&
+            candidate.endPosition &&
+            parent.endPosition.isGreaterThanOrEqual(candidate.endPosition))
         ) {
           parent = candidate;
         }

@@ -11,10 +11,7 @@ import {
   ServerCapabilities,
   WorkspaceEdit,
 } from '../languageclient';
-import {
-  Range,
-  TextEditor,
-} from 'atom';
+import { Range, TextEditor } from 'atom';
 import CommandExecutionAdapter from './command-execution-adapter';
 
 export default class CodeActionAdapter {
@@ -44,7 +41,7 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter | undefined,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[],
+    diagnostics: atomIde.Diagnostic[]
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return [];
@@ -58,7 +55,7 @@ export default class CodeActionAdapter {
 
   private static createCodeAction(
     action: Command | CodeAction,
-    connection: LanguageClientConnection,
+    connection: LanguageClientConnection
   ): atomIde.CodeAction {
     return {
       async apply() {
@@ -72,22 +69,17 @@ export default class CodeActionAdapter {
       getTitle(): Promise<string> {
         return Promise.resolve(action.title);
       },
-      dispose(): void { },
+      dispose(): void {},
     };
   }
 
-  private static applyWorkspaceEdit(
-    edit: WorkspaceEdit | undefined,
-  ): void {
+  private static applyWorkspaceEdit(edit: WorkspaceEdit | undefined): void {
     if (WorkspaceEdit.is(edit)) {
       ApplyEditAdapter.onApplyEdit({ edit });
     }
   }
 
-  private static async executeCommand(
-    command: any,
-    connection: LanguageClientConnection,
-  ): Promise<void> {
+  private static async executeCommand(command: any, connection: LanguageClientConnection): Promise<void> {
     if (Command.is(command)) {
       await CommandExecutionAdapter.executeCommand(connection, command.command, command.arguments);
     }
@@ -97,7 +89,7 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[],
+    diagnostics: atomIde.Diagnostic[]
   ): CodeActionParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),

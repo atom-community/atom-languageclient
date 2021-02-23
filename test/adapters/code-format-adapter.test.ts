@@ -49,7 +49,7 @@ describe('CodeFormatAdapter', () => {
           documentFormattingProvider: true,
         },
         fakeEditor,
-        range,
+        range
       );
       expect(rangeStub.called).to.be.true;
       expect(docStub.called).to.be.false;

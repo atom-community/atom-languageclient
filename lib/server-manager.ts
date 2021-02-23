@@ -1,17 +1,12 @@
 import Convert from './convert';
 import * as path from 'path';
 import * as ls from './languageclient';
-import { ChildProcess } from 'child_process'
+import { ChildProcess } from 'child_process';
 import { Logger } from './logger';
-import {
-  CompositeDisposable,
-  FilesystemChangeEvent,
-  TextEditor,
-} from 'atom';
+import { CompositeDisposable, FilesystemChangeEvent, TextEditor } from 'atom';
 import { ReportBusyWhile } from './utils';
 
-
-type MinimalLanguageServerProcess = Pick<ChildProcess, 'stdin' | 'stdout' | 'stderr' | 'pid' | 'kill' | 'on'>
+type MinimalLanguageServerProcess = Pick<ChildProcess, 'stdin' | 'stdout' | 'stderr' | 'pid' | 'kill' | 'on'>;
 
 /**
  * Public: Defines a language server process which is either a ChildProcess, or it is a minimal object that resembles a
@@ -19,7 +14,7 @@ type MinimalLanguageServerProcess = Pick<ChildProcess, 'stdin' | 'stdout' | 'std
  * `MinimalLanguageServerProcess` is used so that language packages with alternative language server process hosting strategies
  * can return something compatible with `AutoLanguageClient.startServerProcess`.
  */
-export type LanguageServerProcess = ChildProcess | MinimalLanguageServerProcess
+export type LanguageServerProcess = ChildProcess | MinimalLanguageServerProcess;
 
 /** The necessary elements for a server that has started or is starting. */
 export interface ActiveServer {
@@ -55,7 +50,7 @@ export class ServerManager {
     private _startForEditor: (editor: TextEditor) => boolean,
     private _changeWatchedFileFilter: (filePath: string) => boolean,
     private _reportBusyWhile: ReportBusyWhile,
-    private _languageServerName: string,
+    private _languageServerName: string
   ) {
     this.updateNormalizedProjectPaths();
   }
@@ -97,7 +92,7 @@ export class ServerManager {
           editor.onDidDestroy(() => {
             this._editorToServer.delete(editor);
             this.stopUnusedServers();
-          }),
+          })
         );
       }
     }
@@ -126,7 +121,7 @@ export class ServerManager {
 
   public async getServer(
     textEditor: TextEditor,
-    { shouldStart }: { shouldStart?: boolean } = { shouldStart: false },
+    { shouldStart }: { shouldStart?: boolean } = { shouldStart: false }
   ): Promise<ActiveServer | null> {
     const finalProjectPath = this.determineProjectPath(textEditor);
     if (finalProjectPath == null) {
@@ -227,7 +222,7 @@ export class ServerManager {
 
         this.exitServer(server);
         this._stoppingServers.splice(this._stoppingServers.indexOf(server), 1);
-      },
+      }
     );
   }
 

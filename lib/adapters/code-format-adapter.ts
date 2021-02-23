@@ -8,11 +8,7 @@ import {
   FormattingOptions,
   ServerCapabilities,
 } from '../languageclient';
-import {
-  TextEditor,
-  Range,
-  Point,
-} from 'atom';
+import { TextEditor, Range, Point } from 'atom';
 
 /**
  * Public: Adapts the language server protocol "textDocument/completion" to the
@@ -50,7 +46,7 @@ export default class CodeFormatAdapter {
     connection: LanguageClientConnection,
     serverCapabilities: ServerCapabilities,
     editor: TextEditor,
-    range: Range,
+    range: Range
   ): Promise<atomIde.TextEdit[]> {
     if (serverCapabilities.documentRangeFormattingProvider) {
       return CodeFormatAdapter.formatRange(connection, editor, range);
@@ -73,7 +69,7 @@ export default class CodeFormatAdapter {
    */
   public static async formatDocument(
     connection: LanguageClientConnection,
-    editor: TextEditor,
+    editor: TextEditor
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentFormatting(CodeFormatAdapter.createDocumentFormattingParams(editor));
     return Convert.convertLsTextEdits(edits);
@@ -106,10 +102,10 @@ export default class CodeFormatAdapter {
   public static async formatRange(
     connection: LanguageClientConnection,
     editor: TextEditor,
-    range: Range,
+    range: Range
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentRangeFormatting(
-      CodeFormatAdapter.createDocumentRangeFormattingParams(editor, range),
+      CodeFormatAdapter.createDocumentRangeFormattingParams(editor, range)
     );
     return Convert.convertLsTextEdits(edits);
   }
@@ -124,10 +120,7 @@ export default class CodeFormatAdapter {
    *   range of the text to be formatted as well as the options to be used in formatting the
    *   document such as tab size and tabs vs spaces.
    */
-  public static createDocumentRangeFormattingParams(
-    editor: TextEditor,
-    range: Range,
-  ): DocumentRangeFormattingParams {
+  public static createDocumentRangeFormattingParams(editor: TextEditor, range: Range): DocumentRangeFormattingParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       range: Convert.atomRangeToLSRange(range),
@@ -149,10 +142,10 @@ export default class CodeFormatAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     point: Point,
-    character: string,
+    character: string
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentOnTypeFormatting(
-      CodeFormatAdapter.createDocumentOnTypeFormattingParams(editor, point, character),
+      CodeFormatAdapter.createDocumentOnTypeFormattingParams(editor, point, character)
     );
     return Convert.convertLsTextEdits(edits);
   }
@@ -171,7 +164,7 @@ export default class CodeFormatAdapter {
   public static createDocumentOnTypeFormattingParams(
     editor: TextEditor,
     point: Point,
-    character: string,
+    character: string
   ): DocumentOnTypeFormattingParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),

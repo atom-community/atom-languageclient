@@ -39,13 +39,13 @@ describe('CodeHighlightAdapter', () => {
               end: { line: 0, character: 2 },
             },
           },
-        ]),
+        ])
       );
       const result = await CodeHighlightAdapter.highlight(
         connection,
         { documentHighlightProvider: true },
         fakeEditor,
-        new Point(0, 0),
+        new Point(0, 0)
       );
       expect(highlightStub.called).to.be.true;
 
@@ -58,7 +58,7 @@ describe('CodeHighlightAdapter', () => {
 
     it('throws if document highlights are not supported', async () => {
       const result = await CodeHighlightAdapter.highlight(connection, {}, fakeEditor, new Point(0, 0)).catch(
-        (err) => err,
+        (err) => err
       );
       expect(result).to.be.an.instanceof(Error);
       invariant(result instanceof Error);

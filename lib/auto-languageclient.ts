@@ -23,23 +23,9 @@ import SignatureHelpAdapter from './adapters/signature-help-adapter';
 import * as Utils from './utils';
 import { Socket } from 'net';
 import { LanguageClientConnection } from './languageclient';
-import {
-  ConsoleLogger,
-  FilteredLogger,
-  Logger,
-} from './logger';
-import {
-  LanguageServerProcess,
-  ServerManager,
-  ActiveServer,
-} from './server-manager.js';
-import {
-  Disposable,
-  CompositeDisposable,
-  Point,
-  Range,
-  TextEditor,
-} from 'atom';
+import { ConsoleLogger, FilteredLogger, Logger } from './logger';
+import { LanguageServerProcess, ServerManager, ActiveServer } from './server-manager.js';
+import { Disposable, CompositeDisposable, Point, Range, TextEditor } from 'atom';
 import * as ac from 'atom/autocomplete-plus';
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess };
@@ -213,10 +199,10 @@ export default class AutoLanguageClient {
   }
 
   /** (Optional) Early wire-up of listeners before initialize method is sent */
-  protected preInitialization(_connection: LanguageClientConnection): void { }
+  protected preInitialization(_connection: LanguageClientConnection): void {}
 
   /** (Optional) Late wire-up of listeners after initialize method has been sent */
-  protected postInitialization(_server: ActiveServer): void { }
+  protected postInitialization(_server: ActiveServer): void {}
 
   /** (Optional) Determine whether to use ipc, stdio or socket to connect to the server */
   protected getConnectionType(): ConnectionType {
@@ -261,7 +247,7 @@ export default class AutoLanguageClient {
       (e) => this.shouldStartForEditor(e),
       (filepath) => this.filterChangeWatchedFiles(filepath),
       this.reportBusyWhile,
-      this.getServerName(),
+      this.getServerName()
     );
     this._serverManager.startListening();
     process.on('exit', () => this.exitCleanup.bind(this));
@@ -328,7 +314,7 @@ export default class AutoLanguageClient {
   private async startServer(projectPath: string): Promise<ActiveServer> {
     const lsProcess = await this.reportBusyWhile(
       `Starting ${this.getServerName()} for ${path.basename(projectPath)}`,
-      async () => this.startServerProcess(projectPath),
+      async () => this.startServerProcess(projectPath)
     );
     this.captureServerErrors(lsProcess, projectPath);
     const connection = new LanguageClientConnection(this.createRpcConnection(lsProcess), this.logger);
@@ -337,7 +323,7 @@ export default class AutoLanguageClient {
     const initialization = connection.initialize(initializeParams);
     this.reportBusyWhile(
       `${this.getServerName()} initializing for ${path.basename(projectPath)}`,
-      () => initialization,
+      () => initialization
     );
     const initializeResponse = await initialization;
     const newServer = {
@@ -358,7 +344,8 @@ export default class AutoLanguageClient {
         } else {
           this.logger.warn(`Language server has exceeded auto-restart limit for project '${newServer.projectPath}'`);
           atom.notifications.addError(
-            `The ${this.name} language server has exited and exceeded the restart limit for project '${newServer.projectPath}'`);
+            `The ${this.name} language server has exited and exceeded the restart limit for project '${newServer.projectPath}'`
+          );
         }
       }
     });
@@ -373,7 +360,8 @@ export default class AutoLanguageClient {
               settings: mappedConfig,
             });
           }
-        }));
+        })
+      );
     }
 
     this.startExclusiveAdapters(newServer);
@@ -382,8 +370,8 @@ export default class AutoLanguageClient {
 
   private captureServerErrors(lsProcess: LanguageServerProcess, projectPath: string): void {
     lsProcess.on('error', (err) => this.onSpawnError(err));
-    lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal));
-    lsProcess.on("disconnect", () => this.onSpawnDisconnect());
+    lsProcess.on('close', (code, signal) => this.onSpawnClose(code, signal));
+    lsProcess.on('disconnect', () => this.onSpawnDisconnect());
     lsProcess.on('exit', (code, signal) => this.onSpawnExit(code, signal));
     lsProcess.stderr?.setEncoding('utf8');
     lsProcess.stderr?.on('data', (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath));
@@ -398,7 +386,7 @@ export default class AutoLanguageClient {
       {
         dismissable: true,
         description: err.toString(),
-      },
+      }
     );
   }
 
@@ -434,10 +422,7 @@ export default class AutoLanguageClient {
     const errorString = chunk.toString();
     this.handleServerStderr(errorString, projectPath);
     // Keep the last 5 lines for packages to use in messages
-    this.processStdErr = (this.processStdErr + errorString)
-      .split('\n')
-      .slice(-5)
-      .join('\n');
+    this.processStdErr = (this.processStdErr + errorString).split('\n').slice(-5).join('\n');
   }
 
   /** Creates the RPC connection which can be ipc, socket or stdio */
@@ -459,8 +444,10 @@ export default class AutoLanguageClient {
           reader = new rpc.StreamMessageReader(lsProcess.stdout);
           writer = new rpc.StreamMessageWriter(lsProcess.stdin);
         } else {
-          this.logger.error(`The language server process for ${this.getLanguageName()} does not have a valid stdin and stdout`);
-          return Utils.assertUnreachable('stdio' as never)
+          this.logger.error(
+            `The language server process for ${this.getLanguageName()} does not have a valid stdin and stdout`
+          );
+          return Utils.assertUnreachable('stdio' as never);
         }
         break;
       default:
@@ -468,9 +455,9 @@ export default class AutoLanguageClient {
     }
 
     return rpc.createMessageConnection(reader, writer, {
-      log: (..._args: any[]) => { },
-      warn: (..._args: any[]) => { },
-      info: (..._args: any[]) => { },
+      log: (..._args: any[]) => {},
+      warn: (..._args: any[]) => {},
+      info: (..._args: any[]) => {},
       error: (...args: any[]) => {
         this.logger.error(args);
       },
@@ -483,13 +470,12 @@ export default class AutoLanguageClient {
     NotificationsAdapter.attach(server.connection, this.name, server.projectPath);
 
     if (DocumentSyncAdapter.canAdapt(server.capabilities)) {
-      const docSyncAdapter =
-        new DocumentSyncAdapter(
-          server.connection,
-          (editor) => this.shouldSyncForEditor(editor, server.projectPath),
-          server.capabilities.textDocumentSync,
-          this.reportBusyWhile,
-        );
+      const docSyncAdapter = new DocumentSyncAdapter(
+        server.connection,
+        (editor) => this.shouldSyncForEditor(editor, server.projectPath),
+        server.capabilities.textDocumentSync,
+        this.reportBusyWhile
+      );
       server.disposable.add(docSyncAdapter);
     }
 
@@ -515,7 +501,9 @@ export default class AutoLanguageClient {
     }
 
     this._serverAdapters.set(server, {
-      linterPushV2, loggingConsole, signatureHelpAdapter,
+      linterPushV2,
+      loggingConsole,
+      signatureHelpAdapter,
     });
   }
 
@@ -531,7 +519,7 @@ export default class AutoLanguageClient {
   public provideAutocomplete(): ac.AutocompleteProvider {
     return {
       selector: this.getGrammarScopes()
-        .map((g) => g.includes('.') ? '.' + g : g)
+        .map((g) => (g.includes('.') ? '.' + g : g))
         .join(', '),
       inclusionPriority: 1,
       suggestionPriority: 2,
@@ -542,9 +530,7 @@ export default class AutoLanguageClient {
     };
   }
 
-  protected async getSuggestions(
-    request: ac.SuggestionsRequestedEvent,
-  ): Promise<ac.AnySuggestion[]> {
+  protected async getSuggestions(request: ac.SuggestionsRequestedEvent): Promise<ac.AnySuggestion[]> {
     const server = await this._serverManager.getServer(request.editor);
     if (server == null || !AutocompleteAdapter.canAdapt(server.capabilities)) {
       return [];
@@ -552,15 +538,19 @@ export default class AutoLanguageClient {
 
     this.autoComplete = this.autoComplete || new AutocompleteAdapter();
     this._lastAutocompleteRequest = request;
-    return this.autoComplete.getSuggestions(server, request, this.onDidConvertAutocomplete,
-      atom.config.get('autocomplete-plus.minimumWordLength'));
+    return this.autoComplete.getSuggestions(
+      server,
+      request,
+      this.onDidConvertAutocomplete,
+      atom.config.get('autocomplete-plus.minimumWordLength')
+    );
   }
 
-  protected async getSuggestionDetailsOnSelect(
-    suggestion: ac.AnySuggestion,
-  ): Promise<ac.AnySuggestion | null> {
+  protected async getSuggestionDetailsOnSelect(suggestion: ac.AnySuggestion): Promise<ac.AnySuggestion | null> {
     const request = this._lastAutocompleteRequest;
-    if (request == null) { return null; }
+    if (request == null) {
+      return null;
+    }
     const server = await this._serverManager.getServer(request.editor);
     if (server == null || !AutocompleteAdapter.canResolve(server.capabilities) || this.autoComplete == null) {
       return null;
@@ -572,11 +562,10 @@ export default class AutoLanguageClient {
   protected onDidConvertAutocomplete(
     _completionItem: ls.CompletionItem,
     _suggestion: ac.AnySuggestion,
-    _request: ac.SuggestionsRequestedEvent,
-  ): void {
-  }
+    _request: ac.SuggestionsRequestedEvent
+  ): void {}
 
-  protected onDidInsertSuggestion(_arg: ac.SuggestionInsertedEvent): void { }
+  protected onDidInsertSuggestion(_arg: ac.SuggestionInsertedEvent): void {}
 
   // Definitions via LS documentHighlight and gotoDefinition------------
   public provideDefinitions(): atomIde.DefinitionProvider {
@@ -601,7 +590,7 @@ export default class AutoLanguageClient {
       server.capabilities,
       this.getLanguageName(),
       editor,
-      point,
+      point
     );
   }
 
@@ -669,7 +658,7 @@ export default class AutoLanguageClient {
           return this.getGrammarScopes().includes(scopeName);
         },
         datatip: this.getDatatip.bind(this),
-      }),
+      })
     );
   }
 
@@ -695,7 +684,7 @@ export default class AutoLanguageClient {
     }
 
     // No way of detaching from client connections today
-    return new Disposable(() => { });
+    return new Disposable(() => {});
   }
 
   // Code Format via LS formatDocument & formatDocumentRange------------
@@ -769,7 +758,7 @@ export default class AutoLanguageClient {
   protected async getOnTypeCodeFormat(
     editor: TextEditor,
     point: Point,
-    character: string,
+    character: string
   ): Promise<atomIde.TextEdit[]> {
     const server = await this._serverManager.getServer(editor);
     if (server == null || !server.capabilities.documentOnTypeFormattingProvider) {
@@ -824,7 +813,7 @@ export default class AutoLanguageClient {
       this.getServerAdapter(server, 'linterPushV2'),
       editor,
       range,
-      diagnostics,
+      diagnostics
     );
   }
 
@@ -846,12 +835,7 @@ export default class AutoLanguageClient {
       return null;
     }
 
-    return RenameAdapter.getRename(
-      server.connection,
-      editor,
-      position,
-      newName,
-    );
+    return RenameAdapter.getRename(server.connection, editor, position, newName);
   }
 
   public consumeSignatureHelp(registry: atomIde.SignatureHelpRegistry): Disposable {
@@ -886,11 +870,15 @@ export default class AutoLanguageClient {
    * @param stderr A chunk of stderr from a language server instance
    */
   protected handleServerStderr(stderr: string, _projectPath: string): void {
-    stderr.split('\n').filter((l) => l).forEach((line) => this.logger.warn(`stderr ${line}`));
+    stderr
+      .split('\n')
+      .filter((l) => l)
+      .forEach((line) => this.logger.warn(`stderr ${line}`));
   }
 
   private getServerAdapter<T extends keyof ServerAdapters>(
-    server: ActiveServer, adapter: T,
+    server: ActiveServer,
+    adapter: T
   ): ServerAdapters[T] | undefined {
     const adapters = this._serverAdapters.get(server);
     return adapters && adapters[adapter];
@@ -902,7 +890,7 @@ export default class AutoLanguageClient {
     } else {
       return this.reportBusyWhileDefault(title, f);
     }
-  }
+  };
 
   protected reportBusyWhileDefault: Utils.ReportBusyWhile = async (title, f) => {
     this.logger.info(`[Started] ${title}`);
@@ -913,5 +901,5 @@ export default class AutoLanguageClient {
       this.logger.info(`[Finished] ${title}`);
     }
     return res;
-  }
+  };
 }

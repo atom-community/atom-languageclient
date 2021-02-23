@@ -52,11 +52,11 @@ export class ConsoleLogger {
 }
 
 export class NullLogger {
-  public warn(..._args: any[]): void { }
-  public error(..._args: any[]): void { }
-  public info(..._args: any[]): void { }
-  public log(..._args: any[]): void { }
-  public debug(..._args: any[]): void { }
+  public warn(..._args: any[]): void {}
+  public error(..._args: any[]): void {}
+  public info(..._args: any[]): void {}
+  public log(..._args: any[]): void {}
+  public debug(..._args: any[]): void {}
 }
 
 export class FilteredLogger {

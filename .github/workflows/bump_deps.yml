@@ -2,7 +2,7 @@ name: Bump_Dependencies
 
 on:
   schedule:
-    - cron: "5 8 * * Sun" #  8:05 every Sunday
+    - cron: '5 8 * * Sun' #  8:05 every Sunday
 
 jobs:
   Bump_Dependencies:
@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: '12'
       - name: Setup PNPM
         uses: pnpm/action-setup@v1.2.2
         with:
@@ -24,7 +24,6 @@ jobs:
           ncu -u --dep prod
           pnpm install
 
-
       - uses: tibdex/github-app-token@v1
         id: generate-token
         with:
@@ -33,11 +32,10 @@ jobs:
       - uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          commit-message: "chore: Update Dependencies"
-          title: "fix: Update Dependencies"
+          commit-message: 'chore: Update Dependencies'
+          title: 'fix: Update Dependencies'
           labels: Dependencies
-          branch: "Bump_Dependencies"
-
+          branch: 'Bump_Dependencies'
 
   Bump_devDependencies:
     runs-on: ubuntu-latest
@@ -45,7 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: '12'
       - name: Setup PNPM
         uses: pnpm/action-setup@v1.2.2
         with:
@@ -66,7 +64,7 @@ jobs:
       - uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          commit-message: "chore: Update devDependencies"
-          title: "chore: Update devDependencies"
+          commit-message: 'chore: Update devDependencies'
+          title: 'chore: Update devDependencies'
           labels: Dependencies
-          branch: "Bump_devDependencies"
+          branch: 'Bump_devDependencies'

@@ -1,17 +1,8 @@
 import type * as atomIde from 'atom-ide-base';
 import Convert from '../convert';
 import * as Utils from '../utils';
-import {
-  Hover,
-  LanguageClientConnection,
-  MarkupContent,
-  MarkedString,
-  ServerCapabilities,
-} from '../languageclient';
-import {
-  Point,
-  TextEditor,
-} from 'atom';
+import { Hover, LanguageClientConnection, MarkupContent, MarkedString, ServerCapabilities } from '../languageclient';
+import { Point, TextEditor } from 'atom';
 
 /**
  * Public: Adapts the language server protocol "textDocument/hover" to the
@@ -43,7 +34,7 @@ export default class DatatipAdapter {
   public async getDatatip(
     connection: LanguageClientConnection,
     editor: TextEditor,
-    point: Point,
+    point: Point
   ): Promise<atomIde.Datatip | null> {
     const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
 
@@ -56,22 +47,23 @@ export default class DatatipAdapter {
       hover.range == null ? Utils.getWordAtPosition(editor, point) : Convert.lsRangeToAtomRange(hover.range);
 
     const markedStrings = (Array.isArray(hover.contents) ? hover.contents : [hover.contents]).map((str) =>
-      DatatipAdapter.convertMarkedString(editor, str),
+      DatatipAdapter.convertMarkedString(editor, str)
     );
 
     return { range, markedStrings };
   }
 
   private static isEmptyHover(hover: Hover): boolean {
-    return hover.contents == null ||
+    return (
+      hover.contents == null ||
       (typeof hover.contents === 'string' && hover.contents.length === 0) ||
-      (Array.isArray(hover.contents) &&
-        (hover.contents.length === 0 || hover.contents[0] === ""));
+      (Array.isArray(hover.contents) && (hover.contents.length === 0 || hover.contents[0] === ''))
+    );
   }
 
   private static convertMarkedString(
     editor: TextEditor,
-    markedString: MarkedString | MarkupContent,
+    markedString: MarkedString | MarkupContent
   ): atomIde.MarkedString {
     if (typeof markedString === 'string') {
       return { type: 'markdown', value: markedString };
@@ -92,8 +84,8 @@ export default class DatatipAdapter {
         type: 'snippet',
         // TODO: find a better mapping from language -> grammar
         grammar:
-          atom.grammars.grammarForScopeName(
-            `source.${(markedString as { language: string }).language}`) || editor.getGrammar(),
+          atom.grammars.grammarForScopeName(`source.${(markedString as { language: string }).language}`) ||
+          editor.getGrammar(),
         value: markedString.value,
       };
     }

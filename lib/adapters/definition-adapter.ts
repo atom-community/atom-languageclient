@@ -1,16 +1,8 @@
 import type * as atomIde from 'atom-ide-base';
 import Convert from '../convert';
 import * as Utils from '../utils';
-import {
-  LanguageClientConnection,
-  Location,
-  ServerCapabilities,
-} from '../languageclient';
-import {
-  Point,
-  TextEditor,
-  Range,
-} from 'atom';
+import { LanguageClientConnection, Location, ServerCapabilities } from '../languageclient';
+import { Point, TextEditor, Range } from 'atom';
 
 /**
  * Public: Adapts the language server definition provider to the
@@ -48,11 +40,11 @@ export default class DefinitionAdapter {
     serverCapabilities: ServerCapabilities,
     languageName: string,
     editor: TextEditor,
-    point: Point,
+    point: Point
   ): Promise<atomIde.DefinitionQueryResult | null> {
     const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
     const definitionLocations = DefinitionAdapter.normalizeLocations(
-      await connection.gotoDefinition(documentPositionParams),
+      await connection.gotoDefinition(documentPositionParams)
     );
     if (definitionLocations == null || definitionLocations.length === 0) {
       return null;

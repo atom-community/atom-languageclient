@@ -1,12 +1,7 @@
 import type * as atomIde from 'atom-ide-base';
 import * as ls from './languageclient';
 import * as URL from 'url';
-import {
-  Point,
-  FilesystemChange,
-  Range,
-  TextEditor,
-} from 'atom';
+import { Point, FilesystemChange, Range, TextEditor } from 'atom';
 
 /**
  * Public: Class that contains a number of helper methods for general conversions
@@ -115,10 +110,7 @@ export default class Convert {
    * @returns A {TextDocumentPositionParams} that has textDocument property with the editors {TextDocumentIdentifier}
    *   and a position property with the supplied point (or current cursor position when not specified).
    */
-  public static editorToTextDocumentPositionParams(
-    editor: TextEditor,
-    point?: Point,
-  ): ls.TextDocumentPositionParams {
+  public static editorToTextDocumentPositionParams(editor: TextEditor, point?: Point): ls.TextDocumentPositionParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       position: Convert.pointToPosition(point != null ? point : editor.getCursorBufferPosition()),
@@ -177,7 +169,7 @@ export default class Convert {
       case 'deleted':
         return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Deleted }];
       case 'renamed': {
-        const results: Array<{ uri: string, type: ls.FileChangeType }> = [];
+        const results: Array<{ uri: string; type: ls.FileChangeType }> = [];
         if (fileEvent.oldPath) {
           results.push({ uri: Convert.pathToUri(fileEvent.oldPath), type: ls.FileChangeType.Deleted });
         }
