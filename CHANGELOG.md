@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.2.0...v1.2.1) (2021-02-23)
+
+
+### Reverts
+
+* Revert "fix: fix url.parse deprecation" ([002e7f7](https://github.com/atom-ide-community/atom-languageclient/commit/002e7f7943c6b728320227d18b774ce035aaea28))
+
 # [1.2.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.1.1...v1.2.0) (2021-02-23)
 
 
