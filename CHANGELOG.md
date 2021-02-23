@@ -1,3 +1,23 @@
+# [1.2.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.1.1...v1.2.0) (2021-02-23)
+
+
+### Bug Fixes
+
+* add arch to the folder name ([49abb87](https://github.com/atom-ide-community/atom-languageclient/commit/49abb873f9546c3d859a9f3cee3c55a85abbf116))
+* add close handler for lsProcess ([2940f89](https://github.com/atom-ide-community/atom-languageclient/commit/2940f8909d56c4a2b3e96acef62c4c2db7b3936b))
+* add platform-arch to rootPath ([9746992](https://github.com/atom-ide-community/atom-languageclient/commit/9746992e9a358815e861cbc48753e52d74fe45c1))
+* merge getExePath into spawn ([a5c03a5](https://github.com/atom-ide-community/atom-languageclient/commit/a5c03a572bacd1a12eca83fbced80be942cc5ed6))
+* return the exe name if the file doesn't exist ([d57e55a](https://github.com/atom-ide-community/atom-languageclient/commit/d57e55a13218e9ea52b40039381be1e47bb8d851))
+* use ChildProcess type for LanguageServerProcess ([798ab56](https://github.com/atom-ide-community/atom-languageclient/commit/798ab5695558644f00718e1ab519c25aba0897e4))
+
+
+### Features
+
+* add disconnect handler ([3c29170](https://github.com/atom-ide-community/atom-languageclient/commit/3c29170d37490ce33e7e790cfc0c5ea634459109))
+* add getExePath ([7508f42](https://github.com/atom-ide-community/atom-languageclient/commit/7508f425a0fbb8b55c927d4243f7143ac822b770))
+* add spawn to spawn general lsp exe ([6d4b1e7](https://github.com/atom-ide-community/atom-languageclient/commit/6d4b1e7318b5b721139afab4839be3ff4d41416e))
+* allow providing custom error, close, exit handling ([a40e8b5](https://github.com/atom-ide-community/atom-languageclient/commit/a40e8b584473c4bf45b50ceb69bb20bd2f8c4f5f))
+
 ## [1.1.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.1.0...v1.1.1) (2021-02-20)
 
 
