@@ -410,10 +410,10 @@ export class TextEditorSyncAdapter {
 
     const uri = this.getEditorUri()
     const didSaveNotification = {
-      textDocument: { uri, version: this._getVersion((uri)) },
-    } as DidSaveTextDocumentParams;
-    if (typeof this._documentSync.save === 'object' && this._documentSync.save.includeText) {
-      didSaveNotification.text = this._editor.getText();
+      textDocument: { uri, version: this._getVersion(uri) },
+    } as DidSaveTextDocumentParams
+    if (typeof this._documentSync.save === "object" && this._documentSync.save.includeText) {
+      didSaveNotification.text = this._editor.getText()
     }
     this._connection.didSaveTextDocument(didSaveNotification)
     if (this._fakeDidChangeWatchedFiles) {

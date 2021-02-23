@@ -28,7 +28,7 @@ import { Suggestion, TextSuggestion, SnippetSuggestion } from "../types/autocomp
  * - if `false` -> the edits are inserted : const|ole
  * - if `true`` -> the edits are replaced: const|
  */
-type ShouldReplace = boolean;
+type ShouldReplace = boolean
 
 /**
  * Holds a list of suggestions generated from the CompletionItem[]
@@ -93,7 +93,7 @@ export default class AutocompleteAdapter {
     request: ac.SuggestionsRequestedEvent,
     onDidConvertCompletionItem?: CompletionItemAdjuster,
     minimumWordLength?: number,
-    shouldReplace: ShouldReplace = false,
+    shouldReplace: ShouldReplace = false
   ): Promise<ac.AnySuggestion[]> {
     const triggerChars =
       server.capabilities.completionProvider != null
@@ -472,21 +472,23 @@ export default class AutocompleteAdapter {
     triggerColumns: [number, number],
     originalBufferPosition: Point,
     suggestion: TextSuggestion,
-    shouldReplace: ShouldReplace,
+    shouldReplace: ShouldReplace
   ): void {
-    if (!textEdit) { return; }
-    let range: Range;
-    if ('range' in textEdit) {
-      range = textEdit.range;
+    if (!textEdit) {
+      return
+    }
+    let range: Range
+    if ("range" in textEdit) {
+      range = textEdit.range
     } else if (shouldReplace) {
-      range = textEdit.replace;
+      range = textEdit.replace
     } else {
-      range = textEdit.insert;
+      range = textEdit.insert
     }
 
     if (range.start.character !== triggerColumns[0]) {
-      const atomRange = Convert.lsRangeToAtomRange(range);
-      suggestion.customReplacmentPrefix = editor.getTextInBufferRange([atomRange.start, originalBufferPosition]);
+      const atomRange = Convert.lsRangeToAtomRange(range)
+      suggestion.customReplacmentPrefix = editor.getTextInBufferRange([atomRange.start, originalBufferPosition])
     }
     suggestion.text = textEdit.newText
   }
