@@ -4,11 +4,11 @@ import {
   MessageActionItem,
   ShowMessageParams,
   ShowMessageRequestParams,
-} from '../languageclient';
-import { Notification, NotificationOptions, NotificationExt } from 'atom';
+} from "../languageclient"
+import { Notification, NotificationOptions, NotificationExt } from "atom"
 
 export interface NotificationButton {
-  text: string;
+  text: string
 }
 
 /** Public: Adapts Atom's user notifications to those of the language server protocol. */
@@ -18,8 +18,8 @@ export default class NotificationsAdapter {
    * when user notifications should be displayed.
    */
   public static attach(connection: LanguageClientConnection, name: string, projectPath: string): void {
-    connection.onShowMessage((m) => NotificationsAdapter.onShowMessage(m, name, projectPath));
-    connection.onShowMessageRequest((m) => NotificationsAdapter.onShowMessageRequest(m, name, projectPath));
+    connection.onShowMessage((m) => NotificationsAdapter.onShowMessage(m, name, projectPath))
+    connection.onShowMessageRequest((m) => NotificationsAdapter.onShowMessageRequest(m, name, projectPath))
   }
 
   /**
@@ -40,27 +40,27 @@ export default class NotificationsAdapter {
       const options: NotificationOptions = {
         dismissable: true,
         detail: `${name} ${projectPath}`,
-      };
+      }
       if (params.actions) {
         options.buttons = params.actions.map((a) => ({
           text: a.title,
           onDidClick: () => {
-            resolve(a);
+            resolve(a)
             if (notification != null) {
-              notification.dismiss();
+              notification.dismiss()
             }
           },
-        }));
+        }))
       }
 
-      const notification = addNotificationForMessage(params.type, params.message, options);
+      const notification = addNotificationForMessage(params.type, params.message, options)
 
       if (notification != null) {
         notification.onDidDismiss(() => {
-          resolve(null);
-        });
+          resolve(null)
+        })
       }
-    });
+    })
   }
 
   /**
@@ -76,7 +76,7 @@ export default class NotificationsAdapter {
     addNotificationForMessage(params.type, params.message, {
       dismissable: true,
       detail: `${name} ${projectPath}`,
-    });
+    })
   }
 
   /**
@@ -89,18 +89,18 @@ export default class NotificationsAdapter {
   public static actionItemToNotificationButton(actionItem: MessageActionItem): NotificationButton {
     return {
       text: actionItem.title,
-    };
+    }
   }
 }
 
 function messageTypeToString(messageType: number): string {
   switch (messageType) {
     case MessageType.Error:
-      return 'error';
+      return "error"
     case MessageType.Warning:
-      return 'warning';
+      return "warning"
     default:
-      return 'info';
+      return "info"
   }
 }
 
@@ -110,29 +110,29 @@ function addNotificationForMessage(
   options: NotificationOptions
 ): Notification | null {
   function isDuplicate(note: NotificationExt): boolean {
-    const noteDismissed = note.isDismissed && note.isDismissed();
-    const noteOptions = (note.getOptions && note.getOptions()) || {};
+    const noteDismissed = note.isDismissed && note.isDismissed()
+    const noteOptions = (note.getOptions && note.getOptions()) || {}
     return (
       !noteDismissed &&
       note.getType() === messageTypeToString(messageType) &&
       note.getMessage() === message &&
       noteOptions.detail === options.detail
-    );
+    )
   }
   if (atom.notifications.getNotifications().some(isDuplicate)) {
-    return null;
+    return null
   }
 
   switch (messageType) {
     case MessageType.Error:
-      return atom.notifications.addError(message, options);
+      return atom.notifications.addError(message, options)
     case MessageType.Warning:
-      return atom.notifications.addWarning(message, options);
+      return atom.notifications.addWarning(message, options)
     case MessageType.Log:
       // console.log(params.message);
-      return null;
+      return null
     case MessageType.Info:
     default:
-      return atom.notifications.addInfo(message, options);
+      return atom.notifications.addInfo(message, options)
   }
 }

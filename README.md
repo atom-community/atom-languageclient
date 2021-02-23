@@ -64,25 +64,25 @@ The underlying JSON-RPC communication is handled by the [vscode-jsonrpc npm modu
 A minimal implementation can be illustrated by the Omnisharp package here which has only npm-managed dependencies, and the LSP is a JavaScript file. You simply provide the scope name, language name and server name as well as start your process and `AutoLanguageClient` takes care of interrogating your language server capabilities and wiring up the appropriate services within Atom to expose them.
 
 ```javascript
-const { AutoLanguageClient } = require('atom-languageclient');
+const { AutoLanguageClient } = require("atom-languageclient")
 
 class CSharpLanguageClient extends AutoLanguageClient {
   getGrammarScopes() {
-    return ['source.cs'];
+    return ["source.cs"]
   }
   getLanguageName() {
-    return 'C#';
+    return "C#"
   }
   getServerName() {
-    return 'OmniSharp';
+    return "OmniSharp"
   }
 
   startServerProcess() {
-    return super.spawnChildNode([require.resolve('omnisharp-client/languageserver/server')]);
+    return super.spawnChildNode([require.resolve("omnisharp-client/languageserver/server")])
   }
 }
 
-module.exports = new CSharpLanguageClient();
+module.exports = new CSharpLanguageClient()
 ```
 
 You can get this code packaged up with the necessary package.json etc. from the [ide-csharp](https://github.com/atom/ide-csharp) provides C# support via [Omnisharp (node-omnisharp)](https://github.com/OmniSharp/omnisharp-node-client) repo.
@@ -94,30 +94,30 @@ Note that you will also need to add various entries to the `providedServices` an
 If the LSP is a general executable (not a JavaScript file), you should use `spawn` inside `startServerProcess`.
 
 ```javascript
-const { AutoLanguageClient } = require('atom-languageclient');
+const { AutoLanguageClient } = require("atom-languageclient")
 
 class DLanguageClient extends AutoLanguageClient {
   getGrammarScopes() {
-    return ['source.d'];
+    return ["source.d"]
   }
   getLanguageName() {
-    return 'D';
+    return "D"
   }
   getServerName() {
-    return 'serve-d';
+    return "serve-d"
   }
 
   startServerProcess(projectPath) {
     return super.spawn(
-      'serve-d', // the `name` or `path` of the executable
+      "serve-d", // the `name` or `path` of the executable
       // if the `name` is provided it checks `bin/platform-arch/exeName` by default, and if doesn't exists uses the `exeName` on the PATH
       [], // args passed to spawn the exe
       { cwd: projectPath } // child process spawn options
-    );
+    )
   }
 }
 
-module.exports = new DLanguageClient();
+module.exports = new DLanguageClient()
 ```
 
 ### Using other connection types
@@ -131,24 +131,24 @@ To use ipc simply return _ipc_ from getConnectionType(), e.g.
 ```javascript
 class ExampleLanguageClient extends AutoLanguageClient {
   getGrammarScopes() {
-    return ['source.js', 'javascript'];
+    return ["source.js", "javascript"]
   }
   getLanguageName() {
-    return 'JavaScript';
+    return "JavaScript"
   }
   getServerName() {
-    return 'JavaScript Language Server';
+    return "JavaScript Language Server"
   }
 
   getConnectionType() {
-    return 'ipc';
+    return "ipc"
   }
 
   startServerProcess() {
-    const startServer = require.resolve('@example/js-language-server');
-    return super.spawnChildNode([startServer, '--node-ipc'], {
-      stdio: [null, null, null, 'ipc'],
-    });
+    const startServer = require.resolve("@example/js-language-server")
+    return super.spawnChildNode([startServer, "--node-ipc"], {
+      stdio: [null, null, null, "ipc"],
+    })
   }
 }
 ```

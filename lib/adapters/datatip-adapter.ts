@@ -1,8 +1,8 @@
-import type * as atomIde from 'atom-ide-base';
-import Convert from '../convert';
-import * as Utils from '../utils';
-import { Hover, LanguageClientConnection, MarkupContent, MarkedString, ServerCapabilities } from '../languageclient';
-import { Point, TextEditor } from 'atom';
+import type * as atomIde from "atom-ide-base"
+import Convert from "../convert"
+import * as Utils from "../utils"
+import { Hover, LanguageClientConnection, MarkupContent, MarkedString, ServerCapabilities } from "../languageclient"
+import { Point, TextEditor } from "atom"
 
 /**
  * Public: Adapts the language server protocol "textDocument/hover" to the
@@ -18,7 +18,7 @@ export default class DatatipAdapter {
    *   given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.hoverProvider === true;
+    return serverCapabilities.hoverProvider === true
   }
 
   /**
@@ -36,44 +36,43 @@ export default class DatatipAdapter {
     editor: TextEditor,
     point: Point
   ): Promise<atomIde.Datatip | null> {
-    const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
+    const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point)
 
-    const hover = await connection.hover(documentPositionParams);
+    const hover = await connection.hover(documentPositionParams)
     if (hover == null || DatatipAdapter.isEmptyHover(hover)) {
-      return null;
+      return null
     }
 
-    const range =
-      hover.range == null ? Utils.getWordAtPosition(editor, point) : Convert.lsRangeToAtomRange(hover.range);
+    const range = hover.range == null ? Utils.getWordAtPosition(editor, point) : Convert.lsRangeToAtomRange(hover.range)
 
     const markedStrings = (Array.isArray(hover.contents) ? hover.contents : [hover.contents]).map((str) =>
       DatatipAdapter.convertMarkedString(editor, str)
-    );
+    )
 
-    return { range, markedStrings };
+    return { range, markedStrings }
   }
 
   private static isEmptyHover(hover: Hover): boolean {
     return (
       hover.contents == null ||
-      (typeof hover.contents === 'string' && hover.contents.length === 0) ||
-      (Array.isArray(hover.contents) && (hover.contents.length === 0 || hover.contents[0] === ''))
-    );
+      (typeof hover.contents === "string" && hover.contents.length === 0) ||
+      (Array.isArray(hover.contents) && (hover.contents.length === 0 || hover.contents[0] === ""))
+    )
   }
 
   private static convertMarkedString(
     editor: TextEditor,
     markedString: MarkedString | MarkupContent
   ): atomIde.MarkedString {
-    if (typeof markedString === 'string') {
-      return { type: 'markdown', value: markedString };
+    if (typeof markedString === "string") {
+      return { type: "markdown", value: markedString }
     }
 
     if ((markedString as MarkupContent).kind) {
       return {
-        type: 'markdown',
+        type: "markdown",
         value: markedString.value,
-      };
+      }
     }
 
     // Must check as <{language: string}> to disambiguate between
@@ -81,16 +80,16 @@ export default class DatatipAdapter {
     // is a union of the two types
     if ((markedString as { language: string }).language) {
       return {
-        type: 'snippet',
+        type: "snippet",
         // TODO: find a better mapping from language -> grammar
         grammar:
           atom.grammars.grammarForScopeName(`source.${(markedString as { language: string }).language}`) ||
           editor.getGrammar(),
         value: markedString.value,
-      };
+      }
     }
 
     // Catch-all case
-    return { type: 'markdown', value: markedString.toString() };
+    return { type: "markdown", value: markedString.toString() }
   }
 }

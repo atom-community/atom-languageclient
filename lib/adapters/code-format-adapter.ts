@@ -1,5 +1,5 @@
-import type * as atomIde from 'atom-ide-base';
-import Convert from '../convert';
+import type * as atomIde from "atom-ide-base"
+import Convert from "../convert"
 import {
   LanguageClientConnection,
   DocumentFormattingParams,
@@ -7,8 +7,8 @@ import {
   DocumentOnTypeFormattingParams,
   FormattingOptions,
   ServerCapabilities,
-} from '../languageclient';
-import { TextEditor, Range, Point } from 'atom';
+} from "../languageclient"
+import { TextEditor, Range, Point } from "atom"
 
 /**
  * Public: Adapts the language server protocol "textDocument/completion" to the
@@ -28,7 +28,7 @@ export default class CodeFormatAdapter {
     return (
       serverCapabilities.documentRangeFormattingProvider === true ||
       serverCapabilities.documentFormattingProvider === true
-    );
+    )
   }
 
   /**
@@ -49,14 +49,14 @@ export default class CodeFormatAdapter {
     range: Range
   ): Promise<atomIde.TextEdit[]> {
     if (serverCapabilities.documentRangeFormattingProvider) {
-      return CodeFormatAdapter.formatRange(connection, editor, range);
+      return CodeFormatAdapter.formatRange(connection, editor, range)
     }
 
     if (serverCapabilities.documentFormattingProvider) {
-      return CodeFormatAdapter.formatDocument(connection, editor);
+      return CodeFormatAdapter.formatDocument(connection, editor)
     }
 
-    throw new Error('Can not format document, language server does not support it');
+    throw new Error("Can not format document, language server does not support it")
   }
 
   /**
@@ -71,8 +71,8 @@ export default class CodeFormatAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor
   ): Promise<atomIde.TextEdit[]> {
-    const edits = await connection.documentFormatting(CodeFormatAdapter.createDocumentFormattingParams(editor));
-    return Convert.convertLsTextEdits(edits);
+    const edits = await connection.documentFormatting(CodeFormatAdapter.createDocumentFormattingParams(editor))
+    return Convert.convertLsTextEdits(edits)
   }
 
   /**
@@ -87,7 +87,7 @@ export default class CodeFormatAdapter {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       options: CodeFormatAdapter.getFormatOptions(editor),
-    };
+    }
   }
 
   /**
@@ -106,8 +106,8 @@ export default class CodeFormatAdapter {
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentRangeFormatting(
       CodeFormatAdapter.createDocumentRangeFormattingParams(editor, range)
-    );
-    return Convert.convertLsTextEdits(edits);
+    )
+    return Convert.convertLsTextEdits(edits)
   }
 
   /**
@@ -125,7 +125,7 @@ export default class CodeFormatAdapter {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       range: Convert.atomRangeToLSRange(range),
       options: CodeFormatAdapter.getFormatOptions(editor),
-    };
+    }
   }
 
   /**
@@ -146,8 +146,8 @@ export default class CodeFormatAdapter {
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentOnTypeFormatting(
       CodeFormatAdapter.createDocumentOnTypeFormattingParams(editor, point, character)
-    );
-    return Convert.convertLsTextEdits(edits);
+    )
+    return Convert.convertLsTextEdits(edits)
   }
 
   /**
@@ -171,7 +171,7 @@ export default class CodeFormatAdapter {
       position: Convert.pointToPosition(point),
       ch: character,
       options: CodeFormatAdapter.getFormatOptions(editor),
-    };
+    }
   }
 
   /**
@@ -188,6 +188,6 @@ export default class CodeFormatAdapter {
     return {
       tabSize: editor.getTabLength(),
       insertSpaces: editor.getSoftTabs(),
-    };
+    }
   }
 }

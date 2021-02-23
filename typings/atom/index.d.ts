@@ -1,12 +1,12 @@
-export {};
-declare module 'atom' {
+export {}
+declare module "atom" {
   interface TextEditor {
-    getNonWordCharacters(position: Point): string;
+    getNonWordCharacters(position: Point): string
   }
 
   /** Non-public Notification api */
   interface NotificationExt extends Notification {
-    isDismissed?: () => boolean;
-    getOptions?: () => NotificationOptions | null;
+    isDismissed?: () => boolean
+    getOptions?: () => NotificationOptions | null
   }
 }

@@ -1,7 +1,7 @@
-import assert = require('assert');
-import Convert from '../convert';
-import { Point, TextEditor, Range } from 'atom';
-import { LanguageClientConnection, ServerCapabilities } from '../languageclient';
+import assert = require("assert")
+import Convert from "../convert"
+import { Point, TextEditor, Range } from "atom"
+import { LanguageClientConnection, ServerCapabilities } from "../languageclient"
 
 export default class CodeHighlightAdapter {
   /**
@@ -9,7 +9,7 @@ export default class CodeHighlightAdapter {
    * given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.documentHighlightProvider === true;
+    return serverCapabilities.documentHighlightProvider === true
   }
 
   /**
@@ -28,10 +28,10 @@ export default class CodeHighlightAdapter {
     editor: TextEditor,
     position: Point
   ): Promise<Range[] | null> {
-    assert(serverCapabilities.documentHighlightProvider, 'Must have the documentHighlight capability');
-    const highlights = await connection.documentHighlight(Convert.editorToTextDocumentPositionParams(editor, position));
+    assert(serverCapabilities.documentHighlightProvider, "Must have the documentHighlight capability")
+    const highlights = await connection.documentHighlight(Convert.editorToTextDocumentPositionParams(editor, position))
     return highlights.map((highlight) => {
-      return Convert.lsRangeToAtomRange(highlight.range);
-    });
+      return Convert.lsRangeToAtomRange(highlight.range)
+    })
   }
 }

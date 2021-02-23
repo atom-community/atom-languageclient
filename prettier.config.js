@@ -8,18 +8,18 @@ module.exports = {
   singleQuote: false,
   overrides: [
     {
-      files: '{*.json}',
+      files: "{*.json}",
       options: {
-        parser: 'json',
-        trailingComma: 'es5',
+        parser: "json",
+        trailingComma: "es5",
       },
     },
     {
-      files: '{*.md}',
+      files: "{*.md}",
       options: {
-        parser: 'markdown',
-        proseWrap: 'preserve',
+        parser: "markdown",
+        proseWrap: "preserve",
       },
     },
   ],
-};
+}

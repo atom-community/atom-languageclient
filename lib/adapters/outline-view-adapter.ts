@@ -1,22 +1,22 @@
-import type * as atomIde from 'atom-ide-base';
-import Convert from '../convert';
-import * as Utils from '../utils';
-import { CancellationTokenSource } from 'vscode-jsonrpc';
+import type * as atomIde from "atom-ide-base"
+import Convert from "../convert"
+import * as Utils from "../utils"
+import { CancellationTokenSource } from "vscode-jsonrpc"
 import {
   LanguageClientConnection,
   SymbolKind,
   ServerCapabilities,
   SymbolInformation,
   DocumentSymbol,
-} from '../languageclient';
-import { Point, TextEditor } from 'atom';
+} from "../languageclient"
+import { Point, TextEditor } from "atom"
 
 /**
  * Public: Adapts the documentSymbolProvider of the language server to the Outline View
  * supplied by Atom IDE UI.
  */
 export default class OutlineViewAdapter {
-  private _cancellationTokens: WeakMap<LanguageClientConnection, CancellationTokenSource> = new WeakMap();
+  private _cancellationTokens: WeakMap<LanguageClientConnection, CancellationTokenSource> = new WeakMap()
 
   /**
    * Public: Determine whether this adapter can be used to adapt a language server
@@ -27,7 +27,7 @@ export default class OutlineViewAdapter {
    *   given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.documentSymbolProvider === true;
+    return serverCapabilities.documentSymbolProvider === true
   }
 
   /**
@@ -42,24 +42,24 @@ export default class OutlineViewAdapter {
   public async getOutline(connection: LanguageClientConnection, editor: TextEditor): Promise<atomIde.Outline | null> {
     const results = await Utils.doWithCancellationToken(connection, this._cancellationTokens, (cancellationToken) =>
       connection.documentSymbol({ textDocument: Convert.editorToTextDocumentIdentifier(editor) }, cancellationToken)
-    );
+    )
 
     if (results.length === 0) {
       return {
         outlineTrees: [],
-      };
+      }
     }
 
     if ((results[0] as DocumentSymbol).selectionRange !== undefined) {
       // If the server is giving back the newer DocumentSymbol format.
       return {
         outlineTrees: OutlineViewAdapter.createHierarchicalOutlineTrees(results as DocumentSymbol[]),
-      };
+      }
     } else {
       // If the server is giving back the original SymbolInformation format.
       return {
         outlineTrees: OutlineViewAdapter.createOutlineTrees(results as SymbolInformation[]),
-      };
+      }
     }
   }
 
@@ -76,29 +76,29 @@ export default class OutlineViewAdapter {
     // Sort all the incoming symbols
     symbols.sort((a, b) => {
       if (a.range.start.line !== b.range.start.line) {
-        return a.range.start.line - b.range.start.line;
+        return a.range.start.line - b.range.start.line
       }
 
       if (a.range.start.character !== b.range.start.character) {
-        return a.range.start.character - b.range.start.character;
+        return a.range.start.character - b.range.start.character
       }
 
       if (a.range.end.line !== b.range.end.line) {
-        return a.range.end.line - b.range.end.line;
+        return a.range.end.line - b.range.end.line
       }
 
-      return a.range.end.character - b.range.end.character;
-    });
+      return a.range.end.character - b.range.end.character
+    })
 
     return symbols.map((symbol) => {
-      const tree = OutlineViewAdapter.hierarchicalSymbolToOutline(symbol);
+      const tree = OutlineViewAdapter.hierarchicalSymbolToOutline(symbol)
 
       if (symbol.children != null) {
-        tree.children = OutlineViewAdapter.createHierarchicalOutlineTrees(symbol.children);
+        tree.children = OutlineViewAdapter.createHierarchicalOutlineTrees(symbol.children)
       }
 
-      return tree;
-    });
+      return tree
+    })
   }
 
   /**
@@ -115,7 +115,7 @@ export default class OutlineViewAdapter {
       a.location.range.start.line === b.location.range.start.line
         ? a.location.range.start.character - b.location.range.start.character
         : a.location.range.start.line - b.location.range.start.line
-    );
+    )
 
     // Temporarily keep containerName through the conversion process
     // Also filter out symbols without a name - it's part of the spec but some don't include it
@@ -124,53 +124,53 @@ export default class OutlineViewAdapter {
       .map((symbol) => ({
         containerName: symbol.containerName,
         outline: OutlineViewAdapter.symbolToOutline(symbol),
-      }));
+      }))
 
     // Create a map of containers by name with all items that have that name
     const containers = allItems.reduce((map, item) => {
-      const name = item.outline.representativeName;
+      const name = item.outline.representativeName
       if (name != null) {
-        const container = map.get(name);
+        const container = map.get(name)
         if (container == null) {
-          map.set(name, [item.outline]);
+          map.set(name, [item.outline])
         } else {
-          container.push(item.outline);
+          container.push(item.outline)
         }
       }
-      return map;
-    }, new Map());
+      return map
+    }, new Map())
 
-    const roots: atomIde.OutlineTree[] = [];
+    const roots: atomIde.OutlineTree[] = []
 
     // Put each item within its parent and extract out the roots
     for (const item of allItems) {
-      const containerName = item.containerName;
-      const child = item.outline;
-      if (containerName == null || containerName === '') {
-        roots.push(item.outline);
+      const containerName = item.containerName
+      const child = item.outline
+      if (containerName == null || containerName === "") {
+        roots.push(item.outline)
       } else {
-        const possibleParents = containers.get(containerName);
-        let closestParent = OutlineViewAdapter._getClosestParent(possibleParents, child);
+        const possibleParents = containers.get(containerName)
+        let closestParent = OutlineViewAdapter._getClosestParent(possibleParents, child)
         if (closestParent == null) {
           closestParent = {
             plainText: containerName,
             representativeName: containerName,
             startPosition: new Point(0, 0),
             children: [child],
-          };
-          roots.push(closestParent);
+          }
+          roots.push(closestParent)
           if (possibleParents == null) {
-            containers.set(containerName, [closestParent]);
+            containers.set(containerName, [closestParent])
           } else {
-            possibleParents.push(closestParent);
+            possibleParents.push(closestParent)
           }
         } else {
-          closestParent.children.push(child);
+          closestParent.children.push(child)
         }
       }
     }
 
-    return roots;
+    return roots
   }
 
   private static _getClosestParent(
@@ -178,10 +178,10 @@ export default class OutlineViewAdapter {
     child: atomIde.OutlineTree
   ): atomIde.OutlineTree | null {
     if (candidates == null || candidates.length === 0) {
-      return null;
+      return null
     }
 
-    let parent: atomIde.OutlineTree | undefined;
+    let parent: atomIde.OutlineTree | undefined
     for (const candidate of candidates) {
       if (
         candidate !== child &&
@@ -196,12 +196,12 @@ export default class OutlineViewAdapter {
             candidate.endPosition &&
             parent.endPosition.isGreaterThanOrEqual(candidate.endPosition))
         ) {
-          parent = candidate;
+          parent = candidate
         }
       }
     }
 
-    return parent || null;
+    return parent || null
   }
 
   /**
@@ -213,7 +213,7 @@ export default class OutlineViewAdapter {
    * @returns The {OutlineTree} corresponding to the given {DocumentSymbol}.
    */
   public static hierarchicalSymbolToOutline(symbol: DocumentSymbol): atomIde.OutlineTree {
-    const icon = OutlineViewAdapter.symbolKindToEntityKind(symbol.kind);
+    const icon = OutlineViewAdapter.symbolKindToEntityKind(symbol.kind)
 
     return {
       tokenizedText: [
@@ -227,7 +227,7 @@ export default class OutlineViewAdapter {
       startPosition: Convert.positionToPoint(symbol.selectionRange.start),
       endPosition: Convert.positionToPoint(symbol.selectionRange.end),
       children: [],
-    };
+    }
   }
 
   /**
@@ -238,7 +238,7 @@ export default class OutlineViewAdapter {
    * @returns The {OutlineTree} equivalent to the given {SymbolInformation}.
    */
   public static symbolToOutline(symbol: SymbolInformation): atomIde.OutlineTree {
-    const icon = OutlineViewAdapter.symbolKindToEntityKind(symbol.kind);
+    const icon = OutlineViewAdapter.symbolKindToEntityKind(symbol.kind)
     return {
       tokenizedText: [
         {
@@ -251,7 +251,7 @@ export default class OutlineViewAdapter {
       startPosition: Convert.positionToPoint(symbol.location.range.start),
       endPosition: Convert.positionToPoint(symbol.location.range.end),
       children: [],
-    };
+    }
   }
 
   /**
@@ -264,47 +264,47 @@ export default class OutlineViewAdapter {
   public static symbolKindToEntityKind(symbol: number): string | null {
     switch (symbol) {
       case SymbolKind.Array:
-        return 'type-array';
+        return "type-array"
       case SymbolKind.Boolean:
-        return 'type-boolean';
+        return "type-boolean"
       case SymbolKind.Class:
-        return 'type-class';
+        return "type-class"
       case SymbolKind.Constant:
-        return 'type-constant';
+        return "type-constant"
       case SymbolKind.Constructor:
-        return 'type-constructor';
+        return "type-constructor"
       case SymbolKind.Enum:
-        return 'type-enum';
+        return "type-enum"
       case SymbolKind.Field:
-        return 'type-field';
+        return "type-field"
       case SymbolKind.File:
-        return 'type-file';
+        return "type-file"
       case SymbolKind.Function:
-        return 'type-function';
+        return "type-function"
       case SymbolKind.Interface:
-        return 'type-interface';
+        return "type-interface"
       case SymbolKind.Method:
-        return 'type-method';
+        return "type-method"
       case SymbolKind.Module:
-        return 'type-module';
+        return "type-module"
       case SymbolKind.Namespace:
-        return 'type-namespace';
+        return "type-namespace"
       case SymbolKind.Number:
-        return 'type-number';
+        return "type-number"
       case SymbolKind.Package:
-        return 'type-package';
+        return "type-package"
       case SymbolKind.Property:
-        return 'type-property';
+        return "type-property"
       case SymbolKind.String:
-        return 'type-string';
+        return "type-string"
       case SymbolKind.Variable:
-        return 'type-variable';
+        return "type-variable"
       case SymbolKind.Struct:
-        return 'type-class';
+        return "type-class"
       case SymbolKind.EnumMember:
-        return 'type-constant';
+        return "type-constant"
       default:
-        return null;
+        return null
     }
   }
 
@@ -318,16 +318,16 @@ export default class OutlineViewAdapter {
   public static symbolKindToTokenKind(symbol: number): atomIde.TokenKind {
     switch (symbol) {
       case SymbolKind.Class:
-        return 'type';
+        return "type"
       case SymbolKind.Constructor:
-        return 'constructor';
+        return "constructor"
       case SymbolKind.Method:
       case SymbolKind.Function:
-        return 'method';
+        return "method"
       case SymbolKind.String:
-        return 'string';
+        return "string"
       default:
-        return 'plain';
+        return "plain"
     }
   }
 }
