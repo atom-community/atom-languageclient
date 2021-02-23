@@ -1,5 +1,5 @@
-import type * as atomIde from 'atom-ide-base';
-import Convert from '../convert';
+import type * as atomIde from "atom-ide-base"
+import Convert from "../convert"
 import {
   LanguageClientConnection,
   DocumentFormattingParams,
@@ -7,12 +7,8 @@ import {
   DocumentOnTypeFormattingParams,
   FormattingOptions,
   ServerCapabilities,
-} from '../languageclient';
-import {
-  TextEditor,
-  Range,
-  Point,
-} from 'atom';
+} from "../languageclient"
+import { TextEditor, Range, Point } from "atom"
 
 /**
  * Public: Adapts the language server protocol "textDocument/completion" to the
@@ -32,7 +28,7 @@ export default class CodeFormatAdapter {
     return (
       serverCapabilities.documentRangeFormattingProvider === true ||
       serverCapabilities.documentFormattingProvider === true
-    );
+    )
   }
 
   /**
@@ -50,17 +46,17 @@ export default class CodeFormatAdapter {
     connection: LanguageClientConnection,
     serverCapabilities: ServerCapabilities,
     editor: TextEditor,
-    range: Range,
+    range: Range
   ): Promise<atomIde.TextEdit[]> {
     if (serverCapabilities.documentRangeFormattingProvider) {
-      return CodeFormatAdapter.formatRange(connection, editor, range);
+      return CodeFormatAdapter.formatRange(connection, editor, range)
     }
 
     if (serverCapabilities.documentFormattingProvider) {
-      return CodeFormatAdapter.formatDocument(connection, editor);
+      return CodeFormatAdapter.formatDocument(connection, editor)
     }
 
-    throw new Error('Can not format document, language server does not support it');
+    throw new Error("Can not format document, language server does not support it")
   }
 
   /**
@@ -73,10 +69,10 @@ export default class CodeFormatAdapter {
    */
   public static async formatDocument(
     connection: LanguageClientConnection,
-    editor: TextEditor,
+    editor: TextEditor
   ): Promise<atomIde.TextEdit[]> {
-    const edits = await connection.documentFormatting(CodeFormatAdapter.createDocumentFormattingParams(editor));
-    return Convert.convertLsTextEdits(edits);
+    const edits = await connection.documentFormatting(CodeFormatAdapter.createDocumentFormattingParams(editor))
+    return Convert.convertLsTextEdits(edits)
   }
 
   /**
@@ -91,7 +87,7 @@ export default class CodeFormatAdapter {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       options: CodeFormatAdapter.getFormatOptions(editor),
-    };
+    }
   }
 
   /**
@@ -106,12 +102,12 @@ export default class CodeFormatAdapter {
   public static async formatRange(
     connection: LanguageClientConnection,
     editor: TextEditor,
-    range: Range,
+    range: Range
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentRangeFormatting(
-      CodeFormatAdapter.createDocumentRangeFormattingParams(editor, range),
-    );
-    return Convert.convertLsTextEdits(edits);
+      CodeFormatAdapter.createDocumentRangeFormattingParams(editor, range)
+    )
+    return Convert.convertLsTextEdits(edits)
   }
 
   /**
@@ -124,15 +120,12 @@ export default class CodeFormatAdapter {
    *   range of the text to be formatted as well as the options to be used in formatting the
    *   document such as tab size and tabs vs spaces.
    */
-  public static createDocumentRangeFormattingParams(
-    editor: TextEditor,
-    range: Range,
-  ): DocumentRangeFormattingParams {
+  public static createDocumentRangeFormattingParams(editor: TextEditor, range: Range): DocumentRangeFormattingParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       range: Convert.atomRangeToLSRange(range),
       options: CodeFormatAdapter.getFormatOptions(editor),
-    };
+    }
   }
 
   /**
@@ -149,12 +142,12 @@ export default class CodeFormatAdapter {
     connection: LanguageClientConnection,
     editor: TextEditor,
     point: Point,
-    character: string,
+    character: string
   ): Promise<atomIde.TextEdit[]> {
     const edits = await connection.documentOnTypeFormatting(
-      CodeFormatAdapter.createDocumentOnTypeFormattingParams(editor, point, character),
-    );
-    return Convert.convertLsTextEdits(edits);
+      CodeFormatAdapter.createDocumentOnTypeFormattingParams(editor, point, character)
+    )
+    return Convert.convertLsTextEdits(edits)
   }
 
   /**
@@ -171,14 +164,14 @@ export default class CodeFormatAdapter {
   public static createDocumentOnTypeFormattingParams(
     editor: TextEditor,
     point: Point,
-    character: string,
+    character: string
   ): DocumentOnTypeFormattingParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       position: Convert.pointToPosition(point),
       ch: character,
       options: CodeFormatAdapter.getFormatOptions(editor),
-    };
+    }
   }
 
   /**
@@ -195,6 +188,6 @@ export default class CodeFormatAdapter {
     return {
       tabSize: editor.getTabLength(),
       insertSpaces: editor.getSoftTabs(),
-    };
+    }
   }
 }

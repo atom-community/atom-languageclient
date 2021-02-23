@@ -1,8 +1,8 @@
-import type * as atomIde from 'atom-ide-base';
-import LinterPushV2Adapter from './linter-push-v2-adapter';
-import assert = require('assert');
-import Convert from '../convert';
-import ApplyEditAdapter from './apply-edit-adapter';
+import type * as atomIde from "atom-ide-base"
+import LinterPushV2Adapter from "./linter-push-v2-adapter"
+import assert = require("assert")
+import Convert from "../convert"
+import ApplyEditAdapter from "./apply-edit-adapter"
 import {
   CodeAction,
   CodeActionParams,
@@ -10,12 +10,9 @@ import {
   LanguageClientConnection,
   ServerCapabilities,
   WorkspaceEdit,
-} from '../languageclient';
-import {
-  Range,
-  TextEditor,
-} from 'atom';
-import CommandExecutionAdapter from './command-execution-adapter';
+} from "../languageclient"
+import { Range, TextEditor } from "atom"
+import CommandExecutionAdapter from "./command-execution-adapter"
 
 export default class CodeActionAdapter {
   /**
@@ -23,7 +20,7 @@ export default class CodeActionAdapter {
    *   given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.codeActionProvider === true;
+    return serverCapabilities.codeActionProvider === true
   }
 
   /**
@@ -44,52 +41,47 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter | undefined,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[],
+    diagnostics: atomIde.Diagnostic[]
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
-      return [];
+      return []
     }
-    assert(serverCapabilities.codeActionProvider, 'Must have the textDocument/codeAction capability');
+    assert(serverCapabilities.codeActionProvider, "Must have the textDocument/codeAction capability")
 
-    const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics);
-    const actions = await connection.codeAction(params);
-    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection));
+    const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics)
+    const actions = await connection.codeAction(params)
+    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection))
   }
 
   private static createCodeAction(
     action: Command | CodeAction,
-    connection: LanguageClientConnection,
+    connection: LanguageClientConnection
   ): atomIde.CodeAction {
     return {
       async apply() {
         if (CodeAction.is(action)) {
-          CodeActionAdapter.applyWorkspaceEdit(action.edit);
-          await CodeActionAdapter.executeCommand(action.command, connection);
+          CodeActionAdapter.applyWorkspaceEdit(action.edit)
+          await CodeActionAdapter.executeCommand(action.command, connection)
         } else {
-          await CodeActionAdapter.executeCommand(action, connection);
+          await CodeActionAdapter.executeCommand(action, connection)
         }
       },
       getTitle(): Promise<string> {
-        return Promise.resolve(action.title);
+        return Promise.resolve(action.title)
       },
-      dispose(): void { },
-    };
-  }
-
-  private static applyWorkspaceEdit(
-    edit: WorkspaceEdit | undefined,
-  ): void {
-    if (WorkspaceEdit.is(edit)) {
-      ApplyEditAdapter.onApplyEdit({ edit });
+      dispose(): void {},
     }
   }
 
-  private static async executeCommand(
-    command: any,
-    connection: LanguageClientConnection,
-  ): Promise<void> {
+  private static applyWorkspaceEdit(edit: WorkspaceEdit | undefined): void {
+    if (WorkspaceEdit.is(edit)) {
+      ApplyEditAdapter.onApplyEdit({ edit })
+    }
+  }
+
+  private static async executeCommand(command: any, connection: LanguageClientConnection): Promise<void> {
     if (Command.is(command)) {
-      await CommandExecutionAdapter.executeCommand(connection, command.command, command.arguments);
+      await CommandExecutionAdapter.executeCommand(connection, command.command, command.arguments)
     }
   }
 
@@ -97,7 +89,7 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[],
+    diagnostics: atomIde.Diagnostic[]
   ): CodeActionParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
@@ -107,16 +99,16 @@ export default class CodeActionAdapter {
           // Retrieve the stored diagnostic code if it exists.
           // Until the Linter API provides a place to store the code,
           // there's no real way for the code actions API to give it back to us.
-          const converted = Convert.atomIdeDiagnosticToLSDiagnostic(diagnostic);
+          const converted = Convert.atomIdeDiagnosticToLSDiagnostic(diagnostic)
           if (diagnostic.range != null && diagnostic.text != null) {
-            const code = linterAdapter.getDiagnosticCode(editor, diagnostic.range, diagnostic.text);
+            const code = linterAdapter.getDiagnosticCode(editor, diagnostic.range, diagnostic.text)
             if (code != null) {
-              converted.code = code;
+              converted.code = code
             }
           }
-          return converted;
+          return converted
         }),
       },
-    };
+    }
   }
 }

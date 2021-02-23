@@ -1,16 +1,8 @@
-import type * as atomIde from 'atom-ide-base';
-import Convert from '../convert';
-import * as Utils from '../utils';
-import {
-  LanguageClientConnection,
-  Location,
-  ServerCapabilities,
-} from '../languageclient';
-import {
-  Point,
-  TextEditor,
-  Range,
-} from 'atom';
+import type * as atomIde from "atom-ide-base"
+import Convert from "../convert"
+import * as Utils from "../utils"
+import { LanguageClientConnection, Location, ServerCapabilities } from "../languageclient"
+import { Point, TextEditor, Range } from "atom"
 
 /**
  * Public: Adapts the language server definition provider to the
@@ -26,7 +18,7 @@ export default class DefinitionAdapter {
    *   given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.definitionProvider === true;
+    return serverCapabilities.definitionProvider === true
   }
 
   /**
@@ -48,28 +40,28 @@ export default class DefinitionAdapter {
     serverCapabilities: ServerCapabilities,
     languageName: string,
     editor: TextEditor,
-    point: Point,
+    point: Point
   ): Promise<atomIde.DefinitionQueryResult | null> {
-    const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point);
+    const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point)
     const definitionLocations = DefinitionAdapter.normalizeLocations(
-      await connection.gotoDefinition(documentPositionParams),
-    );
+      await connection.gotoDefinition(documentPositionParams)
+    )
     if (definitionLocations == null || definitionLocations.length === 0) {
-      return null;
+      return null
     }
 
-    let queryRange;
+    let queryRange
     if (serverCapabilities.documentHighlightProvider) {
-      const highlights = await connection.documentHighlight(documentPositionParams);
+      const highlights = await connection.documentHighlight(documentPositionParams)
       if (highlights != null && highlights.length > 0) {
-        queryRange = highlights.map((h) => Convert.lsRangeToAtomRange(h.range));
+        queryRange = highlights.map((h) => Convert.lsRangeToAtomRange(h.range))
       }
     }
 
     return {
       queryRange: queryRange || [Utils.getWordAtPosition(editor, point)],
       definitions: DefinitionAdapter.convertLocationsToDefinitions(definitionLocations, languageName),
-    };
+    }
   }
 
   /**
@@ -81,9 +73,9 @@ export default class DefinitionAdapter {
    */
   public static normalizeLocations(locationResult: Location | Location[]): Location[] | null {
     if (locationResult == null) {
-      return null;
+      return null
     }
-    return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => d.range.start != null);
+    return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => d.range.start != null)
   }
 
   /**
@@ -99,6 +91,6 @@ export default class DefinitionAdapter {
       position: Convert.positionToPoint(d.range.start),
       range: Range.fromObject(Convert.lsRangeToAtomRange(d.range)),
       language: languageName,
-    }));
+    }))
   }
 }

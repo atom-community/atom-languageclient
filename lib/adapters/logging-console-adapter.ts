@@ -1,13 +1,9 @@
-import type * as atomIde from 'atom-ide-base';
-import {
-  LanguageClientConnection,
-  LogMessageParams,
-  MessageType,
-} from '../languageclient';
+import type * as atomIde from "atom-ide-base"
+import { LanguageClientConnection, LogMessageParams, MessageType } from "../languageclient"
 
 /** Adapts Atom's user notifications to those of the language server protocol. */
 export default class LoggingConsoleAdapter {
-  private _consoles: Set<atomIde.ConsoleApi> = new Set();
+  private _consoles: Set<atomIde.ConsoleApi> = new Set()
 
   /**
    * Create a new {LoggingConsoleAdapter} that will listen for log messages
@@ -16,12 +12,12 @@ export default class LoggingConsoleAdapter {
    * @param connection A {LanguageClientConnection} to the language server that will provide log messages.
    */
   constructor(connection: LanguageClientConnection) {
-    connection.onLogMessage(this.logMessage.bind(this));
+    connection.onLogMessage(this.logMessage.bind(this))
   }
 
   /** Dispose this adapter ensuring any resources are freed and events unhooked. */
   public dispose(): void {
-    this.detachAll();
+    this.detachAll()
   }
 
   /**
@@ -30,12 +26,12 @@ export default class LoggingConsoleAdapter {
    * @param console A {atomIde.ConsoleApi} that wants to receive messages.
    */
   public attach(console: atomIde.ConsoleApi): void {
-    this._consoles.add(console);
+    this._consoles.add(console)
   }
 
   /** Public: Remove all {atomIde.ConsoleApi}'s attached to this adapter. */
   public detachAll(): void {
-    this._consoles.clear();
+    this._consoles.clear()
   }
 
   /**
@@ -47,20 +43,20 @@ export default class LoggingConsoleAdapter {
   private logMessage(params: LogMessageParams): void {
     switch (params.type) {
       case MessageType.Error: {
-        this._consoles.forEach((c) => c.error(params.message));
-        return;
+        this._consoles.forEach((c) => c.error(params.message))
+        return
       }
       case MessageType.Warning: {
-        this._consoles.forEach((c) => c.warn(params.message));
-        return;
+        this._consoles.forEach((c) => c.warn(params.message))
+        return
       }
       case MessageType.Info: {
-        this._consoles.forEach((c) => c.info(params.message));
-        return;
+        this._consoles.forEach((c) => c.info(params.message))
+        return
       }
       case MessageType.Log: {
-        this._consoles.forEach((c) => c.log(params.message));
-        return;
+        this._consoles.forEach((c) => c.log(params.message))
+        return
       }
     }
   }

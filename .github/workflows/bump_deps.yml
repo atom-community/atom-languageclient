@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: "12"
       - name: Setup PNPM
-        uses: pnpm/action-setup@v1.2.2
+        uses: pnpm/action-setup@v1.2.1
         with:
           version: latest
 
@@ -23,7 +23,6 @@ jobs:
       - run: |
           ncu -u --dep prod
           pnpm install
-
 
       - uses: tibdex/github-app-token@v1
         id: generate-token
@@ -38,7 +37,6 @@ jobs:
           labels: Dependencies
           branch: "Bump_Dependencies"
 
-
   Bump_devDependencies:
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +45,7 @@ jobs:
         with:
           node-version: "12"
       - name: Setup PNPM
-        uses: pnpm/action-setup@v1.2.2
+        uses: pnpm/action-setup@v1.2.1
         with:
           version: latest
 

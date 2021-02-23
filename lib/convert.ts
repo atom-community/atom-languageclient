@@ -1,12 +1,7 @@
-import type * as atomIde from 'atom-ide-base';
-import * as ls from './languageclient';
-import * as URL from 'url';
-import {
-  Point,
-  FilesystemChange,
-  Range,
-  TextEditor,
-} from 'atom';
+import type * as atomIde from "atom-ide-base"
+import * as ls from "./languageclient"
+import * as URL from "url"
+import { Point, FilesystemChange, Range, TextEditor } from "atom"
 
 /**
  * Public: Class that contains a number of helper methods for general conversions
@@ -20,11 +15,11 @@ export default class Convert {
    * @returns The Uri corresponding to the path. e.g. file:///a/b/c.txt
    */
   public static pathToUri(filePath: string): string {
-    let newPath = filePath.replace(/\\/g, '/');
-    if (newPath[0] !== '/') {
-      newPath = `/${newPath}`;
+    let newPath = filePath.replace(/\\/g, "/")
+    if (newPath[0] !== "/") {
+      newPath = `/${newPath}`
     }
-    return encodeURI(`file://${newPath}`).replace(/[?#]/g, encodeURIComponent);
+    return encodeURI(`file://${newPath}`).replace(/[#?]/g, encodeURIComponent)
   }
 
   /**
@@ -36,20 +31,20 @@ export default class Convert {
    *   to deal with http/https sources in the future.
    */
   public static uriToPath(uri: string): string {
-    const url = URL.parse(uri);
-    if (url.protocol !== 'file:' || url.path === undefined || url.path === null) {
-      return uri;
+    const url = URL.parse(uri) /*eslint node/no-deprecated-api: "warn"*/ // TODO
+    if (url.protocol !== "file:" || url.path === undefined || url.path === null) {
+      return uri
     }
 
-    let filePath = decodeURIComponent(url.path);
-    if (process.platform === 'win32') {
+    let filePath = decodeURIComponent(url.path)
+    if (process.platform === "win32") {
       // Deal with Windows drive names
-      if (filePath[0] === '/') {
-        filePath = filePath.substr(1);
+      if (filePath[0] === "/") {
+        filePath = filePath.substr(1)
       }
-      return filePath.replace(/\//g, '\\');
+      return filePath.replace(/\//g, "\\")
     }
-    return filePath;
+    return filePath
   }
 
   /**
@@ -59,7 +54,7 @@ export default class Convert {
    * @returns The {Position} representation of the Atom {PointObject}.
    */
   public static pointToPosition(point: Point): ls.Position {
-    return { line: point.row, character: point.column };
+    return { line: point.row, character: point.column }
   }
 
   /**
@@ -69,7 +64,7 @@ export default class Convert {
    * @returns The Atom {PointObject} representation of the given {Position}.
    */
   public static positionToPoint(position: ls.Position): Point {
-    return new Point(position.line, position.character);
+    return new Point(position.line, position.character)
   }
 
   /**
@@ -79,7 +74,7 @@ export default class Convert {
    * @returns The Atom {Range} representation of the given language server {Range}.
    */
   public static lsRangeToAtomRange(range: ls.Range): Range {
-    return new Range(Convert.positionToPoint(range.start), Convert.positionToPoint(range.end));
+    return new Range(Convert.positionToPoint(range.start), Convert.positionToPoint(range.end))
   }
 
   /**
@@ -92,7 +87,7 @@ export default class Convert {
     return {
       start: Convert.pointToPosition(range.start),
       end: Convert.pointToPosition(range.end),
-    };
+    }
   }
 
   /**
@@ -103,7 +98,7 @@ export default class Convert {
    *   given editor's path.
    */
   public static editorToTextDocumentIdentifier(editor: TextEditor): ls.TextDocumentIdentifier {
-    return { uri: Convert.pathToUri(editor.getPath() || '') };
+    return { uri: Convert.pathToUri(editor.getPath() || "") }
   }
 
   /**
@@ -115,14 +110,11 @@ export default class Convert {
    * @returns A {TextDocumentPositionParams} that has textDocument property with the editors {TextDocumentIdentifier}
    *   and a position property with the supplied point (or current cursor position when not specified).
    */
-  public static editorToTextDocumentPositionParams(
-    editor: TextEditor,
-    point?: Point,
-  ): ls.TextDocumentPositionParams {
+  public static editorToTextDocumentPositionParams(editor: TextEditor, point?: Point): ls.TextDocumentPositionParams {
     return {
       textDocument: Convert.editorToTextDocumentIdentifier(editor),
       position: Convert.pointToPosition(point != null ? point : editor.getCursorBufferPosition()),
-    };
+    }
   }
 
   /**
@@ -136,8 +128,8 @@ export default class Convert {
    */
   public static grammarScopesToTextEditorScopes(grammarScopes: string[]): string {
     return grammarScopes
-      .map((g) => `atom-text-editor[data-grammar="${Convert.encodeHTMLAttribute(g.replace(/\./g, ' '))}"]`)
-      .join(', ');
+      .map((g) => `atom-text-editor[data-grammar="${Convert.encodeHTMLAttribute(g.replace(/\./g, " "))}"]`)
+      .join(", ")
   }
 
   /**
@@ -150,13 +142,13 @@ export default class Convert {
    */
   public static encodeHTMLAttribute(s: string): string {
     const attributeMap: { [key: string]: string } = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&apos;',
-    };
-    return s.replace(/[&<>'"]/g, (c) => attributeMap[c]);
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&apos;",
+    }
+    return s.replace(/["&'<>]/g, (c) => attributeMap[c])
   }
 
   /**
@@ -170,24 +162,24 @@ export default class Convert {
    */
   public static atomFileEventToLSFileEvents(fileEvent: FilesystemChange): ls.FileEvent[] {
     switch (fileEvent.action) {
-      case 'created':
-        return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Created }];
-      case 'modified':
-        return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Changed }];
-      case 'deleted':
-        return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Deleted }];
-      case 'renamed': {
-        const results: Array<{ uri: string, type: ls.FileChangeType }> = [];
+      case "created":
+        return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Created }]
+      case "modified":
+        return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Changed }]
+      case "deleted":
+        return [{ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Deleted }]
+      case "renamed": {
+        const results: Array<{ uri: string; type: ls.FileChangeType }> = []
         if (fileEvent.oldPath) {
-          results.push({ uri: Convert.pathToUri(fileEvent.oldPath), type: ls.FileChangeType.Deleted });
+          results.push({ uri: Convert.pathToUri(fileEvent.oldPath), type: ls.FileChangeType.Deleted })
         }
         if (fileEvent.path) {
-          results.push({ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Created });
+          results.push({ uri: Convert.pathToUri(fileEvent.path), type: ls.FileChangeType.Created })
         }
-        return results;
+        return results
       }
       default:
-        return [];
+        return []
     }
   }
 
@@ -196,20 +188,20 @@ export default class Convert {
       range: Convert.atomRangeToLSRange(diagnostic.range),
       severity: Convert.diagnosticTypeToLSSeverity(diagnostic.type),
       source: diagnostic.providerName,
-      message: diagnostic.text || '',
-    };
+      message: diagnostic.text || "",
+    }
   }
 
   public static diagnosticTypeToLSSeverity(type: atomIde.DiagnosticType): ls.DiagnosticSeverity {
     switch (type) {
-      case 'Error':
-        return ls.DiagnosticSeverity.Error;
-      case 'Warning':
-        return ls.DiagnosticSeverity.Warning;
-      case 'Info':
-        return ls.DiagnosticSeverity.Information;
+      case "Error":
+        return ls.DiagnosticSeverity.Error
+      case "Warning":
+        return ls.DiagnosticSeverity.Warning
+      case "Info":
+        return ls.DiagnosticSeverity.Information
       default:
-        throw Error(`Unexpected diagnostic type ${type}`);
+        throw Error(`Unexpected diagnostic type ${type}`)
     }
   }
 
@@ -221,7 +213,7 @@ export default class Convert {
    * @returns An {Array} of Atom {atomIde.TextEdit} objects.
    */
   public static convertLsTextEdits(textEdits: ls.TextEdit[] | null): atomIde.TextEdit[] {
-    return (textEdits || []).map(Convert.convertLsTextEdit);
+    return (textEdits || []).map(Convert.convertLsTextEdit)
   }
 
   /**
@@ -235,6 +227,6 @@ export default class Convert {
     return {
       oldRange: Convert.lsRangeToAtomRange(textEdit.range),
       newText: textEdit.newText,
-    };
+    }
   }
 }

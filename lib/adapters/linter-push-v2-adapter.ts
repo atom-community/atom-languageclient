@@ -1,22 +1,22 @@
-import * as linter from 'atom/linter';
-import * as atom from 'atom';
-import Convert from '../convert';
+import * as linter from "atom/linter"
+import * as atom from "atom"
+import Convert from "../convert"
 import {
   Diagnostic,
   DiagnosticCode,
   DiagnosticSeverity,
   LanguageClientConnection,
   PublishDiagnosticsParams,
-} from '../languageclient';
+} from "../languageclient"
 
 /**
  * Public: Listen to diagnostics messages from the language server and publish them
  * to the user by way of the Linter Push (Indie) v2 API supported by Atom IDE UI.
  */
 export default class LinterPushV2Adapter {
-  private _diagnosticMap: Map<string, linter.Message[]> = new Map();
-  private _diagnosticCodes: Map<string, Map<string, DiagnosticCode | null>> = new Map();
-  private _indies: Set<linter.IndieDelegate> = new Set();
+  private _diagnosticMap: Map<string, linter.Message[]> = new Map()
+  private _diagnosticCodes: Map<string, Map<string, DiagnosticCode | null>> = new Map()
+  private _indies: Set<linter.IndieDelegate> = new Set()
 
   /**
    * Public: Create a new {LinterPushV2Adapter} that will listen for diagnostics
@@ -25,12 +25,12 @@ export default class LinterPushV2Adapter {
    * @param connection A {LanguageClientConnection} to the language server that will provide diagnostics.
    */
   constructor(connection: LanguageClientConnection) {
-    connection.onPublishDiagnostics(this.captureDiagnostics.bind(this));
+    connection.onPublishDiagnostics(this.captureDiagnostics.bind(this))
   }
 
   /** Dispose this adapter ensuring any resources are freed and events unhooked. */
   public dispose(): void {
-    this.detachAll();
+    this.detachAll()
   }
 
   /**
@@ -39,17 +39,17 @@ export default class LinterPushV2Adapter {
    * @param indie A {V2IndieDelegate} that wants to receive messages.
    */
   public attach(indie: linter.IndieDelegate): void {
-    this._indies.add(indie);
-    this._diagnosticMap.forEach((value, key) => indie.setMessages(key, value));
+    this._indies.add(indie)
+    this._diagnosticMap.forEach((value, key) => indie.setMessages(key, value))
     indie.onDidDestroy(() => {
-      this._indies.delete(indie);
-    });
+      this._indies.delete(indie)
+    })
   }
 
   /** Public: Remove all {V2IndieDelegate} registries attached to this adapter and clear them. */
   public detachAll(): void {
-    this._indies.forEach((i) => i.clearMessages());
-    this._indies.clear();
+    this._indies.forEach((i) => i.clearMessages())
+    this._indies.clear()
   }
 
   /**
@@ -60,16 +60,16 @@ export default class LinterPushV2Adapter {
    *   be captured and forwarded on to any attached {V2IndieDelegate}s.
    */
   public captureDiagnostics(params: PublishDiagnosticsParams): void {
-    const path = Convert.uriToPath(params.uri);
-    const codeMap = new Map();
+    const path = Convert.uriToPath(params.uri)
+    const codeMap = new Map()
     const messages = params.diagnostics.map((d) => {
-      const linterMessage = this.diagnosticToV2Message(path, d);
-      codeMap.set(getCodeKey(linterMessage.location.position, d.message), d.code);
-      return linterMessage;
-    });
-    this._diagnosticMap.set(path, messages);
-    this._diagnosticCodes.set(path, codeMap);
-    this._indies.forEach((i) => i.setMessages(path, messages));
+      const linterMessage = this.diagnosticToV2Message(path, d)
+      codeMap.set(getCodeKey(linterMessage.location.position, d.message), d.code)
+      return linterMessage
+    })
+    this._diagnosticMap.set(path, messages)
+    this._diagnosticCodes.set(path, codeMap)
+    this._indies.forEach((i) => i.setMessages(path, messages))
   }
 
   /**
@@ -89,7 +89,7 @@ export default class LinterPushV2Adapter {
       excerpt: diagnostic.message,
       linterName: diagnostic.source,
       severity: LinterPushV2Adapter.diagnosticSeverityToSeverity(diagnostic.severity || -1),
-    };
+    }
   }
 
   /**
@@ -99,16 +99,16 @@ export default class LinterPushV2Adapter {
    * @param severity A number representing the severity of the diagnostic.
    * @returns A string of 'error', 'warning' or 'info' depending on the severity.
    */
-  public static diagnosticSeverityToSeverity(severity: number): 'error' | 'warning' | 'info' {
+  public static diagnosticSeverityToSeverity(severity: number): "error" | "warning" | "info" {
     switch (severity) {
       case DiagnosticSeverity.Error:
-        return 'error';
+        return "error"
       case DiagnosticSeverity.Warning:
-        return 'warning';
+        return "warning"
       case DiagnosticSeverity.Information:
       case DiagnosticSeverity.Hint:
       default:
-        return 'info';
+        return "info"
     }
   }
 
@@ -119,17 +119,17 @@ export default class LinterPushV2Adapter {
    * when needed (e.g. for passing back into code actions)
    */
   public getDiagnosticCode(editor: atom.TextEditor, range: atom.Range, text: string): DiagnosticCode | null {
-    const path = editor.getPath();
+    const path = editor.getPath()
     if (path != null) {
-      const diagnosticCodes = this._diagnosticCodes.get(path);
+      const diagnosticCodes = this._diagnosticCodes.get(path)
       if (diagnosticCodes != null) {
-        return diagnosticCodes.get(getCodeKey(range, text)) || null;
+        return diagnosticCodes.get(getCodeKey(range, text)) || null
       }
     }
-    return null;
+    return null
   }
 }
 
 function getCodeKey(range: atom.Range, text: string): string {
-  return ([] as any[]).concat(...range.serialize(), text).join(',');
+  return ([] as any[]).concat(...range.serialize(), text).join(",")
 }

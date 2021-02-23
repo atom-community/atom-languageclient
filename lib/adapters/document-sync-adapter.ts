@@ -1,4 +1,4 @@
-import Convert from '../convert';
+import Convert from "../convert"
 import {
   LanguageClientConnection,
   FileChangeType,
@@ -9,16 +9,10 @@ import {
   VersionedTextDocumentIdentifier,
   ServerCapabilities,
   DidSaveTextDocumentParams,
-} from '../languageclient';
-import ApplyEditAdapter from './apply-edit-adapter';
-import {
-  CompositeDisposable,
-  Disposable,
-  TextEditor,
-  BufferStoppedChangingEvent,
-  TextChange,
-} from 'atom';
-import * as Utils from '../utils';
+} from "../languageclient"
+import ApplyEditAdapter from "./apply-edit-adapter"
+import { CompositeDisposable, Disposable, TextEditor, BufferStoppedChangingEvent, TextChange } from "atom"
+import * as Utils from "../utils"
 
 /**
  * Public: Synchronizes the documents between Atom and the language server by notifying
@@ -26,10 +20,10 @@ import * as Utils from '../utils';
  * changes either in whole or in part depending on what the language server supports.
  */
 export default class DocumentSyncAdapter {
-  private _disposable = new CompositeDisposable();
-  public _documentSync: TextDocumentSyncOptions;
-  private _editors: WeakMap<TextEditor, TextEditorSyncAdapter> = new WeakMap();
-  private _versions: Map<string, number> = new Map();
+  private _disposable = new CompositeDisposable()
+  public _documentSync: TextDocumentSyncOptions
+  private _editors: WeakMap<TextEditor, TextEditorSyncAdapter> = new WeakMap()
+  private _versions: Map<string, number> = new Map()
 
   /**
    * Public: Determine whether this adapter can be used to adapt a language server
@@ -41,23 +35,23 @@ export default class DocumentSyncAdapter {
    *   given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return this.canAdaptV2(serverCapabilities) || this.canAdaptV3(serverCapabilities);
+    return this.canAdaptV2(serverCapabilities) || this.canAdaptV3(serverCapabilities)
   }
 
   private static canAdaptV2(serverCapabilities: ServerCapabilities): boolean {
     return (
       serverCapabilities.textDocumentSync === TextDocumentSyncKind.Incremental ||
       serverCapabilities.textDocumentSync === TextDocumentSyncKind.Full
-    );
+    )
   }
 
   private static canAdaptV3(serverCapabilities: ServerCapabilities): boolean {
-    const options = serverCapabilities.textDocumentSync;
+    const options = serverCapabilities.textDocumentSync
     return (
       options !== null &&
-      typeof options === 'object' &&
+      typeof options === "object" &&
       (options.change === TextDocumentSyncKind.Incremental || options.change === TextDocumentSyncKind.Full)
-    );
+    )
   }
 
   /**
@@ -72,21 +66,21 @@ export default class DocumentSyncAdapter {
     private _connection: LanguageClientConnection,
     private _editorSelector: (editor: TextEditor) => boolean,
     documentSync: TextDocumentSyncOptions | TextDocumentSyncKind | undefined,
-    private _reportBusyWhile: Utils.ReportBusyWhile,
+    private _reportBusyWhile: Utils.ReportBusyWhile
   ) {
-    if (typeof documentSync === 'object') {
-      this._documentSync = documentSync;
+    if (typeof documentSync === "object") {
+      this._documentSync = documentSync
     } else {
       this._documentSync = {
         change: documentSync || TextDocumentSyncKind.Full,
-      };
+      }
     }
-    this._disposable.add(atom.textEditors.observe(this.observeTextEditor.bind(this)));
+    this._disposable.add(atom.textEditors.observe(this.observeTextEditor.bind(this)))
   }
 
   /** Dispose this adapter ensuring any resources are freed and events unhooked. */
   public dispose(): void {
-    this._disposable.dispose();
+    this._disposable.dispose()
   }
 
   /**
@@ -96,28 +90,28 @@ export default class DocumentSyncAdapter {
    * @param editor A {TextEditor} to consider for observation.
    */
   public observeTextEditor(editor: TextEditor): void {
-    const listener = editor.observeGrammar((_grammar) => this._handleGrammarChange(editor));
+    const listener = editor.observeGrammar((_grammar) => this._handleGrammarChange(editor))
     this._disposable.add(
       editor.onDidDestroy(() => {
-        this._disposable.remove(listener);
-        listener.dispose();
-      }),
-    );
-    this._disposable.add(listener);
+        this._disposable.remove(listener)
+        listener.dispose()
+      })
+    )
+    this._disposable.add(listener)
     if (!this._editors.has(editor) && this._editorSelector(editor)) {
-      this._handleNewEditor(editor);
+      this._handleNewEditor(editor)
     }
   }
 
   private _handleGrammarChange(editor: TextEditor): void {
-    const sync = this._editors.get(editor);
+    const sync = this._editors.get(editor)
     if (sync != null && !this._editorSelector(editor)) {
-      this._editors.delete(editor);
-      this._disposable.remove(sync);
-      sync.didClose();
-      sync.dispose();
+      this._editors.delete(editor)
+      this._disposable.remove(sync)
+      sync.didClose()
+      sync.dispose()
     } else if (sync == null && this._editorSelector(editor)) {
-      this._handleNewEditor(editor);
+      this._handleNewEditor(editor)
     }
   }
 
@@ -127,32 +121,32 @@ export default class DocumentSyncAdapter {
       this._connection,
       this._documentSync,
       this._versions,
-      this._reportBusyWhile,
-    );
-    this._editors.set(editor, sync);
-    this._disposable.add(sync);
+      this._reportBusyWhile
+    )
+    this._editors.set(editor, sync)
+    this._disposable.add(sync)
     this._disposable.add(
       editor.onDidDestroy(() => {
-        const destroyedSync = this._editors.get(editor);
+        const destroyedSync = this._editors.get(editor)
         if (destroyedSync) {
-          this._editors.delete(editor);
-          this._disposable.remove(destroyedSync);
-          destroyedSync.dispose();
+          this._editors.delete(editor)
+          this._disposable.remove(destroyedSync)
+          destroyedSync.dispose()
         }
-      }),
-    );
+      })
+    )
   }
 
   public getEditorSyncAdapter(editor: TextEditor): TextEditorSyncAdapter | undefined {
-    return this._editors.get(editor);
+    return this._editors.get(editor)
   }
 }
 
 /** Public: Keep a single {TextEditor} in sync with a given language server. */
 export class TextEditorSyncAdapter {
-  private _disposable = new CompositeDisposable();
-  private _currentUri: string;
-  private _fakeDidChangeWatchedFiles: boolean;
+  private _disposable = new CompositeDisposable()
+  private _currentUri: string
+  private _fakeDidChangeWatchedFiles: boolean
 
   /**
    * Public: Create a {TextEditorSyncAdapter} in sync with a given language server.
@@ -166,35 +160,32 @@ export class TextEditorSyncAdapter {
     private _connection: LanguageClientConnection,
     private _documentSync: TextDocumentSyncOptions,
     private _versions: Map<string, number>,
-    private _reportBusyWhile: Utils.ReportBusyWhile,
+    private _reportBusyWhile: Utils.ReportBusyWhile
   ) {
-    this._fakeDidChangeWatchedFiles = atom.project.onDidChangeFiles == null;
+    this._fakeDidChangeWatchedFiles = atom.project.onDidChangeFiles == null
 
-    const changeTracking = this.setupChangeTracking(_documentSync);
+    const changeTracking = this.setupChangeTracking(_documentSync)
     if (changeTracking != null) {
-      this._disposable.add(changeTracking);
+      this._disposable.add(changeTracking)
     }
 
     // These handlers are attached only if server supports them
     if (_documentSync.willSave) {
-      this._disposable.add(_editor.getBuffer().onWillSave(this.willSave.bind(this)));
+      this._disposable.add(_editor.getBuffer().onWillSave(this.willSave.bind(this)))
     }
     if (_documentSync.willSaveWaitUntil) {
-      this._disposable.add(_editor.getBuffer().onWillSave(this.willSaveWaitUntil.bind(this)));
+      this._disposable.add(_editor.getBuffer().onWillSave(this.willSaveWaitUntil.bind(this)))
     }
     // Send close notifications unless it's explicitly disabled
     if (_documentSync.openClose !== false) {
-      this._disposable.add(_editor.onDidDestroy(this.didClose.bind(this)));
+      this._disposable.add(_editor.onDidDestroy(this.didClose.bind(this)))
     }
-    this._disposable.add(
-      _editor.onDidSave(this.didSave.bind(this)),
-      _editor.onDidChangePath(this.didRename.bind(this)),
-    );
+    this._disposable.add(_editor.onDidSave(this.didSave.bind(this)), _editor.onDidChangePath(this.didRename.bind(this)))
 
-    this._currentUri = this.getEditorUri();
+    this._currentUri = this.getEditorUri()
 
     if (_documentSync.openClose !== false) {
-      this.didOpen();
+      this.didOpen()
     }
   }
 
@@ -205,16 +196,16 @@ export class TextEditorSyncAdapter {
   public setupChangeTracking(documentSync: TextDocumentSyncOptions): Disposable | null {
     switch (documentSync.change) {
       case TextDocumentSyncKind.Full:
-        return this._editor.onDidChange(this.sendFullChanges.bind(this));
+        return this._editor.onDidChange(this.sendFullChanges.bind(this))
       case TextDocumentSyncKind.Incremental:
-        return this._editor.getBuffer().onDidChangeText(this.sendIncrementalChanges.bind(this));
+        return this._editor.getBuffer().onDidChangeText(this.sendIncrementalChanges.bind(this))
     }
-    return null;
+    return null
   }
 
   /** Dispose this adapter ensuring any resources are freed and events unhooked. */
   public dispose(): void {
-    this._disposable.dispose();
+    this._disposable.dispose()
   }
 
   /**
@@ -222,7 +213,7 @@ export class TextEditorSyncAdapter {
    * using the grammar name.
    */
   public getLanguageId(): string {
-    return this._editor.getGrammar().name;
+    return this._editor.getGrammar().name
   }
 
   /**
@@ -232,8 +223,8 @@ export class TextEditorSyncAdapter {
   public getVersionedTextDocumentIdentifier(): VersionedTextDocumentIdentifier {
     return {
       uri: this.getEditorUri(),
-      version: this._getVersion(this._editor.getPath() || ''),
-    };
+      version: this._getVersion(this._editor.getPath() || ""),
+    }
   }
 
   /**
@@ -241,13 +232,15 @@ export class TextEditorSyncAdapter {
    * operating in Full (1) sync mode.
    */
   public sendFullChanges(): void {
-    if (!this._isPrimaryAdapter()) { return; } // Multiple editors, we are not first
+    if (!this._isPrimaryAdapter()) {
+      return
+    } // Multiple editors, we are not first
 
-    this._bumpVersion();
+    this._bumpVersion()
     this._connection.didChangeTextDocument({
       textDocument: this.getVersionedTextDocumentIdentifier(),
       contentChanges: [{ text: this._editor.getText() }],
-    });
+    })
   }
 
   /**
@@ -262,13 +255,15 @@ export class TextEditorSyncAdapter {
    */
   public sendIncrementalChanges(event: BufferStoppedChangingEvent): void {
     if (event.changes.length > 0) {
-      if (!this._isPrimaryAdapter()) { return; } // Multiple editors, we are not first
+      if (!this._isPrimaryAdapter()) {
+        return
+      } // Multiple editors, we are not first
 
-      this._bumpVersion();
+      this._bumpVersion()
       this._connection.didChangeTextDocument({
         textDocument: this.getVersionedTextDocumentIdentifier(),
         contentChanges: event.changes.map(TextEditorSyncAdapter.textEditToContentChange).reverse(),
-      });
+      })
     }
   }
 
@@ -283,7 +278,7 @@ export class TextEditorSyncAdapter {
       range: Convert.atomRangeToLSRange(change.oldRange),
       rangeLength: change.oldText.length,
       text: change.newText,
-    };
+    }
   }
 
   private _isPrimaryAdapter(): boolean {
@@ -291,15 +286,17 @@ export class TextEditorSyncAdapter {
       ...atom.workspace
         .getTextEditors()
         .filter((t) => t.getBuffer() === this._editor.getBuffer())
-        .map((t) => t.id),
-    );
-    return lowestIdForBuffer === this._editor.id;
+        .map((t) => t.id)
+    )
+    return lowestIdForBuffer === this._editor.id
   }
 
   private _bumpVersion(): void {
-    const filePath = this._editor.getPath();
-    if (filePath == null) { return; }
-    this._versions.set(filePath, this._getVersion(filePath) + 1);
+    const filePath = this._editor.getPath()
+    if (filePath == null) {
+      return
+    }
+    this._versions.set(filePath, this._getVersion(filePath) + 1)
   }
 
   /**
@@ -307,10 +304,14 @@ export class TextEditorSyncAdapter {
    * so it can load it in and keep track of diagnostics etc.
    */
   private didOpen(): void {
-    const filePath = this._editor.getPath();
-    if (filePath == null) { return; } // Not yet saved
+    const filePath = this._editor.getPath()
+    if (filePath == null) {
+      return
+    } // Not yet saved
 
-    if (!this._isPrimaryAdapter()) { return; } // Multiple editors, we are not first
+    if (!this._isPrimaryAdapter()) {
+      return
+    } // Multiple editors, we are not first
 
     this._connection.didOpenTextDocument({
       textDocument: {
@@ -319,11 +320,11 @@ export class TextEditorSyncAdapter {
         version: this._getVersion(filePath),
         text: this._editor.getText(),
       },
-    });
+    })
   }
 
   private _getVersion(filePath: string): number {
-    return this._versions.get(filePath) || 1;
+    return this._versions.get(filePath) || 1
   }
 
   /**
@@ -331,14 +332,16 @@ export class TextEditorSyncAdapter {
    * the connected language server.
    */
   public didClose(): void {
-    if (this._editor.getPath() == null) { return; } // Not yet saved
+    if (this._editor.getPath() == null) {
+      return
+    } // Not yet saved
 
-    const fileStillOpen = atom.workspace.getTextEditors().find((t) => t.getBuffer() === this._editor.getBuffer());
+    const fileStillOpen = atom.workspace.getTextEditors().find((t) => t.getBuffer() === this._editor.getBuffer())
     if (fileStillOpen) {
-      return; // Other windows or editors still have this file open
+      return // Other windows or editors still have this file open
     }
 
-    this._connection.didCloseTextDocument({ textDocument: { uri: this.getEditorUri() } });
+    this._connection.didCloseTextDocument({ textDocument: { uri: this.getEditorUri() } })
   }
 
   /**
@@ -346,13 +349,15 @@ export class TextEditorSyncAdapter {
    * the connected language server.
    */
   public willSave(): void {
-    if (!this._isPrimaryAdapter()) { return; }
+    if (!this._isPrimaryAdapter()) {
+      return
+    }
 
-    const uri = this.getEditorUri();
+    const uri = this.getEditorUri()
     this._connection.willSaveTextDocument({
       textDocument: { uri },
       reason: TextDocumentSaveReason.Manual,
-    });
+    })
   }
 
   /**
@@ -360,36 +365,36 @@ export class TextEditorSyncAdapter {
    * the connected language server and waits for the response before saving the buffer.
    */
   public async willSaveWaitUntil(): Promise<void> {
-    if (!this._isPrimaryAdapter()) { return Promise.resolve(); }
+    if (!this._isPrimaryAdapter()) {
+      return Promise.resolve()
+    }
 
-    const buffer = this._editor.getBuffer();
-    const uri = this.getEditorUri();
-    const title = this._editor.getLongTitle();
+    const buffer = this._editor.getBuffer()
+    const uri = this.getEditorUri()
+    const title = this._editor.getLongTitle()
 
     const applyEditsOrTimeout = Utils.promiseWithTimeout(
       2500, // 2.5 seconds timeout
       this._connection.willSaveWaitUntilTextDocument({
         textDocument: { uri },
         reason: TextDocumentSaveReason.Manual,
-      }),
-    ).then((edits) => {
-      const cursor = this._editor.getCursorBufferPosition();
-      ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(edits));
-      this._editor.setCursorBufferPosition(cursor);
-    }).catch((err) => {
-      atom.notifications.addError('On-save action failed', {
-        description: `Failed to apply edits to ${title}`,
-        detail: err.message,
-      });
-      return;
-    });
+      })
+    )
+      .then((edits) => {
+        const cursor = this._editor.getCursorBufferPosition()
+        ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(edits))
+        this._editor.setCursorBufferPosition(cursor)
+      })
+      .catch((err) => {
+        atom.notifications.addError("On-save action failed", {
+          description: `Failed to apply edits to ${title}`,
+          detail: err.message,
+        })
+        return
+      })
 
-    const withBusySignal =
-      this._reportBusyWhile(
-        `Applying on-save edits for ${title}`,
-        () => applyEditsOrTimeout,
-      );
-    return withBusySignal || applyEditsOrTimeout;
+    const withBusySignal = this._reportBusyWhile(`Applying on-save edits for ${title}`, () => applyEditsOrTimeout)
+    return withBusySignal || applyEditsOrTimeout
   }
 
   /**
@@ -399,34 +404,38 @@ export class TextEditorSyncAdapter {
    * will be sent from elsewhere soon.
    */
   public didSave(): void {
-    if (!this._isPrimaryAdapter()) { return; }
-
-    const uri = this.getEditorUri();
-    const didSaveNotification = {
-      textDocument: { uri, version: this._getVersion((uri)) },
-    } as DidSaveTextDocumentParams;
-    if (this._documentSync.save && this._documentSync.save.includeText) {
-      didSaveNotification.text = this._editor.getText();
+    if (!this._isPrimaryAdapter()) {
+      return
     }
-    this._connection.didSaveTextDocument(didSaveNotification);
+
+    const uri = this.getEditorUri()
+    const didSaveNotification = {
+      textDocument: { uri, version: this._getVersion(uri) },
+    } as DidSaveTextDocumentParams
+    if (this._documentSync.save && this._documentSync.save.includeText) {
+      didSaveNotification.text = this._editor.getText()
+    }
+    this._connection.didSaveTextDocument(didSaveNotification)
     if (this._fakeDidChangeWatchedFiles) {
       this._connection.didChangeWatchedFiles({
         changes: [{ uri, type: FileChangeType.Changed }],
-      });
+      })
     }
   }
 
   public didRename(): void {
-    if (!this._isPrimaryAdapter()) { return; }
+    if (!this._isPrimaryAdapter()) {
+      return
+    }
 
-    const oldUri = this._currentUri;
-    this._currentUri = this.getEditorUri();
+    const oldUri = this._currentUri
+    this._currentUri = this.getEditorUri()
     if (!oldUri) {
-      return; // Didn't previously have a name
+      return // Didn't previously have a name
     }
 
     if (this._documentSync.openClose !== false) {
-      this._connection.didCloseTextDocument({ textDocument: { uri: oldUri } });
+      this._connection.didCloseTextDocument({ textDocument: { uri: oldUri } })
     }
 
     if (this._fakeDidChangeWatchedFiles) {
@@ -435,18 +444,18 @@ export class TextEditorSyncAdapter {
           { uri: oldUri, type: FileChangeType.Deleted },
           { uri: this._currentUri, type: FileChangeType.Created },
         ],
-      });
+      })
     }
 
     // Send an equivalent open event for this editor, which will now use the new
     // file path.
     if (this._documentSync.openClose !== false) {
-      this.didOpen();
+      this.didOpen()
     }
   }
 
   /** Public: Obtain the current {TextEditor} path and convert it to a Uri. */
   public getEditorUri(): string {
-    return Convert.pathToUri(this._editor.getPath() || '');
+    return Convert.pathToUri(this._editor.getPath() || "")
   }
 }

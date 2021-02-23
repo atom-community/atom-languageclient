@@ -1,6 +1,6 @@
-import * as sinon from 'sinon';
-import * as rpc from 'vscode-jsonrpc';
-import { TextEditor } from 'atom';
+import * as sinon from "sinon"
+import * as rpc from "vscode-jsonrpc"
+import { TextEditor } from "atom"
 
 export function createSpyConnection(): rpc.MessageConnection {
   return {
@@ -19,15 +19,15 @@ export function createSpyConnection(): rpc.MessageConnection {
     sendProgress: sinon.spy(),
     trace: sinon.spy(),
     inspect: sinon.spy(),
-  };
+  }
 }
 
 export function createFakeEditor(path?: string): TextEditor {
-  const editor = new TextEditor();
-  sinon.stub(editor, 'getSelectedBufferRange');
-  sinon.spy(editor, 'setTextInBufferRange');
-  editor.setTabLength(4);
-  editor.setSoftTabs(true);
-  editor.getBuffer().setPath(path || '/a/b/c/d.js');
-  return editor;
+  const editor = new TextEditor()
+  sinon.stub(editor, "getSelectedBufferRange")
+  sinon.spy(editor, "setTextInBufferRange")
+  editor.setTabLength(4)
+  editor.setSoftTabs(true)
+  editor.getBuffer().setPath(path || "/a/b/c/d.js")
+  return editor
 }
