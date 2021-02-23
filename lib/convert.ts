@@ -1,6 +1,6 @@
 import type * as atomIde from "atom-ide-base"
 import * as ls from "./languageclient"
-import { URL } from "url"
+import * as URL from "url"
 import { Point, FilesystemChange, Range, TextEditor } from "atom"
 
 /**
@@ -31,13 +31,12 @@ export default class Convert {
    *   to deal with http/https sources in the future.
    */
   public static uriToPath(uri: string): string {
-    const url = new URL(uri)
-    const urlPath = url.pathname + url.search
-    if (url.protocol !== "file:" || urlPath === undefined || urlPath === null) {
+    const url = URL.parse(uri)
+    if (url.protocol !== "file:" || url.path === undefined || url.path === null) {
       return uri
     }
 
-    let filePath = decodeURIComponent(urlPath)
+    let filePath = decodeURIComponent(url.path)
     if (process.platform === "win32") {
       // Deal with Windows drive names
       if (filePath[0] === "/") {
