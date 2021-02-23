@@ -1,4 +1,3 @@
-const { TestRunnerParams } = require('atom');
 const { createRunner } = require('@atom/mocha-test-runner');
 
 module.exports = createRunner(
