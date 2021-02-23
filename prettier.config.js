@@ -4,8 +4,8 @@
 module.exports = {
   tabWidth: 2,
   printWidth: 120,
-  semi: true, // changed to reduce code-diff
-  singleQuote: true, // changed to reduce code-diff
+  semi: false,
+  singleQuote: false,
   overrides: [
     {
       files: '{*.json}',
