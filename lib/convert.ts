@@ -31,7 +31,7 @@ export default class Convert {
    *   to deal with http/https sources in the future.
    */
   public static uriToPath(uri: string): string {
-    const url = URL.parse(uri)
+    const url = URL.parse(uri) /*eslint node/no-deprecated-api: "warn"*/ // TODO
     if (url.protocol !== "file:" || url.path === undefined || url.path === null) {
       return uri
     }
