@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.2.1...v1.2.2) (2021-02-23)
+
+
+### Bug Fixes
+
+* remove deprecated url.parse ([e360195](https://github.com/atom-ide-community/atom-languageclient/commit/e360195a096aca20cdcb3c86d74c32ed0cd740a0))
+
 ## [1.2.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.2.0...v1.2.1) (2021-02-23)
 
 
