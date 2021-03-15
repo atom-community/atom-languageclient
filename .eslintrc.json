@@ -1,5 +1,5 @@
 {
-  "extends": "eslint-config-atomic/strict",
+  "extends": ["eslint-config-atomic/strict", "plugin:chai-friendly/recommended"],
   "ignorePatterns": ["build/", "node_modules/"],
   "rules": {
     "@typescript-eslint/ban-types": [

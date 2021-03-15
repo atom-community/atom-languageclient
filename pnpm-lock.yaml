@@ -16,6 +16,7 @@ devDependencies:
   chai: 4.3.0
   eslint: 7.20.0
   eslint-config-atomic: 1.12.2_eslint@7.20.0
+  eslint-plugin-chai-friendly: 0.6.0_eslint@7.20.0
   mocha: 8.3.0
   mocha-appveyor-reporter: 0.4.2
   shx: 0.3.3
@@ -1433,6 +1434,16 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-6j9xxegbqe8/kZY8cYpcp0xhbK0EgJlg3g9mib3/miLaExuuwc3n5UEfSnU6hWMbT0FAYVvDbL9RrRgpUeQIvA==
+  /eslint-plugin-chai-friendly/0.6.0_eslint@7.20.0:
+    dependencies:
+      eslint: 7.20.0
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    peerDependencies:
+      eslint: '>=3.0.0'
+    resolution:
+      integrity: sha512-Uvvv1gkbRGp/qfN15B0kQyQWg+oFA8buDSqrwmW3egNSk/FpqH2MjQqKOuKwmEL6w4QIQrIjDp+gg6kGGmD3oQ==
   /eslint-plugin-coffee/0.1.14_eslint@7.20.0:
     dependencies:
       axe-core: 3.5.5
@@ -3886,6 +3897,7 @@ specifiers:
   chai: ^4.2.0
   eslint: ^7.18.0
   eslint-config-atomic: ^1.12.2
+  eslint-plugin-chai-friendly: ^0.6.0
   mocha: ^8.2.1
   mocha-appveyor-reporter: ^0.4.2
   shx: ^0.3.3

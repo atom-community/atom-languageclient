@@ -43,6 +43,7 @@
     "chai": "^4.2.0",
     "eslint": "^7.18.0",
     "eslint-config-atomic": "^1.12.2",
+    "eslint-plugin-chai-friendly": "^0.6.0",
     "mocha": "^8.2.1",
     "mocha-appveyor-reporter": "^0.4.2",
     "shx": "^0.3.3",
