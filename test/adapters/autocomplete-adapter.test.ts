@@ -7,7 +7,7 @@ import * as ac from "atom/autocomplete-plus"
 import { expect } from "chai"
 import { createSpyConnection, createFakeEditor } from "../helpers.js"
 import { TextSuggestion, SnippetSuggestion } from "../../lib/types/autocomplete-extended"
-import { CompletionItem, MarkupContent, InsertTextFormat, TextEdit, Command } from "../../lib/languageclient"
+import { CompletionItem } from "../../lib/languageclient"
 
 function createRequest({
   prefix = "",
@@ -27,32 +27,6 @@ function createRequest({
   }
 }
 
-// Required and optional properties as of LSP 3.14.0
-function createCompletionItem(
-  label: string,
-  optional: {
-    kind?: number
-    detail?: string
-    documentation?: string | MarkupContent
-    deprecated?: boolean
-    preselect?: boolean
-    sortText?: string
-    filterText?: string
-    insertText?: string
-    insertTextFormat?: InsertTextFormat
-    textEdit?: TextEdit
-    additionalTextEdits?: TextEdit[]
-    commitCharacters?: string[]
-    command?: Command
-    data?: any
-  } = {}
-): CompletionItem {
-  return {
-    label,
-    ...optional,
-  } as CompletionItem
-}
-
 describe("AutoCompleteAdapter", () => {
   function createActiveServerSpy(): ActiveServer {
     return {
@@ -64,32 +38,36 @@ describe("AutoCompleteAdapter", () => {
     }
   }
 
-  const completionItems = [
-    createCompletionItem("thisHasFiltertext", {
+  const completionItems: CompletionItem[] = [
+    {
+      label: "thisHasFiltertext",
       kind: ls.CompletionItemKind.Keyword,
       detail: "description1",
       documentation: "a very exciting keyword",
       filterText: "labrador",
       sortText: "z",
-    }),
-    createCompletionItem("label2", {
+    },
+    {
+      label: "label2",
       kind: ls.CompletionItemKind.Field,
       detail: "description2",
       documentation: "a very exciting field",
       filterText: "rabbit",
       sortText: "a",
-    }),
-    createCompletionItem("label3", {
+    },
+    {
+      label: "label3",
       kind: ls.CompletionItemKind.Variable,
       detail: "description3",
       documentation: "a very exciting variable",
-    }),
-    createCompletionItem("filteredout", {
+    },
+    {
+      label: "filteredout",
       kind: ls.CompletionItemKind.Snippet,
       detail: "description4",
       documentation: "should not appear",
       sortText: "zzz",
-    }),
+    },
   ]
 
   const request = createRequest({ prefix: "lab" })
@@ -124,10 +102,10 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("uses the sortText property to arrange completions when there is no prefix", async () => {
-      const sortedItems = [
-        createCompletionItem("a", { sortText: "c" }),
-        createCompletionItem("b"),
-        createCompletionItem("c", { sortText: "a" }),
+      const sortedItems: CompletionItem[] = [
+        { label: "a", sortText: "c" },
+        { label: "b" },
+        { label: "c", sortText: "a" },
       ]
       const results = await getResults(sortedItems, { prefix: "" })
 
@@ -146,17 +124,15 @@ describe("AutoCompleteAdapter", () => {
   })
 
   describe("completeSuggestion", () => {
-    const partialItems = [
-      createCompletionItem("label1"),
-      createCompletionItem("label2"),
-      createCompletionItem("label3"),
-    ]
+    const partialItems: CompletionItem[] = [{ label: "label1" }, { label: "label2" }, { label: "label3" }]
 
     const server: ActiveServer = createActiveServerSpy()
     sinon.stub(server.connection, "completion").resolves(partialItems)
-    sinon
-      .stub(server.connection, "completionItemResolve")
-      .resolves(createCompletionItem("label3", { detail: "description3", documentation: "a very exciting variable" }))
+    sinon.stub(server.connection, "completionItemResolve").resolves({
+      label: "label3",
+      detail: "description3",
+      documentation: "a very exciting variable",
+    } as CompletionItem)
 
     it("resolves suggestions via LSP given an AutoCompleteRequest", async () => {
       const autoCompleteAdapter = new AutoCompleteAdapter()
@@ -198,40 +174,42 @@ describe("AutoCompleteAdapter", () => {
   })
 
   describe("conversion of LSP completion to autocomplete+ completion", () => {
-    const items = [
-      createCompletionItem("align", {
+    const items: CompletionItem[] = [
+      {
+        label: "align",
         sortText: "a",
         kind: ls.CompletionItemKind.Snippet,
         textEdit: {
           range: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
           newText: "hello world",
         },
-      }),
-      createCompletionItem("list", {
+      },
+      {
+        label: "list",
         sortText: "b",
         kind: ls.CompletionItemKind.Constant,
         textEdit: {
           range: { start: { line: 0, character: 8 }, end: { line: 0, character: 13 } },
           newText: "shifted",
         },
-      }),
-      createCompletionItem("minimal", {
-        sortText: "c",
-      }),
-      createCompletionItem("old", {
+      },
+      { label: "minimal", sortText: "c" },
+      {
+        label: "old",
         sortText: "d",
         documentation: "doc string",
         insertText: "inserted",
         insertTextFormat: ls.InsertTextFormat.Snippet,
-      }),
-      createCompletionItem("documented", {
+      },
+      {
+        label: "documented",
         sortText: "e",
         detail: "details",
         documentation: {
           kind: "markdown",
           value: "documentation",
         },
-      }),
+      },
     ]
 
     let server: ActiveServer
@@ -275,7 +253,7 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("respects onDidConvertCompletionItem", async () => {
-      sinon.stub(server.connection, "completion").resolves([createCompletionItem("label")])
+      sinon.stub(server.connection, "completion").resolves([{ label: "label" }] as CompletionItem[])
       const results = await autoCompleteAdapter.getSuggestions(server, createRequest({}), (c, a, r) => {
         ;(a as ac.TextSuggestion).text = c.label + " ok"
         a.displayText = r.scopeDescriptor.getScopesArray()[0]
@@ -294,14 +272,15 @@ describe("AutoCompleteAdapter", () => {
 
     it("converts LSP CompletionItem to AutoComplete Suggestion without textEdit", async () => {
       sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
+        {
+          label: "label",
           insertText: "insert",
           filterText: "filter",
           kind: ls.CompletionItemKind.Keyword,
           detail: "keyword",
           documentation: "a truly useful keyword",
-        }),
-      ])
+        },
+      ] as CompletionItem[])
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0]
       expect((result as TextSuggestion).text).equals("insert")
       expect(result.displayText).equals("label")
@@ -319,7 +298,8 @@ describe("AutoCompleteAdapter", () => {
       })
       customRequest.editor.setText("foo #label bar")
       sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
+        {
+          label: "label",
           insertText: "insert",
           filterText: "filter",
           kind: ls.CompletionItemKind.Variable,
@@ -329,8 +309,8 @@ describe("AutoCompleteAdapter", () => {
             range: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
             newText: "newText",
           },
-        }),
-      ])
+        },
+      ] as CompletionItem[])
 
       const result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0]
       expect(result.displayText).equals("label")
@@ -344,17 +324,16 @@ describe("AutoCompleteAdapter", () => {
 
     it("converts LSP CompletionItem with insertText and filterText to AutoComplete Suggestion", async () => {
       sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
+        {
+          label: "label",
           insertText: "insert",
           filterText: "filter",
           kind: ls.CompletionItemKind.Keyword,
           detail: "detail",
           documentation: "a very exciting keyword",
-        }),
-        createCompletionItem("filteredOut", {
-          filterText: "nop",
-        }),
-      ])
+        },
+        { label: "filteredOut", filterText: "nop" },
+      ] as CompletionItem[])
 
       const results = await autoCompleteAdapter.getSuggestions(server, createRequest({ prefix: "fil" }))
       expect(results.length).equals(1)
@@ -369,11 +348,7 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("converts LSP CompletionItem with missing documentation to AutoComplete Suggestion", async () => {
-      sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
-          detail: "detail",
-        }),
-      ])
+      sinon.stub(server.connection, "completion").resolves([{ label: "label", detail: "detail" }] as CompletionItem[])
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0]
       expect(result.rightLabel).equals("detail")
@@ -382,12 +357,11 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("converts LSP CompletionItem with markdown documentation to AutoComplete Suggestion", async () => {
-      sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
-          detail: "detail",
-          documentation: { value: "Some *markdown*", kind: "markdown" },
-        }),
-      ])
+      sinon
+        .stub(server.connection, "completion")
+        .resolves([
+          { label: "label", detail: "detail", documentation: { value: "Some *markdown*", kind: "markdown" } },
+        ] as CompletionItem[])
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0]
       expect(result.rightLabel).equals("detail")
@@ -396,12 +370,11 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("converts LSP CompletionItem with plaintext documentation to AutoComplete Suggestion", async () => {
-      sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
-          detail: "detail",
-          documentation: { value: "Some plain text", kind: "plaintext" },
-        }),
-      ])
+      sinon
+        .stub(server.connection, "completion")
+        .resolves([
+          { label: "label", detail: "detail", documentation: { value: "Some plain text", kind: "plaintext" } },
+        ] as CompletionItem[])
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0]
       expect(result.rightLabel).equals("detail")
@@ -411,12 +384,13 @@ describe("AutoCompleteAdapter", () => {
 
     it("converts LSP CompletionItem without insertText or filterText to AutoComplete Suggestion", async () => {
       sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("label", {
+        {
+          label: "label",
           kind: ls.CompletionItemKind.Keyword,
           detail: "detail",
           documentation: "A very useful keyword",
-        }),
-      ])
+        },
+      ] as CompletionItem[])
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({})))[0]
       expect((result as TextSuggestion).text).equals("label")
@@ -428,7 +402,7 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("does not do anything if there is no textEdit", async () => {
-      sinon.stub(server.connection, "completion").resolves([createCompletionItem("", { filterText: "rep" })])
+      sinon.stub(server.connection, "completion").resolves([{ label: "", filterText: "rep" }] as CompletionItem[])
 
       const result = (await autoCompleteAdapter.getSuggestions(server, createRequest({ prefix: "rep" })))[0]
       expect((result as TextSuggestion).text).equals("")
@@ -440,14 +414,15 @@ describe("AutoCompleteAdapter", () => {
       const customRequest = createRequest({ prefix: "", position: new Point(0, 10) })
       customRequest.editor.setText("foo #align bar")
       sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("align", {
+        {
+          label: "align",
           sortText: "a",
           textEdit: {
             range: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
             newText: "hello world",
           },
-        }),
-      ])
+        },
+      ] as CompletionItem[])
       const results = await autoCompleteAdapter.getSuggestions(server, customRequest)
 
       expect(results[0].displayText).equals("align")
@@ -459,14 +434,15 @@ describe("AutoCompleteAdapter", () => {
       const customRequest = createRequest({ prefix: "", position: new Point(0, 8) })
       customRequest.editor.setText("foo #ali bar")
       sinon.stub(server.connection, "completion").resolves([
-        createCompletionItem("align", {
+        {
+          label: "align",
           sortText: "a",
           textEdit: {
             range: { start: { line: 0, character: 4 }, end: { line: 0, character: 8 } },
             newText: "hello world",
           },
-        }),
-      ])
+        },
+      ] as CompletionItem[])
 
       let result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0]
       expect(result.replacementPrefix).equals("#ali")
@@ -509,7 +485,7 @@ describe("AutoCompleteAdapter", () => {
       const customRequest = createRequest({ prefix: ".", position: new Point(0, 4) })
       customRequest.editor.setText("foo.")
       server.capabilities.completionProvider!.triggerCharacters = ["."]
-      sinon.stub(server.connection, "completion").resolves([createCompletionItem("bar")])
+      sinon.stub(server.connection, "completion").resolves([{ label: "bar" }] as CompletionItem[])
       let result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0]
       expect(result.replacementPrefix).equals("")
       customRequest.editor.setTextInBufferRange(
@@ -539,7 +515,7 @@ describe("AutoCompleteAdapter", () => {
     it("includes non trigger character prefix in replacementPrefix", async () => {
       const customRequest = createRequest({ prefix: "foo", position: new Point(0, 3) })
       customRequest.editor.setText("foo")
-      sinon.stub(server.connection, "completion").resolves([createCompletionItem("foobar")])
+      sinon.stub(server.connection, "completion").resolves([{ label: "foobar" }] as CompletionItem[])
       let result = (await autoCompleteAdapter.getSuggestions(server, customRequest))[0]
 
       expect(result.replacementPrefix).equals("foo")
