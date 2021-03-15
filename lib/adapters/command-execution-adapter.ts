@@ -29,7 +29,7 @@ export default class CommandExecutionAdapter {
 
   private static createExecuteCommandParams(command: string, commandArgs?: any[]): ExecuteCommandParams {
     return {
-      command: command,
+      command,
       arguments: commandArgs,
     }
   }

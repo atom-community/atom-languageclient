@@ -12,7 +12,7 @@ const TEST_PATH4 = normalizeDriveLetterName(path.join(__dirname, "test4.txt"))
 
 function normalizeDriveLetterName(filePath: string): string {
   if (process.platform === "win32") {
-    return filePath.replace(/^([a-z]):/, ([driveLetter]) => driveLetter.toUpperCase() + ":")
+    return filePath.replace(/^([a-z]):/, ([driveLetter]) => `${driveLetter.toUpperCase()}:`)
   } else {
     return filePath
   }

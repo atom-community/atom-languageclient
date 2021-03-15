@@ -50,7 +50,7 @@ describe("Utils", () => {
     it("returns the exe path under bin folder by default", () => {
       let expectedExe = join(process.cwd(), "bin", `${process.platform}-${process.arch}`, "serve-d")
       if (process.platform === "win32") {
-        expectedExe = expectedExe + ".exe"
+        expectedExe = `${expectedExe}.exe`
       }
 
       const fsMock = sinon.mock(fs)
@@ -65,7 +65,7 @@ describe("Utils", () => {
       const rootPath = join(__dirname, `${process.platform}-${process.arch}`)
       let expectedExe = join(rootPath, "serve-d")
       if (process.platform === "win32") {
-        expectedExe = expectedExe + ".exe"
+        expectedExe = `${expectedExe}.exe`
       }
 
       const fsMock = sinon.mock(fs)
