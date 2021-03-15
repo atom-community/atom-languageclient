@@ -42,7 +42,7 @@
     "@typescript-eslint/parser": "^4.14.1",
     "chai": "^4.2.0",
     "eslint": "^7.18.0",
-    "eslint-config-atomic": "1.10.1",
+    "eslint-config-atomic": "^1.12.2",
     "mocha": "^8.2.1",
     "mocha-appveyor-reporter": "^0.4.2",
     "shx": "^0.3.3",

@@ -15,7 +15,7 @@ devDependencies:
   '@typescript-eslint/parser': 4.15.2_eslint@7.20.0+typescript@4.1.5
   chai: 4.3.0
   eslint: 7.20.0
-  eslint-config-atomic: 1.10.2_eslint@7.20.0
+  eslint-config-atomic: 1.12.2_eslint@7.20.0
   mocha: 8.3.0
   mocha-appveyor-reporter: 0.4.2
   shx: 0.3.3
@@ -1384,7 +1384,7 @@ packages:
       eslint-plugin-react-hooks: ^4 || ^3 || ^2.3.0 || ^1.7.0
     resolution:
       integrity: sha512-glZNDEZ36VdlZWoxn/bUR1r/sdFKPd1mHPbqUtkctgNG4yT2DLLtJ3D+yCV+jzZCc2V1nBVkmdknOJBZ5Hc0fg==
-  /eslint-config-atomic/1.10.2_eslint@7.20.0:
+  /eslint-config-atomic/1.12.2_eslint@7.20.0:
     dependencies:
       '@babel/core': 7.13.1
       '@typescript-eslint/eslint-plugin': 4.15.2_bd37cc6d9e4ef1f78f94a852ca0107ce
@@ -1392,7 +1392,7 @@ packages:
       babel-eslint: 10.1.0_eslint@7.20.0
       coffeescript: 1.12.7
       eslint: 7.20.0
-      eslint-config-prettier: 7.2.0_eslint@7.20.0
+      eslint-config-prettier: 8.1.0_eslint@7.20.0
       eslint-plugin-coffee: 0.1.14_eslint@7.20.0
       eslint-plugin-import: 2.22.1_eslint@7.20.0
       eslint-plugin-json: 2.1.2
@@ -1407,8 +1407,8 @@ packages:
     peerDependencies:
       eslint: '>=7'
     resolution:
-      integrity: sha512-hLut/mAB6tBzpHI93A9+ej26AGc7LKt+ZmUtJbWgohEFyXcEWnJqMuJ9F0kYCvlUbR61BFdvxKN6PGtuYtad4Q==
-  /eslint-config-prettier/7.2.0_eslint@7.20.0:
+      integrity: sha512-3RxvRCSWTV8B3iINXGCPiZh8m63YyaWrIbBMSoRMkqdE1eTnUD8Zy1miP44ypadldisqgk7ezWuUywjYqxpIJA==
+  /eslint-config-prettier/8.1.0_eslint@7.20.0:
     dependencies:
       eslint: 7.20.0
     dev: true
@@ -1416,7 +1416,7 @@ packages:
     peerDependencies:
       eslint: '>=7.0.0'
     resolution:
-      integrity: sha512-rV4Qu0C3nfJKPOAhFujFxB7RMP+URFyQqqOZW9DMRD7ZDTFyjaIlETU3xzHELt++4ugC0+Jm084HQYkkJe+Ivg==
+      integrity: sha512-oKMhGv3ihGbCIimCAjqkdzx2Q+jthoqnXSP+d86M9tptwugycmTFdVR4IpLgq2c4SHifbwO90z2fQ8/Aio73yw==
   /eslint-import-resolver-node/0.3.4:
     dependencies:
       debug: 2.6.9
@@ -3885,7 +3885,7 @@ specifiers:
   atom-ide-base: ^2.4.0
   chai: ^4.2.0
   eslint: ^7.18.0
-  eslint-config-atomic: ^1.10.1
+  eslint-config-atomic: ^1.12.2
   mocha: ^8.2.1
   mocha-appveyor-reporter: ^0.4.2
   shx: ^0.3.3
