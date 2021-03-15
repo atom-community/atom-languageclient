@@ -6,7 +6,7 @@ dependencies:
   zadeh: 2.0.2
 devDependencies:
   '@atom/mocha-test-runner': 1.6.1
-  '@types/atom': 1.40.7
+  '@types/atom': 1.40.9
   '@types/chai': 4.2.15
   '@types/mocha': 8.2.1
   '@types/node': 14.14.22
@@ -301,12 +301,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
-  /@types/atom/1.40.7:
+  /@types/atom/1.40.9:
     dependencies:
       '@types/node': 14.14.22
     dev: true
     resolution:
-      integrity: sha512-PHQIR3dl3AKVqWdPUtL0Wg2X5QXcXoGKTksLAm0Cqgq3QwSxEtFCWcVQWgxAmJAX+rmmEyT0UTUyTTPtMja32w==
+      integrity: sha512-ulAFivA0yzxbMrmjtT1edJ+VaOeUsaV9/ZG9429POm5BnhcgLkAsMpQnQCJeYiZ7ZEQCsQ9LMv1uf7PJj0QyOg==
   /@types/chai/4.2.15:
     dev: true
     resolution:
@@ -3875,7 +3875,7 @@ packages:
       integrity: sha512-20vaD+PTkqYHuvKMDMfFSOYaw4QB6tLQQteHF2mjhnXfeyP0+sCEaord7mI5QdPwrOnR4TAMi9AS2zBL/HA0BQ==
 specifiers:
   '@atom/mocha-test-runner': ^1.6.1
-  '@types/atom': ^1.40.7
+  '@types/atom': ^1.40.9
   '@types/chai': ^4.2.14
   '@types/mocha': ^8.2.0
   '@types/node': 14.14.22
