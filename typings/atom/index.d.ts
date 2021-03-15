@@ -1,6 +1,7 @@
-export {}
+import { Point, Notification, NotificationOptions, TextEditor } from "atom"
+
 declare module "atom" {
-  interface TextEditor {
+  interface TextEditorExt extends TextEditor {
     getNonWordCharacters(position: Point): string
   }
 
