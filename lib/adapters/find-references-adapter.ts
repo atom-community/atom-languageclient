@@ -35,10 +35,6 @@ export default class FindReferencesAdapter {
     projectRoot: string | null
   ): Promise<atomIde.FindReferencesReturn | null> {
     const locations = await connection.findReferences(FindReferencesAdapter.createReferenceParams(editor, point))
-    if (locations == null) {
-      return null
-    }
-
     const references: atomIde.Reference[] = locations.map(FindReferencesAdapter.locationToReference)
     return {
       type: "data",

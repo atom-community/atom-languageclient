@@ -42,7 +42,7 @@ export default class NotificationsAdapter {
           text: a.title,
           onDidClick: () => {
             resolve(a)
-            if (notification != null) {
+            if (notification !== null) {
               notification.dismiss()
             }
           },
@@ -51,7 +51,7 @@ export default class NotificationsAdapter {
 
       const notification = addNotificationForMessage(params.type, params.message, options)
 
-      if (notification != null) {
+      if (notification !== null) {
         notification.onDidDismiss(() => {
           resolve(null)
         })

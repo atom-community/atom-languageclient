@@ -40,7 +40,7 @@ export default class CodeActionAdapter {
     range: Range,
     diagnostics: atomIde.Diagnostic[]
   ): Promise<atomIde.CodeAction[]> {
-    if (linterAdapter == null) {
+    if (linterAdapter === undefined) {
       return []
     }
     assert(serverCapabilities.codeActionProvider, "Must have the textDocument/codeAction capability")
@@ -100,9 +100,9 @@ export default class CodeActionAdapter {
           // Until the Linter API provides a place to store the code,
           // there's no real way for the code actions API to give it back to us.
           const converted = Convert.atomIdeDiagnosticToLSDiagnostic(diagnostic)
-          if (diagnostic.range != null && diagnostic.text != null) {
+          if (diagnostic.text !== undefined) {
             const code = linterAdapter.getDiagnosticCode(editor, diagnostic.range, diagnostic.text)
-            if (code != null) {
+            if (code !== null) {
               converted.code = code
             }
           }

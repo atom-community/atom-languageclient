@@ -7,7 +7,7 @@ export default class CommandExecutionAdapter {
   private static commandsCustomCallbacks = new Map<string, CommandCustomCallbackFunction>()
 
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.executeCommandProvider != null
+    return serverCapabilities.executeCommandProvider !== undefined
   }
 
   public static registerCustomCallbackForCommand(command: string, callback: CommandCustomCallbackFunction): void {

@@ -59,12 +59,12 @@ class PossiblyResolvedCompletionItem {
 /** Public: Adapts the language server protocol "textDocument/completion" to the Atom AutoComplete+ package. */
 export default class AutocompleteAdapter {
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.completionProvider != null
+    return serverCapabilities.completionProvider !== undefined
   }
 
   public static canResolve(serverCapabilities: ServerCapabilities): boolean {
     return (
-      serverCapabilities.completionProvider != null && serverCapabilities.completionProvider.resolveProvider === true
+      serverCapabilities.completionProvider !== undefined && serverCapabilities.completionProvider.resolveProvider === true
     )
   }
 
@@ -89,7 +89,7 @@ export default class AutocompleteAdapter {
     shouldReplace: ShouldReplace = false
   ): Promise<ac.AnySuggestion[]> {
     const triggerChars =
-      server.capabilities.completionProvider != null
+      server.capabilities.completionProvider !== undefined
         ? server.capabilities.completionProvider.triggerCharacters || []
         : []
 
@@ -233,11 +233,11 @@ export default class AutocompleteAdapter {
     const cache = this._suggestionCache.get(server)
     if (cache) {
       const possiblyResolvedCompletionItem = cache.suggestionMap.get(suggestion)
-      if (possiblyResolvedCompletionItem != null && possiblyResolvedCompletionItem.isResolved === false) {
+      if (possiblyResolvedCompletionItem !== undefined && possiblyResolvedCompletionItem.isResolved === false) {
         const resolvedCompletionItem = await server.connection.completionItemResolve(
           possiblyResolvedCompletionItem.completionItem
         )
-        if (resolvedCompletionItem != null) {
+        if (resolvedCompletionItem !== null) {
           AutocompleteAdapter.resolveSuggestion(resolvedCompletionItem, suggestion, request, onDidConvertCompletionItem)
           possiblyResolvedCompletionItem.isResolved = true
         }
@@ -254,7 +254,7 @@ export default class AutocompleteAdapter {
   ): void {
     // only the `documentation` and `detail` properties may change when resolving
     AutocompleteAdapter.applyDetailsToSuggestion(resolvedCompletionItem, suggestion)
-    if (onDidConvertCompletionItem != null) {
+    if (onDidConvertCompletionItem !== undefined) {
       onDidConvertCompletionItem(resolvedCompletionItem, suggestion as ac.AnySuggestion, request)
     }
   }
@@ -417,7 +417,7 @@ export default class AutocompleteAdapter {
       shouldReplace
     )
     AutocompleteAdapter.applySnippetToSuggestion(item, suggestion as SnippetSuggestion)
-    if (onDidConvertCompletionItem != null) {
+    if (onDidConvertCompletionItem !== undefined) {
       onDidConvertCompletionItem(item, suggestion as ac.AnySuggestion, request)
     }
 
@@ -448,7 +448,7 @@ export default class AutocompleteAdapter {
       suggestion.description = item.documentation
     }
 
-    if (item.documentation != null && typeof item.documentation === "object") {
+    if (item.documentation !== undefined && typeof item.documentation === "object") {
       // Newer format specifies the kind of documentation, assign appropriately
       if (item.documentation.kind === "markdown") {
         suggestion.descriptionMarkdown = item.documentation.value

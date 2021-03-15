@@ -33,11 +33,11 @@ export default class DatatipAdapter {
     const documentPositionParams = Convert.editorToTextDocumentPositionParams(editor, point)
 
     const hover = await connection.hover(documentPositionParams)
-    if (hover == null || DatatipAdapter.isEmptyHover(hover)) {
+    if (hover === null || DatatipAdapter.isEmptyHover(hover)) {
       return null
     }
 
-    const range = hover.range == null ? Utils.getWordAtPosition(editor, point) : Convert.lsRangeToAtomRange(hover.range)
+    const range = hover.range === undefined ? Utils.getWordAtPosition(editor, point) : Convert.lsRangeToAtomRange(hover.range)
 
     const markedStrings = (Array.isArray(hover.contents) ? hover.contents : [hover.contents]).map((str) =>
       DatatipAdapter.convertMarkedString(editor, str)
@@ -47,6 +47,7 @@ export default class DatatipAdapter {
   }
 
   private static isEmptyHover(hover: Hover): boolean {
+    // TODO hover.contents is never null!
     return (
       hover.contents == null ||
       (typeof hover.contents === "string" && hover.contents.length === 0) ||

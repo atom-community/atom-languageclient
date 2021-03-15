@@ -103,12 +103,12 @@ export default class DocumentSyncAdapter {
 
   private _handleGrammarChange(editor: TextEditor): void {
     const sync = this._editors.get(editor)
-    if (sync != null && !this._editorSelector(editor)) {
+    if (sync !== undefined && !this._editorSelector(editor)) {
       this._editors.delete(editor)
       this._disposable.remove(sync)
       sync.didClose()
       sync.dispose()
-    } else if (sync == null && this._editorSelector(editor)) {
+    } else if (sync === undefined && this._editorSelector(editor)) {
       this._handleNewEditor(editor)
     }
   }
@@ -160,10 +160,11 @@ export class TextEditorSyncAdapter {
     private _versions: Map<string, number>,
     private _reportBusyWhile: Utils.ReportBusyWhile
   ) {
+    // TODO atom.project.onDidChangeFiles is never null
     this._fakeDidChangeWatchedFiles = atom.project.onDidChangeFiles == null
 
     const changeTracking = this.setupChangeTracking(_documentSync)
-    if (changeTracking != null) {
+    if (changeTracking !== null) {
       this._disposable.add(changeTracking)
     }
 
@@ -279,7 +280,7 @@ export class TextEditorSyncAdapter {
 
   private _bumpVersion(): void {
     const filePath = this._editor.getPath()
-    if (filePath == null) {
+    if (filePath === undefined) {
       return
     }
     this._versions.set(filePath, this._getVersion(filePath) + 1)
@@ -291,7 +292,7 @@ export class TextEditorSyncAdapter {
    */
   private didOpen(): void {
     const filePath = this._editor.getPath()
-    if (filePath == null) {
+    if (filePath === undefined) {
       return
     } // Not yet saved
 
@@ -315,7 +316,7 @@ export class TextEditorSyncAdapter {
 
   /** Called when the {TextEditor} is closed and sends the 'didCloseTextDocument' notification to the connected language server. */
   public didClose(): void {
-    if (this._editor.getPath() == null) {
+    if (this._editor.getPath() === undefined) {
       return
     } // Not yet saved
 

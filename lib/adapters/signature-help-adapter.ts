@@ -19,7 +19,7 @@ export default class SignatureHelpAdapter {
 
   /** @returns A {Boolean} indicating this adapter can adapt the server based on the given serverCapabilities. */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return serverCapabilities.signatureHelpProvider != null
+    return serverCapabilities.signatureHelpProvider !== undefined
   }
 
   public dispose(): void {
@@ -28,7 +28,7 @@ export default class SignatureHelpAdapter {
 
   public attach(register: atomIde.SignatureHelpRegistry): void {
     const { signatureHelpProvider } = this._capabilities
-    assert(signatureHelpProvider != null)
+    assert(signatureHelpProvider !== undefined)
 
     let triggerCharacters: Set<string> | undefined
     if (signatureHelpProvider && Array.isArray(signatureHelpProvider.triggerCharacters)) {

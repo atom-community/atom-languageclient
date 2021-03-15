@@ -86,7 +86,7 @@ export default class OutlineViewAdapter {
     return symbols.map((symbol) => {
       const tree = OutlineViewAdapter.hierarchicalSymbolToOutline(symbol)
 
-      if (symbol.children != null) {
+      if (symbol.children !== undefined) {
         tree.children = OutlineViewAdapter.createHierarchicalOutlineTrees(symbol.children)
       }
 
@@ -123,16 +123,16 @@ export default class OutlineViewAdapter {
     // Create a map of containers by name with all items that have that name
     const containers = allItems.reduce((map, item) => {
       const name = item.outline.representativeName
-      if (name != null) {
+      if (name !== undefined) {
         const container = map.get(name)
-        if (container == null) {
+        if (container === undefined) {
           map.set(name, [item.outline])
         } else {
           container.push(item.outline)
         }
       }
       return map
-    }, new Map())
+    }, new Map<string, atomIde.OutlineTree[]>())
 
     const roots: atomIde.OutlineTree[] = []
 
@@ -140,12 +140,12 @@ export default class OutlineViewAdapter {
     for (const item of allItems) {
       const containerName = item.containerName
       const child = item.outline
-      if (containerName == null || containerName === "") {
+      if (containerName === undefined || containerName === "") {
         roots.push(item.outline)
       } else {
         const possibleParents = containers.get(containerName)
         let closestParent = OutlineViewAdapter._getClosestParent(possibleParents, child)
-        if (closestParent == null) {
+        if (closestParent === null) {
           closestParent = {
             plainText: containerName,
             representativeName: containerName,
@@ -153,7 +153,7 @@ export default class OutlineViewAdapter {
             children: [child],
           }
           roots.push(closestParent)
-          if (possibleParents == null) {
+          if (possibleParents === undefined) {
             containers.set(containerName, [closestParent])
           } else {
             possibleParents.push(closestParent)
@@ -168,10 +168,10 @@ export default class OutlineViewAdapter {
   }
 
   private static _getClosestParent(
-    candidates: atomIde.OutlineTree[] | null,
+    candidates: atomIde.OutlineTree[] | undefined,
     child: atomIde.OutlineTree
   ): atomIde.OutlineTree | null {
-    if (candidates == null || candidates.length === 0) {
+    if (candidates === undefined || candidates.length === 0) {
       return null
     }
 
@@ -186,7 +186,7 @@ export default class OutlineViewAdapter {
         if (
           parent === undefined ||
           parent.startPosition.isLessThanOrEqual(candidate.startPosition) ||
-          (parent.endPosition != null &&
+          (parent.endPosition !== undefined &&
             candidate.endPosition &&
             parent.endPosition.isGreaterThanOrEqual(candidate.endPosition))
         ) {
@@ -215,7 +215,7 @@ export default class OutlineViewAdapter {
           value: symbol.name,
         },
       ],
-      icon: icon != null ? icon : undefined,
+      icon: icon !== null ? icon : undefined,
       representativeName: symbol.name,
       startPosition: Convert.positionToPoint(symbol.selectionRange.start),
       endPosition: Convert.positionToPoint(symbol.selectionRange.end),
@@ -238,7 +238,7 @@ export default class OutlineViewAdapter {
           value: symbol.name,
         },
       ],
-      icon: icon != null ? icon : undefined,
+      icon: icon !== null ? icon : undefined,
       representativeName: symbol.name,
       startPosition: Convert.positionToPoint(symbol.location.range.start),
       endPosition: Convert.positionToPoint(symbol.location.range.end),

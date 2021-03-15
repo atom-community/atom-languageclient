@@ -118,9 +118,9 @@ export default class LinterPushV2Adapter {
    */
   public getDiagnosticCode(editor: atom.TextEditor, range: atom.Range, text: string): DiagnosticCode | null {
     const path = editor.getPath()
-    if (path != null) {
+    if (path !== undefined) {
       const diagnosticCodes = this._diagnosticCodes.get(path)
-      if (diagnosticCodes != null) {
+      if (diagnosticCodes !== undefined) {
         return diagnosticCodes.get(getCodeKey(range, text)) || null
       }
     }
