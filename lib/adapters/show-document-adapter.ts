@@ -35,7 +35,7 @@ export default class ShowDocumentAdapter {
     } else {
       // open using Electron
       shell.openExternal(params.uri, { activate: params.takeFocus })
-      return { success: false }
+      return { success: true }
     }
   }
 }
