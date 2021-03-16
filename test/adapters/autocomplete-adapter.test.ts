@@ -448,27 +448,184 @@ describe("AutoCompleteAdapter", () => {
       expect(result.replacementPrefix).equals("")
     })
 
-    it("applies changes from TextEdit to text", async () => {
+    describe("applies changes from TextEdit to text", async () => {
       const customRequest = createRequest({ prefix: "", position: new Point(0, 10) })
       customRequest.editor.setText("foo #align bar")
 
-      const results = await getSuggestionsMock(
-        [
-          {
-            label: "align",
-            sortText: "a",
-            textEdit: {
-              range: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
-              newText: "hello world",
+      it("applies the change if range is provided", async () => {
+        const results = await getSuggestionsMock(
+          [
+            {
+              label: "align",
+              sortText: "a",
+              textEdit: {
+                range: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                newText: "hello world",
+              },
             },
-          },
-        ],
-        customRequest
-      )
+          ],
+          customRequest
+        )
 
-      expect(results[0].displayText).equals("align")
-      expect((results[0] as TextSuggestion).text).equals("hello world")
-      expect(results[0].replacementPrefix).equals("#align")
+        expect(results[0].displayText).equals("align")
+        expect((results[0] as TextSuggestion).text).equals("hello world")
+        expect(results[0].replacementPrefix).equals("#align")
+        expect((results[0] as TextSuggestion).customReplacmentPrefix).equals("#align")
+      })
+
+      describe("applies the change if shouldReplace is true", async () => {
+        it("1", async () => {
+          const results = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                textEdit: {
+                  replace: { start: { line: 0, character: 2 }, end: { line: 0, character: 5 } }, // used
+                  insert: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                  newText: "hello world",
+                },
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            true
+          )
+
+          expect(results[0].displayText).equals("align")
+          expect((results[0] as TextSuggestion).text).equals("hello world")
+          expect(results[0].replacementPrefix).equals("o #align")
+          expect((results[0] as TextSuggestion).customReplacmentPrefix).equals("o #align")
+        })
+
+        it("2", async () => {
+          const results2 = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                textEdit: {
+                  replace: { start: { line: 0, character: 1 }, end: { line: 0, character: 5 } }, // used
+                  insert: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                  newText: "hello world",
+                },
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            true
+          )
+
+          expect(results2[0].displayText).equals("align")
+          expect((results2[0] as TextSuggestion).text).equals("hello world")
+          expect(results2[0].replacementPrefix).equals("oo #align")
+          expect((results2[0] as TextSuggestion).customReplacmentPrefix).equals("oo #align")
+        })
+
+        it("3", async () => {
+          const results3 = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                textEdit: {
+                  replace: { start: { line: 0, character: 3 }, end: { line: 0, character: 1000 } }, // used
+                  insert: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                  newText: "hello world",
+                },
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            true
+          )
+
+          expect(results3[0].displayText).equals("align")
+          expect((results3[0] as TextSuggestion).text).equals("hello world")
+          expect(results3[0].replacementPrefix).equals(" #align")
+          expect((results3[0] as TextSuggestion).customReplacmentPrefix).equals(" #align")
+        })
+      })
+
+      describe("applies the change if shouldReplace is false", async () => {
+        it("1", async () => {
+          const results = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                textEdit: {
+                  replace: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                  insert: { start: { line: 0, character: 2 }, end: { line: 0, character: 5 } }, // used
+                  newText: "hello world",
+                },
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            false
+          )
+
+          expect(results[0].displayText).equals("align")
+          expect((results[0] as TextSuggestion).text).equals("hello world")
+          expect(results[0].replacementPrefix).equals("o #align")
+          expect((results[0] as TextSuggestion).customReplacmentPrefix).equals("o #align")
+        })
+
+        it("2", async () => {
+          const results2 = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                textEdit: {
+                  replace: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                  insert: { start: { line: 0, character: 1 }, end: { line: 0, character: 5 } }, // used
+                  newText: "hello world",
+                },
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            false
+          )
+
+          expect(results2[0].displayText).equals("align")
+          expect((results2[0] as TextSuggestion).text).equals("hello world")
+          expect(results2[0].replacementPrefix).equals("oo #align")
+          expect((results2[0] as TextSuggestion).customReplacmentPrefix).equals("oo #align")
+        })
+
+        it("3", async () => {
+          const results3 = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                textEdit: {
+                  replace: { start: { line: 0, character: 4 }, end: { line: 0, character: 10 } },
+                  insert: { start: { line: 0, character: 3 }, end: { line: 0, character: 1000 } }, // used
+                  newText: "hello world",
+                },
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            false
+          )
+
+          expect(results3[0].displayText).equals("align")
+          expect((results3[0] as TextSuggestion).text).equals("hello world")
+          expect(results3[0].replacementPrefix).equals(" #align")
+          expect((results3[0] as TextSuggestion).customReplacmentPrefix).equals(" #align")
+        })
+      })
     })
 
     it("updates the replacementPrefix when the editor text changes", async () => {
