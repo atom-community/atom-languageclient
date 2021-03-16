@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.2.2...v1.3.0) (2021-03-16)
+
+
+### Bug Fixes
+
+* use ShouldReplace ([6601427](https://github.com/atom-ide-community/atom-languageclient/commit/66014277fd95007cb6ab500a7727c7475e7fcae1))
+
+
+### Features
+
+* upgrade to LSP 3.16 and fix compiler errors ([db07b3c](https://github.com/atom-ide-community/atom-languageclient/commit/db07b3c4972842f3f5b8a4e221c8e406aed52e96))
+
 ## [1.2.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.2.1...v1.2.2) (2021-02-23)
 
 

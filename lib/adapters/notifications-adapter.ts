@@ -5,7 +5,7 @@ import {
   ShowMessageParams,
   ShowMessageRequestParams,
 } from "../languageclient"
-import { Notification, NotificationOptions, NotificationExt } from "atom"
+import { Notification, NotificationOptions } from "atom"
 
 export interface NotificationButton {
   text: string
@@ -109,7 +109,7 @@ function addNotificationForMessage(
   message: string,
   options: NotificationOptions
 ): Notification | null {
-  function isDuplicate(note: NotificationExt): boolean {
+  function isDuplicate(note: Notification): boolean {
     const noteDismissed = note.isDismissed && note.isDismissed()
     const noteOptions = (note.getOptions && note.getOptions()) || {}
     return (

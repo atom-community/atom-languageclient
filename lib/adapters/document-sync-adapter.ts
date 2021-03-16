@@ -412,7 +412,7 @@ export class TextEditorSyncAdapter {
     const didSaveNotification = {
       textDocument: { uri, version: this._getVersion(uri) },
     } as DidSaveTextDocumentParams
-    if (this._documentSync.save && this._documentSync.save.includeText) {
+    if (typeof this._documentSync.save === "object" && this._documentSync.save.includeText) {
       didSaveNotification.text = this._editor.getText()
     }
     this._connection.didSaveTextDocument(didSaveNotification)
