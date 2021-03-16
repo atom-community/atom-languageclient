@@ -28,6 +28,9 @@ function createRequest({
 }
 
 describe("AutoCompleteAdapter", () => {
+  let server: ActiveServer
+  let autoCompleteAdapter: AutoCompleteAdapter
+
   function createActiveServerSpy(): ActiveServer {
     return {
       capabilities: { completionProvider: {} },
@@ -36,6 +39,27 @@ describe("AutoCompleteAdapter", () => {
       process: undefined as any,
       projectPath: "/",
     }
+  }
+
+  type getSuggestionParams = Parameters<typeof autoCompleteAdapter.getSuggestions>
+
+  /** Function that stubs `server.connection.completion` and returns the `autoCompleteAdapter.getSuggestions(...)`  */
+  async function getSuggestionsMock(
+    items: CompletionItem[],
+    request: getSuggestionParams[1],
+    onDidConvertCompletionItem?: getSuggestionParams[2],
+    minimumWordLength?: getSuggestionParams[3],
+  ): Promise<ac.AnySuggestion[]> {
+    const resultsSandBox = sinon.createSandbox()
+    resultsSandBox.stub(server.connection, "completion").resolves(items)
+    const results = autoCompleteAdapter.getSuggestions(
+      server,
+      request,
+      onDidConvertCompletionItem,
+      minimumWordLength,
+    )
+    resultsSandBox.restore()
+    return results
   }
 
   const completionItems: CompletionItem[] = [
@@ -73,45 +97,21 @@ describe("AutoCompleteAdapter", () => {
   const request = createRequest({ prefix: "lab" })
 
   describe("getSuggestions", () => {
-    let server: ActiveServer
-    let autoCompleteAdapter: AutoCompleteAdapter
-
-    type getSuggestionParams = Parameters<typeof autoCompleteAdapter.getSuggestions>
-
-    /** Function that stubs `server.connection.completion` and returns the `autoCompleteAdapter.getSuggestions(...)`  */
-    async function getSuggestionsMock(
-      items: CompletionItem[],
-      requestParams: Parameters<typeof createRequest>[0],
-      onDidConvertCompletionItem?: getSuggestionParams[2],
-      minimumWordLength?: getSuggestionParams[3],
-    ): Promise<ac.AnySuggestion[]> {
-      const resultsSandBox = sinon.createSandbox()
-      resultsSandBox.stub(server.connection, "completion").resolves(items)
-      const results = autoCompleteAdapter.getSuggestions(
-        server,
-        createRequest(requestParams),
-        onDidConvertCompletionItem,
-        minimumWordLength,
-      )
-      resultsSandBox.restore()
-      return results
-    }
-
     beforeEach(() => {
       server = createActiveServerSpy()
       autoCompleteAdapter = new AutoCompleteAdapter()
     })
 
     it("gets AutoComplete suggestions via LSP given an AutoCompleteRequest", async () => {
-      const results = await getSuggestionsMock(completionItems, { prefix: "" })
+      const results = await getSuggestionsMock(completionItems, createRequest({ prefix: "" }))
       expect(results.length).equals(completionItems.length)
     })
 
     it("provides a filtered selection based on the filterKey", async () => {
-      const results = await getSuggestionsMock(completionItems, { prefix: "lab" })
-      expect(results.length).equals(2)
-      expect(results.some((r) => r.displayText === "thisHasFiltertext")).to.be.true
-      expect(results.some((r) => r.displayText === "label3")).to.be.true
+      const resultsLab = await getSuggestionsMock(completionItems, createRequest({ prefix: "lab" }))
+      expect(resultsLab.length).equals(2)
+      expect(resultsLab.some((r) => r.displayText === "thisHasFiltertext")).to.be.true
+      expect(resultsLab.some((r) => r.displayText === "label3")).to.be.true
     })
 
     it("uses the sortText property to arrange completions when there is no prefix", async () => {
@@ -120,7 +120,7 @@ describe("AutoCompleteAdapter", () => {
         { label: "b" },
         { label: "c", sortText: "a" },
       ]
-      const results = await getSuggestionsMock(sortedItems, { prefix: "" })
+      const results = await getSuggestionsMock(sortedItems, createRequest({ prefix: "" }))
 
       expect(results.length).equals(sortedItems.length)
       expect(results[0].displayText).equals("c")
@@ -129,7 +129,7 @@ describe("AutoCompleteAdapter", () => {
     })
 
     it("uses the filterText property to arrange completions when there is a prefix", async () => {
-      const results = await getSuggestionsMock(completionItems, { prefix: "lab" })
+      const results = await getSuggestionsMock(completionItems, createRequest({ prefix: "lab" }))
       expect(results.length).equals(2)
       expect(results[0].displayText).equals("label3") // shorter than 'labrador', so expected to be first
       expect(results[1].displayText).equals("thisHasFiltertext")
@@ -224,9 +224,6 @@ describe("AutoCompleteAdapter", () => {
         },
       },
     ]
-
-    let server: ActiveServer
-    let autoCompleteAdapter: AutoCompleteAdapter
 
     beforeEach(() => {
       server = createActiveServerSpy()
