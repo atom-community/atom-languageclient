@@ -21,6 +21,7 @@ import NotificationsAdapter from "./adapters/notifications-adapter"
 import OutlineViewAdapter from "./adapters/outline-view-adapter"
 import RenameAdapter from "./adapters/rename-adapter"
 import SignatureHelpAdapter from "./adapters/signature-help-adapter"
+import ShowDocumentAdapter from "./adapters/show-document-adapter"
 import * as Utils from "./utils"
 import { Socket } from "net"
 import { LanguageClientConnection } from "./languageclient"
@@ -196,6 +197,11 @@ export default class AutoLanguageClient {
           typeDefinition: undefined,
           colorProvider: undefined,
           foldingRange: undefined,
+        },
+        window: {
+          workDoneProgress: false, // TODO: support
+          showMessage: undefined,
+          showDocument: { support: true },
         },
         experimental: {},
       },
@@ -506,6 +512,8 @@ export default class AutoLanguageClient {
       loggingConsole,
       signatureHelpAdapter,
     })
+
+    ShowDocumentAdapter.attach(server.connection)
   }
 
   public shouldSyncForEditor(editor: TextEditor, projectPath: string): boolean {
