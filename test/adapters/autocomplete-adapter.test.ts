@@ -7,7 +7,7 @@ import * as ac from "atom/autocomplete-plus"
 import { expect } from "chai"
 import { createSpyConnection, createFakeEditor } from "../helpers.js"
 import { TextSuggestion, SnippetSuggestion } from "../../lib/types/autocomplete-extended"
-import { CompletionItem } from "../../lib/languageclient"
+import { CompletionItem, Range } from "../../lib/languageclient"
 
 function createRequest({
   prefix = "",
@@ -94,6 +94,23 @@ describe("AutoCompleteAdapter", () => {
       documentation: "should not appear",
       sortText: "zzz",
     },
+    {
+      label: "snippet5",
+      kind: ls.CompletionItemKind.Snippet,
+      textEdit: {
+        newText: "snippet5NewText",
+        range: Range.create({ line: 0, character: 0 }, { line: 0, character: 14 }),
+      },
+    },
+    {
+      label: "snippet6",
+      kind: ls.CompletionItemKind.Snippet,
+      textEdit: {
+        newText: "snippet6newText",
+        replace: Range.create({ line: 0, character: 0 }, { line: 0, character: 14 }),
+        insert: Range.create({ line: 0, character: 0 }, { line: 0, character: 14 }),
+      },
+    },
   ]
 
   const request = createRequest({ prefix: "lab" })
@@ -114,6 +131,12 @@ describe("AutoCompleteAdapter", () => {
       expect(resultsLab.length).equals(2)
       expect(resultsLab.some((r) => r.displayText === "thisHasFiltertext")).to.be.true
       expect(resultsLab.some((r) => r.displayText === "label3")).to.be.true
+
+      const resultsSnip = await getSuggestionsMock(completionItems, createRequest({ prefix: "snip" }))
+      expect(resultsSnip.length).equals(2)
+      expect(
+        resultsSnip.filter((r) => r.displayText !== undefined && ["snippet5", "snippet6"].includes(r.displayText))
+      ).to.have.lengthOf(2)
     })
 
     it("uses the sortText property to arrange completions when there is no prefix", async () => {
