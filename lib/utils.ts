@@ -1,6 +1,6 @@
 import { join, resolve } from "path"
 import { existsSync } from "fs"
-import { Point, TextBuffer, TextEditor, TextEditorExt, Range, BufferScanResult } from "atom"
+import { Point, TextBuffer, TextEditor, Range, BufferScanResult } from "atom"
 import { CancellationToken, CancellationTokenSource } from "vscode-jsonrpc"
 
 export type ReportBusyWhile = <T>(title: string, f: () => Promise<T>) => Promise<T>
@@ -10,7 +10,7 @@ export type ReportBusyWhile = <T>(title: string, f: () => Promise<T>) => Promise
  * Uses the non-word characters from the position's grammar scope.
  */
 export function getWordAtPosition(editor: TextEditor, position: Point): Range {
-  const nonWordCharacters = escapeRegExp((editor as TextEditorExt).getNonWordCharacters(position))
+  const nonWordCharacters = escapeRegExp(editor.getNonWordCharacters(position))
   const range = _getRegexpRangeAtPosition(
     editor.getBuffer(),
     position,

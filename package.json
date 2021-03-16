@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@atom/mocha-test-runner": "^1.6.1",
-    "@types/atom": "^1.40.9",
+    "@types/atom": "^1.40.10",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
     "@types/node": "14.14.22",
