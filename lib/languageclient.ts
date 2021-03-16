@@ -534,7 +534,7 @@ export class LanguageClientConnection extends EventEmitter {
       return result
     } catch (e) {
       const responseError = e as jsonrpc.ResponseError<any>
-      if (cancellationToken && responseError.code === jsonrpc.ErrorCodes.RequestCancelled) {
+      if (cancellationToken && responseError.code === lsp.LSPErrorCodes.RequestCancelled) {
         this._log.debug(`rpc.sendRequest ${method} was cancelled`)
       } else {
         this._log.error(`rpc.sendRequest ${method} threw`, e)
