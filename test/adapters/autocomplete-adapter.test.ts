@@ -48,11 +48,18 @@ describe("AutoCompleteAdapter", () => {
     items: CompletionItem[],
     request: getSuggestionParams[1],
     onDidConvertCompletionItem?: getSuggestionParams[2],
-    minimumWordLength?: getSuggestionParams[3]
+    minimumWordLength?: getSuggestionParams[3],
+    shouldReplace: getSuggestionParams[4] = false
   ): Promise<ac.AnySuggestion[]> {
     const resultsSandBox = sinon.createSandbox()
     resultsSandBox.stub(server.connection, "completion").resolves(items)
-    const results = autoCompleteAdapter.getSuggestions(server, request, onDidConvertCompletionItem, minimumWordLength)
+    const results = autoCompleteAdapter.getSuggestions(
+      server,
+      request,
+      onDidConvertCompletionItem,
+      minimumWordLength,
+      shouldReplace
+    )
     resultsSandBox.restore()
     return results
   }
