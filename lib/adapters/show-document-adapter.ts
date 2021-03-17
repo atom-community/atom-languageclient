@@ -23,10 +23,12 @@ export function attach(connection: LanguageClientConnection): void {
 }
 
 /**
- * Public: Show a notification message with buttons using the Atom notifications API.
+ * Public: show documents inside Atom text editor or in external programs
  *
  * @param params The {ShowDocumentParams} received from the language server
  *   indicating the document to be displayed as well as other metadata.
+ * @returns {Promise<ShowDocumentResult>} with a `success: boolean` property specifying if the operation was sucessful
+ * {@inheritDoc ShowDocumentParams}
  */
 export async function onShowDocument(params: ShowDocumentParams): Promise<ShowDocumentResult> {
   if (!params.external) {
