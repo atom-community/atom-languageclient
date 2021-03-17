@@ -40,7 +40,7 @@ export async function onShowDocument(params: ShowDocumentParams): Promise<ShowDo
       initialLine: params.selection?.start.line ?? 0,
       initialColumn: params.selection?.start.character ?? 0,
     })
-    if (view instanceof TextEditor && params.selection != null) {
+    if (view instanceof TextEditor && params.selection !== undefined) {
       view.selectToBufferPosition(Convert.positionToPoint(params.selection.end))
     }
     return { success: true }
