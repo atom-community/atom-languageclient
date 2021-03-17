@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.3.0...v1.4.0) (2021-03-17)
+
+
+### Features
+
+* handling custom requests ([543cd6e](https://github.com/atom-ide-community/atom-languageclient/commit/543cd6e74936f078f389f34166bdf947d4c4bee0))
+
 # [1.3.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.2.2...v1.3.0) (2021-03-16)
 
 
