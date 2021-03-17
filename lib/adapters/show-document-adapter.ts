@@ -9,9 +9,9 @@ export class ShowDocumentAdapter {
   public attach(arg: Parameters<typeof attach>[0]): ReturnType<typeof attach> {
     attach(arg)
   }
-  /** {@inheritDoc onShowDocument} */
-  public onShowDocument(...args: Parameters<typeof onShowDocument>): ReturnType<typeof onShowDocument> {
-    return onShowDocument(...args)
+  /** {@inheritDoc showDocument} */
+  public onShowDocument(...args: Parameters<typeof showDocument>): ReturnType<typeof showDocument> {
+    return showDocument(...args)
   }
 }
 
@@ -19,7 +19,7 @@ export class ShowDocumentAdapter {
  * Public: Attach to a {LanguageClientConnection} to recieve requests to show documents.
  */
 export function attach(connection: LanguageClientConnection): void {
-  connection.onShowDocument(onShowDocument)
+  connection.onShowDocument(showDocument)
 }
 
 /**
@@ -30,7 +30,7 @@ export function attach(connection: LanguageClientConnection): void {
  * @returns {Promise<ShowDocumentResult>} with a `success: boolean` property specifying if the operation was sucessful
  * {@inheritDoc ShowDocumentParams}
  */
-export async function onShowDocument(params: ShowDocumentParams): Promise<ShowDocumentResult> {
+export async function showDocument(params: ShowDocumentParams): Promise<ShowDocumentResult> {
   if (!params.external) {
     // open using atom.workspace
     const view = await atom.workspace.open(params.uri, {

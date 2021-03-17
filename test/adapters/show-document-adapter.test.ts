@@ -16,7 +16,7 @@ describe("ShowDocumentAdapter", () => {
       expect((lcc["_onRequest"] as sinon.SinonSpy).calledOnce).to.be.true
       const spyArgs = spy.firstCall.args
       expect(spyArgs[0]).to.deep.equal({ method: "window/showDocument" })
-      expect(spyArgs[1]).to.equal(ShowDocumentAdapter.onShowDocument)
+      expect(spyArgs[1]).to.equal(ShowDocumentAdapter.showDocument)
     })
   })
 })
