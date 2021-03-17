@@ -17,7 +17,7 @@ export interface KnownNotifications {
 export interface KnownRequests {
   "window/showMessageRequest": [lsp.ShowMessageRequestParams, lsp.MessageActionItem | null]
   "workspace/applyEdit": [lsp.ApplyWorkspaceEditParams, lsp.ApplyWorkspaceEditResponse]
-  [custom: string]: [object, object | null]
+  [custom: string]: [Record<string, any>, Record<string, any> | null]
 }
 
 export type RequestCallback<T extends keyof KnownRequests> = KnownRequests[T] extends [infer U, infer V]
@@ -116,7 +116,10 @@ export class LanguageClientConnection extends EventEmitter {
    * @param callback The function to be called when the message is received.
    *   The payload from the message is passed to the function.
    */
-  public onCustomRequest(method: string, callback: (obj: object) => Promise<object>): void {
+  public onCustomRequest(
+    method: string,
+    callback: (obj: Record<string, any>) => Promise<Record<string, any> | null>
+  ): void {
     this._onRequest({ method }, callback)
   }
 
