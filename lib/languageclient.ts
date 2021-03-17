@@ -17,6 +17,7 @@ export interface KnownNotifications {
 export interface KnownRequests {
   "window/showMessageRequest": [lsp.ShowMessageRequestParams, lsp.MessageActionItem | null]
   "workspace/applyEdit": [lsp.ApplyWorkspaceEditParams, lsp.ApplyWorkspaceEditResponse]
+  [custom: string]: [Record<string, any>, Record<string, any> | null]
 }
 
 export type RequestCallback<T extends keyof KnownRequests> = KnownRequests[T] extends [infer U, infer V]
@@ -91,14 +92,35 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /**
-   * Public: Register a callback for a custom message.
+   * Public: Register a callback for a custom notification
    *
    * @param method A string containing the name of the message to listen for.
    * @param callback The function to be called when the message is received.
    *   The payload from the message is passed to the function.
    */
-  public onCustom(method: string, callback: (obj: object) => void): void {
+  public onCustomNotification(method: string, callback: (obj: object) => void): void {
     this._onNotification({ method }, callback)
+  }
+
+  /**
+   * @deprecated Use `onCustomNotification` method instead
+   */
+  public onCustom(method: string, callback: (obj: object) => void): void {
+    this.onCustomNotification(method, callback)
+  }
+
+  /**
+   * Public: Register a callback for a custom request
+   *
+   * @param method A string containing the name of the message to listen for.
+   * @param callback The function to be called when the message is received.
+   *   The payload from the message is passed to the function.
+   */
+  public onCustomRequest(
+    method: string,
+    callback: (obj: Record<string, any>) => Promise<Record<string, any> | null>
+  ): void {
+    this._onRequest({ method }, callback)
   }
 
   /**
