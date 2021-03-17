@@ -102,7 +102,9 @@ export class LanguageClientConnection extends EventEmitter {
     this._onNotification({ method }, callback)
   }
 
-  // @deprecated Use onCustomNotification method instead
+  /**
+   * @deprecated Use `onCustomNotification` method instead
+   */
   public onCustom(method: string, callback: (obj: object) => void): void {
     this.onCustomNotification(method, callback)
   }
