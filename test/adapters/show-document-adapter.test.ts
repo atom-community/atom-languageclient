@@ -1,7 +1,10 @@
+import { TextEditor } from "atom"
 import * as sinon from "sinon"
 import { expect } from "chai"
+import { join, dirname } from "path"
+import Convert from "../../lib/convert"
 import * as ShowDocumentAdapter from "../../lib/adapters/show-document-adapter"
-import { LanguageClientConnection } from "../../lib/languageclient"
+import { LanguageClientConnection, ShowDocumentParams } from "../../lib/languageclient"
 import { createSpyConnection } from "../helpers"
 
 describe("ShowDocumentAdapter", () => {
@@ -32,6 +35,35 @@ describe("ShowDocumentAdapter", () => {
       const spyArgs = spy.firstCall.args
       expect(spyArgs[0]).to.equal("window/showDocument")
       expect(typeof spyArgs[1]).to.equal("function")
+    })
+  })
+  describe("can show documents", () => {
+    describe("shows the document inside Atom", async () => {
+      const helloPath = join(dirname(__dirname), "fixtures", "hello.js")
+      const helloURI = Convert.pathToUri(helloPath)
+
+      beforeEach(() => {
+        atom.workspace.getTextEditors().forEach((ed) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          ed.destroy()
+        })
+      })
+
+      it("shows the document inside Atom for the given URI", async () => {
+        const params: ShowDocumentParams = {
+          uri: helloURI,
+        }
+
+        const { success } = await ShowDocumentAdapter.showDocument(params)
+        expect(success).to.be.true
+
+        const editor = atom.workspace.getTextEditors()[0]
+        expect(editor instanceof TextEditor).to.be.true
+
+        expect(editor!.getPath()).includes(helloPath)
+        expect(editor!.getText()).includes(`atom.notifications.addSuccess("Hello World")`)
+      })
     })
   })
 })
