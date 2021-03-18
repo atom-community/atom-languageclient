@@ -31,22 +31,26 @@ export function attach(connection: LanguageClientConnection): void {
  * {@inheritDoc ShowDocumentParams}
  */
 export async function showDocument(params: ShowDocumentParams): Promise<ShowDocumentResult> {
-  if (!params.external) {
-    // open using atom.workspace
-    const view = await atom.workspace.open(params.uri, {
-      activateItem: params.takeFocus,
-      activatePane: params.takeFocus,
-      pending: true,
-      initialLine: params.selection?.start.line ?? 0,
-      initialColumn: params.selection?.start.character ?? 0,
-    })
-    if (view instanceof TextEditor && params.selection !== undefined) {
-      view.selectToBufferPosition(Convert.positionToPoint(params.selection.end))
+  try {
+    if (!params.external) {
+      // open using atom.workspace
+      const view = await atom.workspace.open(params.uri, {
+        activateItem: params.takeFocus,
+        activatePane: params.takeFocus,
+        pending: true,
+        initialLine: params.selection?.start.line ?? 0,
+        initialColumn: params.selection?.start.character ?? 0,
+      })
+      if (view instanceof TextEditor && params.selection !== undefined) {
+        view.selectToBufferPosition(Convert.positionToPoint(params.selection.end))
+      }
+    } else {
+      // open using Electron
+      shell.openExternal(params.uri, { activate: params.takeFocus })
     }
     return { success: true }
-  } else {
-    // open using Electron
-    shell.openExternal(params.uri, { activate: params.takeFocus })
-    return { success: true }
+  } catch (e) {
+    atom.notifications.addError(e)
+    return { success: false }
   }
 }
