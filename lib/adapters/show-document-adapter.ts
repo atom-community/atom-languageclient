@@ -41,6 +41,9 @@ export async function showDocument(params: ShowDocumentParams): Promise<ShowDocu
         initialLine: params.selection?.start.line ?? 0,
         initialColumn: params.selection?.start.character ?? 0,
       })
+      if (view === undefined) {
+        return { success: false }
+      }
       if (view instanceof TextEditor && params.selection !== undefined) {
         view.selectToBufferPosition(Convert.positionToPoint(params.selection.end))
       }
