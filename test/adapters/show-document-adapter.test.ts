@@ -6,9 +6,10 @@ import { createSpyConnection } from "../helpers"
 
 describe("ShowDocumentAdapter", () => {
   describe("can attach to a server", () => {
-    const lcc = new LanguageClientConnection(createSpyConnection())
-
     it("subscribes to onShowDocument", async () => {
+      const connection = createSpyConnection()
+      const lcc = new LanguageClientConnection(connection)
+
       const spy = sinon.spy()
       lcc["_onRequest"] = spy
 
@@ -17,6 +18,20 @@ describe("ShowDocumentAdapter", () => {
       const spyArgs = spy.firstCall.args
       expect(spyArgs[0]).to.deep.equal({ method: "window/showDocument" })
       expect(spyArgs[1]).to.equal(ShowDocumentAdapter.showDocument)
+    })
+
+    it("onRequest connection is called", async () => {
+      const connection = createSpyConnection()
+      const lcc = new LanguageClientConnection(connection)
+
+      const spy = sinon.spy()
+      connection.onRequest = spy
+
+      ShowDocumentAdapter.attach(lcc)
+      expect((connection.onRequest as sinon.SinonSpy).calledOnce).to.be.true
+      const spyArgs = spy.firstCall.args
+      expect(spyArgs[0]).to.equal("window/showDocument")
+      expect(typeof spyArgs[1]).to.equal("function")
     })
   })
 })
