@@ -41,6 +41,19 @@ describe("ShowDocumentAdapter", () => {
     describe("shows the document inside Atom", async () => {
       const helloPath = join(dirname(__dirname), "fixtures", "hello.js")
 
+      async function canShowDocumentInAtom(params: ShowDocumentParams) {
+        const { success } = await ShowDocumentAdapter.showDocument(params)
+        expect(success).to.be.true
+
+        const editor = atom.workspace.getTextEditors()[0]
+        expect(editor instanceof TextEditor).to.be.true
+
+        expect(editor!.getPath()).includes(helloPath)
+        expect(editor!.getText()).includes(`atom.notifications.addSuccess("Hello World")`)
+
+        return editor
+      }
+
       beforeEach(() => {
         atom.workspace.getTextEditors().forEach((ed) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -53,15 +66,16 @@ describe("ShowDocumentAdapter", () => {
         const params: ShowDocumentParams = {
           uri: helloPath,
         }
+        await canShowDocumentInAtom(params)
+      })
 
-        const { success } = await ShowDocumentAdapter.showDocument(params)
-        expect(success).to.be.true
-
-        const editor = atom.workspace.getTextEditors()[0]
-        expect(editor instanceof TextEditor).to.be.true
-
-        expect(editor!.getPath()).includes(helloPath)
-        expect(editor!.getText()).includes(`atom.notifications.addSuccess("Hello World")`)
+      it("takes the focus", async () => {
+        const params: ShowDocumentParams = {
+          uri: helloPath,
+          takeFocus: true,
+        }
+        const editor = await canShowDocumentInAtom(params)
+        expect(atom.workspace.getActivePane()?.getItems()[0]).equal(editor)
       })
     })
 
