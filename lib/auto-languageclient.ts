@@ -109,6 +109,7 @@ export default class AutoLanguageClient {
       processId: lsProcess.pid,
       rootPath: projectPath,
       rootUri: Convert.pathToUri(projectPath),
+      locale: atom.config.get("atom-i18n.locale") || "en",
       workspaceFolders: null,
       // The capabilities supported.
       // TODO the capabilities set to false/undefined are TODO. See {ls.ServerCapabilities} for a full list.
