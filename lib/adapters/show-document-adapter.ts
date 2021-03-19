@@ -4,7 +4,7 @@ import { TextEditor } from "atom"
 import Convert from "../convert"
 
 /** Public: Adapts the window/showDocument command to Atom's text editors or external programs. */
-export class ShowDocumentAdapter {
+export default class ShowDocumentAdapter {
   /** {@inheritDoc attach} */
   public attach(arg: Parameters<typeof attach>[0]): ReturnType<typeof attach> {
     attach(arg)
