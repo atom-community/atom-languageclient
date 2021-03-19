@@ -558,3 +558,13 @@ export default class AutocompleteAdapter {
     }
   }
 }
+
+/**
+ * Normalizes the given grammar scope for autoComplete package so it always starts with `.`
+ * Based on https://github.com/atom/autocomplete-plus/wiki/Autocomplete-Providers
+ * @param grammarScope such as 'source.python' or '.source.python'
+ * @returns the normalized grammarScope such as `.source.python`
+ */
+export function grammarScopeToAutoCompleteSelector(grammarScope: string): string {
+  return grammarScope.includes(".") && grammarScope[0] !== "." ? `.${grammarScope}` : grammarScope
+}

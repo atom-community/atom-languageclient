@@ -123,12 +123,3 @@ export function getExePath(exeName: string, rootPath = rootPathDefault, exeExten
     return exeName
   }
 }
-
-/**
- * Normalizes the given grammar scope so it always starts with `.`
- * @param grammarScope such as 'source.python' or '.source.python'
- * @returns the normalized grammarScope such as `.source.python`
- */
-export function normalizeGrammarScope(grammarScope: string): string {
-  return grammarScope.includes(".") && grammarScope[0] !== "." ? `.${grammarScope}` : grammarScope
-}

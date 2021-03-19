@@ -1,4 +1,4 @@
-import AutoCompleteAdapter from "../../lib/adapters/autocomplete-adapter"
+import AutoCompleteAdapter, { grammarScopeToAutoCompleteSelector } from "../../lib/adapters/autocomplete-adapter"
 import { ActiveServer } from "../../lib/server-manager.js"
 import * as ls from "../../lib/languageclient"
 import * as sinon from "sinon"
@@ -805,6 +805,18 @@ describe("AutoCompleteAdapter", () => {
     it('defaults to "value"', () => {
       const result = AutoCompleteAdapter.completionKindToSuggestionType(undefined)
       expect(result).equals("value")
+    })
+  })
+
+  describe("grammarScopeToAutoCompleteSelector", () => {
+    it("prepends dot to the begining of the grammarScope", () => {
+      expect(grammarScopeToAutoCompleteSelector("source.python")).equal(".source.python")
+    })
+    it("doesn't prepend dot if it already has", () => {
+      expect(grammarScopeToAutoCompleteSelector(".source.python")).equal(".source.python")
+    })
+    it("doesn't prepend dot if the scope doesn't have dot in it", () => {
+      expect(grammarScopeToAutoCompleteSelector("javascript")).equal("javascript")
     })
   })
 })

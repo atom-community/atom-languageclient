@@ -7,7 +7,7 @@ import * as atomIde from "atom-ide"
 import * as linter from "atom/linter"
 import Convert from "./convert.js"
 import ApplyEditAdapter from "./adapters/apply-edit-adapter"
-import AutocompleteAdapter from "./adapters/autocomplete-adapter"
+import AutocompleteAdapter, { grammarScopeToAutoCompleteSelector } from "./adapters/autocomplete-adapter"
 import CodeActionAdapter from "./adapters/code-action-adapter"
 import CodeFormatAdapter from "./adapters/code-format-adapter"
 import CodeHighlightAdapter from "./adapters/code-highlight-adapter"
@@ -547,10 +547,10 @@ export default class AutoLanguageClient {
   public provideAutocomplete(): ac.AutocompleteProvider {
     return {
       selector: this.getGrammarScopes()
-        .map((g) => Utils.normalizeGrammarScope(g))
+        .map((g) => grammarScopeToAutoCompleteSelector(g))
         .join(", "),
       disableForSelector: this.getAutocompleteDisabledScopes()
-        .map((g) => Utils.normalizeGrammarScope(g))
+        .map((g) => grammarScopeToAutoCompleteSelector(g))
         .join(", "),
       inclusionPriority: 1,
       suggestionPriority: 2,
