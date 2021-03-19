@@ -5,6 +5,7 @@ import { expect } from "chai"
 import { join, dirname } from "path"
 import * as ShowDocumentAdapter from "../../lib/adapters/show-document-adapter"
 import { LanguageClientConnection, ShowDocumentParams } from "../../lib/languageclient"
+import Convert from "../../lib/convert"
 import { createSpyConnection } from "../helpers"
 
 describe("ShowDocumentAdapter", () => {
@@ -76,6 +77,17 @@ describe("ShowDocumentAdapter", () => {
         }
         const editor = await canShowDocumentInAtom(params)
         expect(atom.workspace.getActivePane()?.getItems()[0]).equal(editor)
+      })
+
+      it("selects the given selection range", async () => {
+        const selectionLSRange = { start: { line: 1, character: 30 }, end: { line: 1, character: 43 } } // `"Hello World"` in JavaScript file
+        const params: ShowDocumentParams = {
+          uri: helloPath,
+          selection: selectionLSRange,
+        }
+        const editor = await canShowDocumentInAtom(params)
+        expect(editor.getSelectedBufferRange()).deep.equal(Convert.lsRangeToAtomRange(selectionLSRange))
+        expect(editor.getSelectedText()).equal(`"Hello World"`)
       })
     })
 
