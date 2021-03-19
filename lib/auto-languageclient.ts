@@ -517,11 +517,23 @@ export default class AutoLanguageClient {
   }
 
   // Autocomplete+ via LS completion---------------------------------------
+
+  /**
+   * A method to override to return an array of grammar scopes that should not be used for autocompletion.
+   *
+   * Usually that's used for disabling autocomplete inside comments,
+   * @example if the grammar scopes are [ '.source.js' ], `getAutocompleteDisabledScopes` may return [ '.source.js .comment' ].
+   */
+  protected getAutocompleteDisabledScopes(): Array<string> {
+    return []
+  }
+
   public provideAutocomplete(): ac.AutocompleteProvider {
     return {
       selector: this.getGrammarScopes()
         .map((g) => (g.includes(".") ? "." + g : g))
         .join(", "),
+      disableForSelector: this.getAutocompleteDisabledScopes().join(", "),
       inclusionPriority: 1,
       suggestionPriority: 2,
       excludeLowerPriority: false,
