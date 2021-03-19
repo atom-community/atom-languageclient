@@ -34,7 +34,7 @@ export async function showDocument(params: ShowDocumentParams): Promise<ShowDocu
   try {
     if (!params.external) {
       // open using atom.workspace
-      const view = await atom.workspace.open(params.uri, {
+      const view = await atom.workspace.open(Convert.uriToPath(params.uri), {
         activateItem: params.takeFocus,
         activatePane: params.takeFocus,
         pending: true,

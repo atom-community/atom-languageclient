@@ -2,7 +2,6 @@ import { TextEditor } from "atom"
 import * as sinon from "sinon"
 import { expect } from "chai"
 import { join, dirname } from "path"
-import Convert from "../../lib/convert"
 import * as ShowDocumentAdapter from "../../lib/adapters/show-document-adapter"
 import { LanguageClientConnection, ShowDocumentParams } from "../../lib/languageclient"
 import { createSpyConnection } from "../helpers"
@@ -40,7 +39,6 @@ describe("ShowDocumentAdapter", () => {
   describe("can show documents", () => {
     describe("shows the document inside Atom", async () => {
       const helloPath = join(dirname(__dirname), "fixtures", "hello.js")
-      const helloURI = Convert.pathToUri(helloPath)
 
       beforeEach(() => {
         atom.workspace.getTextEditors().forEach((ed) => {
@@ -52,7 +50,7 @@ describe("ShowDocumentAdapter", () => {
 
       it("shows the document inside Atom for the given URI", async () => {
         const params: ShowDocumentParams = {
-          uri: helloURI,
+          uri: helloPath,
         }
 
         const { success } = await ShowDocumentAdapter.showDocument(params)
