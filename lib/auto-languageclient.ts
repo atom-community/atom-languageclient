@@ -110,12 +110,16 @@ export default class AutoLanguageClient {
       rootPath: projectPath,
       rootUri: Convert.pathToUri(projectPath),
       workspaceFolders: null,
+      // The capabilities supported.
+      // TODO the capabilities set to false/undefined are TODO. See {ls.ServerCapabilities} for a full list.
       capabilities: {
         workspace: {
           applyEdit: true,
           configuration: false,
           workspaceEdit: {
             documentChanges: true,
+            normalizesLineEndings: false,
+            changeAnnotationSupport: undefined,
           },
           workspaceFolders: false,
           didChangeConfiguration: {
@@ -124,11 +128,22 @@ export default class AutoLanguageClient {
           didChangeWatchedFiles: {
             dynamicRegistration: false,
           },
+          // BLOCKED: on atom/symbols-view
           symbol: {
             dynamicRegistration: false,
           },
           executeCommand: {
             dynamicRegistration: false,
+          },
+          semanticTokens: undefined,
+          codeLens: undefined,
+          fileOperations: {
+            // BLOCKED: on tree-view not providing hooks for "before file/dir created"
+            willCreate: false,
+            // BLOCKED: on tree-view not providing hooks for "before file/dir renamed"
+            willRename: false,
+            // BLOCKED: on tree-view not providing hooks for "before file/dir deleted"
+            willDelete: false,
           },
         },
         textDocument: {
@@ -152,6 +167,7 @@ export default class AutoLanguageClient {
           signatureHelp: {
             dynamicRegistration: false,
           },
+          declaration: undefined,
           references: {
             dynamicRegistration: false,
           },
@@ -189,13 +205,28 @@ export default class AutoLanguageClient {
           moniker: {
             dynamicRegistration: false,
           },
-
-          // We do not support these features yet.
-          // Need to set to undefined to appease TypeScript weak type detection.
+          publishDiagnostics: {
+            relatedInformation: true,
+            tagSupport: {
+              // BLOCKED: on steelbrain/linter supporting ways of denoting useless code and deprecated symbols
+              valueSet: [],
+            },
+            versionSupport: false,
+            codeDescriptionSupport: true,
+            dataSupport: true,
+          },
           implementation: undefined,
           typeDefinition: undefined,
           colorProvider: undefined,
           foldingRange: undefined,
+          selectionRange: undefined,
+          linkedEditingRange: undefined,
+          callHierarchy: undefined,
+          semanticTokens: undefined,
+        },
+        general: {
+          regularExpressions: undefined,
+          markdown: undefined,
         },
         experimental: {},
       },
