@@ -81,4 +81,16 @@ describe("Utils", () => {
       expect(exePath).eq("python")
     })
   })
+
+  describe("normalizeGrammarScope", () => {
+    it("prepends dot to the begining of the grammarScope", () => {
+      expect(Utils.normalizeGrammarScope("source.python")).equal(".source.python")
+    })
+    it("doesn't prepend dot if it already has", () => {
+      expect(Utils.normalizeGrammarScope(".source.python")).equal(".source.python")
+    })
+    it("doesn't prepend dot if the scope doesn't have dot in it", () => {
+      expect(Utils.normalizeGrammarScope("javascript")).equal("javascript")
+    })
+  })
 })
