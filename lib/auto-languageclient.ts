@@ -7,7 +7,7 @@ import * as atomIde from "atom-ide"
 import * as linter from "atom/linter"
 import Convert from "./convert.js"
 import ApplyEditAdapter from "./adapters/apply-edit-adapter"
-import AutocompleteAdapter from "./adapters/autocomplete-adapter"
+import AutocompleteAdapter, { grammarScopeToAutoCompleteSelector } from "./adapters/autocomplete-adapter"
 import CodeActionAdapter from "./adapters/code-action-adapter"
 import CodeFormatAdapter from "./adapters/code-format-adapter"
 import CodeHighlightAdapter from "./adapters/code-highlight-adapter"
@@ -158,6 +158,22 @@ export default class AutoLanguageClient {
             completionItem: {
               snippetSupport: true,
               commitCharactersSupport: false,
+              documentationFormat: [],
+              deprecatedSupport: false,
+              preselectSupport: false,
+              tagSupport: {
+                valueSet: [],
+              },
+              insertReplaceSupport: false,
+              resolveSupport: {
+                properties: [],
+              },
+              insertTextModeSupport: {
+                valueSet: [],
+              },
+            },
+            completionItemKind: {
+              valueSet: [],
             },
             contextSupport: true,
           },
@@ -548,14 +564,29 @@ export default class AutoLanguageClient {
   }
 
   // Autocomplete+ via LS completion---------------------------------------
+
+  /**
+   * A method to override to return an array of grammar scopes that should not be used for autocompletion.
+   *
+   * Usually that's used for disabling autocomplete inside comments,
+   * @example if the grammar scopes are [ '.source.js' ], `getAutocompleteDisabledScopes` may return [ '.source.js .comment' ].
+   */
+  protected getAutocompleteDisabledScopes(): Array<string> {
+    return []
+  }
+
   public provideAutocomplete(): ac.AutocompleteProvider {
     return {
       selector: this.getGrammarScopes()
-        .map((g) => (g.includes(".") ? "." + g : g))
+        .map((g) => grammarScopeToAutoCompleteSelector(g))
+        .join(", "),
+      disableForSelector: this.getAutocompleteDisabledScopes()
+        .map((g) => grammarScopeToAutoCompleteSelector(g))
         .join(", "),
       inclusionPriority: 1,
       suggestionPriority: 2,
       excludeLowerPriority: false,
+      filterSuggestions: true,
       getSuggestions: this.getSuggestions.bind(this),
       onDidInsertSuggestion: this.onDidInsertSuggestion.bind(this),
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
