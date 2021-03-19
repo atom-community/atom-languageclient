@@ -41,7 +41,7 @@ export async function showDocument(params: ShowDocumentParams): Promise<ShowDocu
         initialLine: params.selection?.start.line ?? 0,
         initialColumn: params.selection?.start.character ?? 0,
       })
-      if (view === undefined) {
+      if (!view) {
         return { success: false }
       }
       if (view instanceof TextEditor && params.selection !== undefined) {
