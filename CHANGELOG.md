@@ -1,3 +1,19 @@
+# [1.5.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.4.0...v1.5.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add and use normalizeGrammarScope ([889f1da](https://github.com/atom-ide-community/atom-languageclient/commit/889f1da34bc0edb2ee2565e96db93e5f8d042df5)), closes [/github.com/atom-community/atom-languageclient/pull/136#discussion_r597451879](https://github.com//github.com/atom-community/atom-languageclient/pull/136/issues/discussion_r597451879)
+* add filterSuggestion: true to provideAutocomplete ([d143451](https://github.com/atom-ide-community/atom-languageclient/commit/d143451d0213d0b2f802c6f7ebe983efbf24d891))
+* add locale to getInitializeParams ([dfce15a](https://github.com/atom-ide-community/atom-languageclient/commit/dfce15a97352b5c0403c50f131d1cbcdcae50299))
+* simplify provideAutocomplete.selector ([1f10d7b](https://github.com/atom-ide-community/atom-languageclient/commit/1f10d7b546e75355d07df3f61d585cf4db141138))
+
+
+### Features
+
+* add more compeletion properties in AutoLanguageClient ([45d7d19](https://github.com/atom-ide-community/atom-languageclient/commit/45d7d1931c9e8104e309b8b660c9331e4262f57e))
+* allow disabling autocomplete for some scopes ([a6e3244](https://github.com/atom-ide-community/atom-languageclient/commit/a6e324458ce2fe601f95e4532a522acc3224e4f8))
+
 # [1.4.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.3.0...v1.4.0) (2021-03-17)
 
 
