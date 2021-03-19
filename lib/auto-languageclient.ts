@@ -143,6 +143,22 @@ export default class AutoLanguageClient {
             completionItem: {
               snippetSupport: true,
               commitCharactersSupport: false,
+              documentationFormat: [],
+              deprecatedSupport: false,
+              preselectSupport: false,
+              tagSupport: {
+                valueSet: [],
+              },
+              insertReplaceSupport: false,
+              resolveSupport: {
+                properties: [],
+              },
+              insertTextModeSupport: {
+                valueSet: [],
+              },
+            },
+            completionItemKind: {
+              valueSet: [],
             },
             contextSupport: true,
           },
