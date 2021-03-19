@@ -1,4 +1,5 @@
 import { TextEditor } from "atom"
+import { shell } from "electron"
 import * as sinon from "sinon"
 import { expect } from "chai"
 import { join, dirname } from "path"
@@ -61,6 +62,24 @@ describe("ShowDocumentAdapter", () => {
 
         expect(editor!.getPath()).includes(helloPath)
         expect(editor!.getText()).includes(`atom.notifications.addSuccess("Hello World")`)
+      })
+    })
+
+    describe("shows document in external programs", () => {
+      it("shows the document in external programs for the given URI", async () => {
+        const params: ShowDocumentParams = {
+          uri: "http://www.github.com",
+          external: true,
+        }
+        const spy = sinon.spy()
+        shell.openExternal = spy
+
+        const { success } = await ShowDocumentAdapter.showDocument(params)
+        expect(success).to.be.true
+
+        expect((shell.openExternal as sinon.SinonSpy).calledOnce).to.be.true
+        const spyArgs = spy.firstCall.args
+        expect(spyArgs[0]).to.equal("http://www.github.com")
       })
     })
   })
