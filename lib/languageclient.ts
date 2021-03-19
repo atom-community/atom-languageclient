@@ -328,6 +328,16 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /**
+   * Public: Send a `textDocument/moniker` request.
+   *
+   * @param params The {MonikerParams} containing information about the position in the document.
+   * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
+   */
+  public moniker(params: lsp.MonikerParams, cancellationToken?: jsonrpc.CancellationToken): Promise<lsp.Moniker[]> {
+    return this._sendRequest('textDocument/moniker', params, cancellationToken);
+  }
+
+  /**
    * Public: Send a `completionItem/resolve` request.
    *
    * @param params The {CompletionItem} for which a fully resolved {CompletionItem} is desired.
