@@ -551,6 +551,7 @@ export default class AutoLanguageClient {
       inclusionPriority: 1,
       suggestionPriority: 2,
       excludeLowerPriority: false,
+      filterSuggestions: true,
       getSuggestions: this.getSuggestions.bind(this),
       onDidInsertSuggestion: this.onDidInsertSuggestion.bind(this),
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
