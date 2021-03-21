@@ -15,6 +15,7 @@ export interface KnownNotifications {
 }
 
 export interface KnownRequests {
+  "window/showDocument": [lsp.ShowDocumentParams, lsp.ShowDocumentResult]
   "window/showMessageRequest": [lsp.ShowMessageRequestParams, lsp.MessageActionItem | null]
   "workspace/applyEdit": [lsp.ApplyWorkspaceEditParams, lsp.ApplyWorkspaceEditResponse]
   [custom: string]: [Record<string, any>, Record<string, any> | null]
@@ -164,6 +165,16 @@ export class LanguageClientConnection extends EventEmitter {
     callback: (params: lsp.ShowMessageRequestParams) => Promise<lsp.MessageActionItem | null>
   ): void {
     this._onRequest({ method: "window/showMessageRequest" }, callback)
+  }
+
+  /**
+   * Public: Register a callback for the `window/showDocument` message.
+   *
+   * @param callback The function to be called when the `window/showDocument` message is
+   *   received with {ShowDocumentParams} being passed.
+   */
+  public onShowDocument(callback: (params: lsp.ShowDocumentParams) => Promise<lsp.ShowDocumentResult>): void {
+    this._onRequest({ method: "window/showDocument" }, callback)
   }
 
   /**
