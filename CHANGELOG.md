@@ -1,3 +1,21 @@
+# [1.6.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.5.0...v1.6.0) (2021-03-21)
+
+
+### Bug Fixes
+
+* consider showing the document in external programs a sucess ([fabf882](https://github.com/atom-ide-community/atom-languageclient/commit/fabf88299c6e221743d3da0d14fcf07861182bc6))
+* fix the doc for onShowDocument ([03b9b20](https://github.com/atom-ide-community/atom-languageclient/commit/03b9b202e9ac1215f064f6de64ad45420faa95ca))
+* params.selection can be undefined ([921613b](https://github.com/atom-ide-community/atom-languageclient/commit/921613b491dc820ad9e0234954d42fd9d4092294))
+* rename onShowDocument function to showDocument ([f9549c6](https://github.com/atom-ide-community/atom-languageclient/commit/f9549c6f27e762f7e122d731f17bf827b8117fb1))
+* return success false if view is undefined ([7bede25](https://github.com/atom-ide-community/atom-languageclient/commit/7bede25205135bdbf716c55a695b307eb8ee9142))
+* try-catch showDocument ([6e8770c](https://github.com/atom-ide-community/atom-languageclient/commit/6e8770ced9d4e77d056db6386d0584b351adbd65))
+* use free functions instead of static methods ([38441c9](https://github.com/atom-ide-community/atom-languageclient/commit/38441c9d24c6336b87b17686d63ed062437ef112))
+
+
+### Features
+
+* implement window/showDocument ([ff1aa7a](https://github.com/atom-ide-community/atom-languageclient/commit/ff1aa7ab0993c6de1c8e76c87e76c10387694935))
+
 # [1.5.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.4.0...v1.5.0) (2021-03-19)
 
 
