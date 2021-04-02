@@ -125,6 +125,25 @@ export default class LinterPushV2Adapter {
       }
     }
     return null
+
+/**
+ * Convert the related information from a diagnostic into
+ * a reference point for a Linter {V2Message}.
+ *
+ * @param relatedInfo Several related information objects (only the first is used).
+ * @returns A value that is suitable for using as {V2Message}.reference.
+ */
+function relatedInformationToReference(
+  relatedInfo: DiagnosticRelatedInformation[] | undefined
+): linter.Message["reference"] {
+  if (relatedInfo === undefined || relatedInfo.length === 0) {
+    return undefined
+  }
+
+  const location = relatedInfo[0].location
+  return {
+    file: Convert.uriToPath(location.uri),
+    position: Convert.lsRangeToAtomRange(location.range).start,
   }
 }
 
