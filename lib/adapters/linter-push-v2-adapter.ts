@@ -16,14 +16,17 @@ export default class LinterPushV2Adapter {
   /*
    * A map from file path calculated using the LS diagnostic uri to an array of linter messages {linter.Message[]}
    */
-  private _diagnosticMap: Map<string, linter.Message[]> = new Map()
+  protected _diagnosticMap: Map<string, linter.Message[]> = new Map()
   /**
    * A map from file path {linter.Message["location"]["file"]} to a Map of all Message keys to Diagnostics ${Map<linter.Message["key"], Diagnostic>}
    * It has to be stored separately because a {Message} object cannot hold all of the information
    * that a {Diagnostic} provides, thus we store the original {Diagnostic} object.
    */
-  private _lsDiagnosticMap: Map<linter.Message["location"]["file"], Map<linter.Message["key"], Diagnostic>> = new Map()
-  private _indies: Set<linter.IndieDelegate> = new Set()
+  protected _lsDiagnosticMap: Map<
+    linter.Message["location"]["file"],
+    Map<linter.Message["key"], Diagnostic>
+  > = new Map()
+  protected _indies: Set<linter.IndieDelegate> = new Set()
 
   /**
    * Public: Create a new {LinterPushV2Adapter} that will listen for diagnostics via the supplied {LanguageClientConnection}.
@@ -102,10 +105,10 @@ export default class LinterPushV2Adapter {
    * @param linterMessages an array of linter {V2Message}
    * @returns an array of LS {Diagnostic[]}
    */
-  public getLSDiagnostics(linterMessages: linter.Message[]): Diagnostic[] {
+  public getLSDiagnosticsForMessages(linterMessages: linter.Message[]): Diagnostic[] {
     return (
       linterMessages
-        .map(this.getLSDiagnostic)
+        .map(this.getLSDiagnosticForMessage)
         // filter out undefined
         .filter((diagnostic) => diagnostic !== undefined) as Diagnostic[]
     )
@@ -117,7 +120,7 @@ export default class LinterPushV2Adapter {
    * @param message The {Message} object to fetch the {Diagnostic} for.
    * @returns The associated {Diagnostic}.
    */
-  public getLSDiagnostic(message: linter.Message): Diagnostic | undefined {
+  public getLSDiagnosticForMessage(message: linter.Message): Diagnostic | undefined {
     return this._lsDiagnosticMap.get(message.location.file)?.get(getMessageKey(message))
   }
 
