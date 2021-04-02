@@ -98,6 +98,19 @@ export default class LinterPushV2Adapter {
     }
   }
 
+  /** Public: get diagnostics for the given linter messages
+   * @param linterMessages an array of linter {V2Message}
+   * @returns an array of LS {Diagnostic[]}
+   */
+  public getLSDiagnostics(linterMessages: linter.Message[]): Diagnostic[] {
+    return (
+      linterMessages
+        .map(this.getLSDiagnostic)
+        // filter out undefined
+        .filter((diagnostic) => diagnostic !== undefined) as Diagnostic[]
+    )
+  }
+
   /**
    * Public: Get the {Diagnostic} that is associated with the given Base Linter v2 {Message}.
    *
