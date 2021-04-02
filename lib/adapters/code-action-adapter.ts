@@ -12,7 +12,6 @@ import {
   WorkspaceEdit,
 } from "../languageclient"
 import { Range, TextEditor } from "atom"
-import CommandExecutionAdapter from "./command-execution-adapter"
 
 export default class CodeActionAdapter {
   /** @returns A {Boolean} indicating this adapter can adapt the server based on the given serverCapabilities. */
@@ -81,7 +80,10 @@ export default class CodeActionAdapter {
 
   private static async executeCommand(command: any, connection: LanguageClientConnection): Promise<void> {
     if (Command.is(command)) {
-      await CommandExecutionAdapter.executeCommand(connection, command.command, command.arguments)
+      await connection.executeCommand({
+        command: command.command,
+        arguments: command.arguments,
+      })
     }
   }
 
