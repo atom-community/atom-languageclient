@@ -586,9 +586,9 @@ export class LanguageClientConnection extends EventEmitter {
   }
 }
 
-export type DiagnosticCode = number | string
-
-/** Contains additional information about the context in which a completion request is triggered. */
+/**
+ * Contains additional information about the context in which a completion request is triggered.
+ */
 export interface CompletionContext {
   /** How the completion was triggered. */
   triggerKind: lsp.CompletionTriggerKind
