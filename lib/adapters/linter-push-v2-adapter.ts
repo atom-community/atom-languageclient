@@ -128,6 +128,17 @@ export default class LinterPushV2Adapter {
   }
 }
 
+/**
+ * Get a unique key for a Linter v2 Message
+ * @param message A {Message} object
+ * @returns ${string} a unique key
+ */
+function getMessageKey(message: linter.Message): string {
+  if (typeof message.key !== "string") {
+    updateMessageKey(message)
+  }
+  return message.key as string // updateMessageKey adds message.key string
+}
 
 /**
  * Construct an unique key for a Linter v2 Message and store it in `Message.key`
