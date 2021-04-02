@@ -2,6 +2,9 @@ import type * as atomIde from "atom-ide-base"
 import * as ls from "./languageclient"
 import { Point, FilesystemChange, Range, TextEditor } from "atom"
 
+// eslint-disable-next-line import/no-deprecated
+import { diagnosticTypeToLSSeverity, atomIdeDiagnosticToLSDiagnostic } from "./adapters/diagnostic-adapter"
+
 /**
  * Public: Class that contains a number of helper methods for general conversions between the language server protocol
  * and Atom/Atom packages.
@@ -177,28 +180,16 @@ export default class Convert {
     }
   }
 
+  /** @deprecated use Linter V2 service */
   public static atomIdeDiagnosticToLSDiagnostic(diagnostic: atomIde.Diagnostic): ls.Diagnostic {
-    // TODO: support diagnostic codes and codeDescriptions
-    // TODO!: support data
-    return {
-      range: Convert.atomRangeToLSRange(diagnostic.range),
-      severity: Convert.diagnosticTypeToLSSeverity(diagnostic.type),
-      source: diagnostic.providerName,
-      message: diagnostic.text || "",
-    }
+    // eslint-disable-next-line import/no-deprecated
+    return atomIdeDiagnosticToLSDiagnostic(diagnostic)
   }
 
+  /** @deprecated use Linter V2 service */
   public static diagnosticTypeToLSSeverity(type: atomIde.DiagnosticType): ls.DiagnosticSeverity {
-    switch (type) {
-      case "Error":
-        return ls.DiagnosticSeverity.Error
-      case "Warning":
-        return ls.DiagnosticSeverity.Warning
-      case "Info":
-        return ls.DiagnosticSeverity.Information
-      default:
-        throw Error(`Unexpected diagnostic type ${type}`)
-    }
+    // eslint-disable-next-line import/no-deprecated
+    return diagnosticTypeToLSSeverity(type)
   }
 
   /**
