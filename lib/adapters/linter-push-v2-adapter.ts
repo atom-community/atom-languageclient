@@ -127,6 +127,31 @@ export default class LinterPushV2Adapter {
     return null
 
 /**
+ * Public: Convert a single {Diagnostic} received from a language server into a single
+ * {Message} expected by the Linter V2 API.
+ *
+ * @param path A string representing the path of the file the diagnostic belongs to.
+ * @param diagnostics A {Diagnostic} object received from the language server.
+ * @returns A {Message} equivalent to the {Diagnostic} object supplied by the language server.
+ */
+function lsDiagnosticToV2Message(path: string, diagnostic: Diagnostic): linter.Message {
+  return {
+    location: {
+      file: path,
+      position: Convert.lsRangeToAtomRange(diagnostic.range),
+    },
+    reference: relatedInformationToReference(diagnostic.relatedInformation),
+    url: diagnostic.codeDescription?.href,
+    icon: iconForLSSeverity(diagnostic.severity ?? DiagnosticSeverity.Error),
+    excerpt: diagnostic.message,
+    linterName: diagnostic.source,
+    severity: lsSeverityToV2MessageSeverity(diagnostic.severity ?? DiagnosticSeverity.Error),
+    // BLOCKED: on steelbrain/linter#1722
+    solutions: undefined,
+  }
+}
+
+/**
  * Convert a severity level of an LSP {Diagnostic} to that of a Base Linter v2 {Message}.
  * Note: this conversion is lossy due to the v2 Message not being able to represent hints.
  *
