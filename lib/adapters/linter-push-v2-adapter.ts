@@ -1,21 +1,28 @@
 import * as linter from "atom/linter"
-import * as atom from "atom"
 import Convert from "../convert"
 import {
   Diagnostic,
-  DiagnosticCode,
   DiagnosticSeverity,
+  DiagnosticRelatedInformation,
   LanguageClientConnection,
   PublishDiagnosticsParams,
 } from "../languageclient"
 
 /**
- * Public: Listen to diagnostics messages from the language server and publish them to the user by way of the Linter
- * Push (Indie) v2 API supported by Atom IDE UI.
+ * Public: Listen to diagnostics messages from the language server and publish them
+ * to the user by way of the Linter Push (Indie) v2 API provided by the Base Linter package.
  */
 export default class LinterPushV2Adapter {
+  /*
+   * A map from file path calculated using the LS diagnostic uri to an array of linter messages {linter.Message[]}
+   */
   private _diagnosticMap: Map<string, linter.Message[]> = new Map()
-  private _diagnosticCodes: Map<string, Map<string, DiagnosticCode | null>> = new Map()
+  /**
+   * A map from file path {linter.Message["location"]["file"]} to a Map of all Message keys to Diagnostics ${Map<linter.Message["key"], Diagnostic>}
+   * It has to be stored separately because a {Message} object cannot hold all of the information
+   * that a {Diagnostic} provides, thus we store the original {Diagnostic} object.
+   */
+  private _lsDiagnosticMap: Map<linter.Message["location"]["file"], Map<linter.Message["key"], Diagnostic>> = new Map()
   private _indies: Set<linter.IndieDelegate> = new Set()
 
   /**
@@ -60,14 +67,14 @@ export default class LinterPushV2Adapter {
    */
   public captureDiagnostics(params: PublishDiagnosticsParams): void {
     const path = Convert.uriToPath(params.uri)
-    const codeMap = new Map()
+    const codeMap = new Map<string, Diagnostic>()
     const messages = params.diagnostics.map((d) => {
-      const linterMessage = this.diagnosticToV2Message(path, d)
-      codeMap.set(getCodeKey(linterMessage.location.position, d.message), d.code)
+      const linterMessage = lsDiagnosticToV2Message(path, d)
+      codeMap.set(getMessageKey(linterMessage), d)
       return linterMessage
     })
     this._diagnosticMap.set(path, messages)
-    this._diagnosticCodes.set(path, codeMap)
+    this._lsDiagnosticMap.set(path, codeMap)
     this._indies.forEach((i) => i.setMessages(path, messages))
   }
 
@@ -92,8 +99,18 @@ export default class LinterPushV2Adapter {
   }
 
   /**
-   * Public: Convert a diagnostic severity number obtained from the language server into the textual equivalent for a
-   * Linter {V2Message}.
+   * Public: Get the {Diagnostic} that is associated with the given Base Linter v2 {Message}.
+   *
+   * @param message The {Message} object to fetch the {Diagnostic} for.
+   * @returns The associated {Diagnostic}.
+   */
+  public getLSDiagnostic(message: linter.Message): Diagnostic | undefined {
+    return this._lsDiagnosticMap.get(message.location.file)?.get(getMessageKey(message))
+  }
+
+  /**
+   * Public: Convert a diagnostic severity number obtained from the language server into
+   * the textual equivalent for a Linter {V2Message}.
    *
    * @param severity A number representing the severity of the diagnostic.
    * @returns A string of 'error', 'warning' or 'info' depending on the severity.
@@ -110,21 +127,7 @@ export default class LinterPushV2Adapter {
         return "info"
     }
   }
-
-  /**
-   * Private: Get the recorded diagnostic code for a range/message. Diagnostic codes are tricky because there's no
-   * suitable place in the Linter API for them. For now, we'll record the original code for each range/message
-   * combination and retrieve it when needed (e.g. for passing back into code actions)
-   */
-  public getDiagnosticCode(editor: atom.TextEditor, range: atom.Range, text: string): DiagnosticCode | null {
-    const path = editor.getPath()
-    if (path != null) {
-      const diagnosticCodes = this._diagnosticCodes.get(path)
-      if (diagnosticCodes != null) {
-        return diagnosticCodes.get(getCodeKey(range, text)) || null
-      }
-    }
-    return null
+}
 
 /**
  * Public: Convert a single {Diagnostic} received from a language server into a single
