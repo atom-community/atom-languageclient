@@ -127,6 +127,27 @@ export default class LinterPushV2Adapter {
     return null
 
 /**
+ * Convert a severity level of an LSP {Diagnostic} to that of a Base Linter v2 {Message}.
+ * Note: this conversion is lossy due to the v2 Message not being able to represent hints.
+ *
+ * @param severity A severity level of of an LSP {Diagnostic} to be converted.
+ * @returns A severity level a Base Linter v2 {Message}.
+ */
+function lsSeverityToV2MessageSeverity(severity: DiagnosticSeverity): linter.Message["severity"] {
+  switch (severity) {
+    case DiagnosticSeverity.Error:
+      return "error"
+    case DiagnosticSeverity.Warning:
+      return "warning"
+    case DiagnosticSeverity.Information:
+    case DiagnosticSeverity.Hint:
+      return "info"
+    default:
+      throw Error(`Unexpected diagnostic severity '${severity}'`)
+  }
+}
+
+/**
  * Convert a diagnostic severity number obtained from the language server into an Octicon icon.
  *
  * @param severity A number representing the severity of the diagnostic.
