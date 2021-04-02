@@ -128,6 +128,27 @@ export default class LinterPushV2Adapter {
   }
 }
 
-function getCodeKey(range: atom.Range, text: string): string {
-  return ([] as any[]).concat(...range.serialize(), text).join(",")
+
+/**
+ * Construct an unique key for a Linter v2 Message and store it in `Message.key`
+ * @param message A {Message} object to serialize.
+ * @returns ${string} a unique key
+ */
+function updateMessageKey(message: linter.Message): void {
+  // From https://github.com/steelbrain/linter/blob/fadd462914ef0a8ed5b73a489f662a9393bdbe9f/lib/helpers.ts#L50-L64
+  const { reference, location } = message
+  const nameStr = `$LINTER:${message.linterName}`
+  const locationStr = `$LOCATION:${location.file}$${location.position.start.row}$${location.position.start.column}$${location.position.end.row}$${location.position.end.column}`
+  const referenceStr = reference
+    ? `$REFERENCE:${reference.file}$${
+        reference.position ? `${reference.position.row}$${reference.position.column}` : ""
+      }`
+    : "$REFERENCE:null"
+  const excerptStr = `$EXCERPT:${message.excerpt}`
+  const severityStr = `$SEVERITY:${message.severity}`
+  const iconStr = message.icon ? `$ICON:${message.icon}` : "$ICON:null"
+  const urlStr = message.url ? `$URL:${message.url}` : "$URL:null"
+  const descriptionStr =
+    typeof message.description === "string" ? `$DESCRIPTION:${message.description}` : "$DESCRIPTION:null"
+  message.key = `${nameStr}${locationStr}${referenceStr}${excerptStr}${severityStr}${iconStr}${urlStr}${descriptionStr}`
 }

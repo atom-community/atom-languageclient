@@ -27,3 +27,9 @@ declare module "atom/src/config" {
     get<T extends "atom-i18n.locale">(key: T): string
   }
 }
+
+declare module "atom/linter" {
+  interface Message {
+    key?: string
+  }
+}
