@@ -3894,4 +3894,4 @@ specifiers:
   vscode-jsonrpc: 6.0.0
   vscode-languageserver-protocol: 3.16.0
   vscode-languageserver-types: 3.16.0
-  zadeh: ^2.0.2
+  zadeh: 2.0.2
