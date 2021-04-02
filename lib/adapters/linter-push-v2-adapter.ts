@@ -127,6 +127,27 @@ export default class LinterPushV2Adapter {
     return null
 
 /**
+ * Convert a diagnostic severity number obtained from the language server into an Octicon icon.
+ *
+ * @param severity A number representing the severity of the diagnostic.
+ * @returns An Octicon name.
+ */
+function iconForLSSeverity(severity: DiagnosticSeverity): string | undefined {
+  switch (severity) {
+    case DiagnosticSeverity.Error:
+      return "stop"
+    case DiagnosticSeverity.Warning:
+      return "warning"
+    case DiagnosticSeverity.Information:
+      return "info"
+    case DiagnosticSeverity.Hint:
+      return "light-bulb"
+    default:
+      return undefined
+  }
+}
+
+/**
  * Convert the related information from a diagnostic into
  * a reference point for a Linter {V2Message}.
  *
