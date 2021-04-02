@@ -103,7 +103,7 @@ function createCodeActionParams(
     diagnostics = []
   } else {
     // TODO compile time dispatch using function names
-    diagnostics = isLinterMessage(linterMessages)
+    diagnostics = areLinterMessages(linterMessages)
       ? linterAdapter.getLSDiagnosticsForMessages(linterMessages as linter.Message[])
       : (linterAdapter as IdeDiagnosticAdapter).getLSDiagnosticsForIdeDiagnostics(
           linterMessages as atomIde.Diagnostic[],
@@ -119,8 +119,8 @@ function createCodeActionParams(
   }
 }
 
-function isLinterMessage(linterMessage: linter.Message[] | atomIde.Diagnostic[]): boolean {
-  if (linterMessage.length > 0 && "excerpt" in linterMessage[0]) {
+function areLinterMessages(linterMessages: linter.Message[] | atomIde.Diagnostic[]): boolean {
+  if ("excerpt" in linterMessages[0]) {
     return true
   }
   return false
