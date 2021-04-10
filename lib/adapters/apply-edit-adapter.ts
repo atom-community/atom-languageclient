@@ -1,7 +1,18 @@
 import type * as atomIde from "atom-ide-base"
 import Convert from "../convert"
-import { LanguageClientConnection, ApplyWorkspaceEditParams, ApplyWorkspaceEditResponse } from "../languageclient"
+import {
+  LanguageClientConnection,
+  ApplyWorkspaceEditParams,
+  ApplyWorkspaceEditResponse,
+  WorkspaceEdit,
+  TextDocumentEdit,
+  CreateFile,
+  RenameFile,
+  DeleteFile,
+  DocumentUri
+} from "../languageclient"
 import { TextBuffer, TextEditor } from "atom"
+import * as fs from 'fs';
 
 /** Public: Adapts workspace/applyEdit commands to editors. */
 export default class ApplyEditAdapter {
@@ -33,24 +44,20 @@ export default class ApplyEditAdapter {
   }
 
   public static async onApplyEdit(params: ApplyWorkspaceEditParams): Promise<ApplyWorkspaceEditResponse> {
-    let changes = params.edit.changes || {}
+    return ApplyEditAdapter.apply(params.edit)
+  }
 
-    if (params.edit.documentChanges) {
-      changes = {}
-      params.edit.documentChanges.forEach((change) => {
-        if (change && "textDocument" in change && change.textDocument) {
-          changes[change.textDocument.uri] = change.edits
-        }
-      })
-    }
-
-    const uris = Object.keys(changes)
-
+  public static async apply(workspaceEdit: WorkspaceEdit): Promise<ApplyWorkspaceEditResponse> {
+    ApplyEditAdapter.normalize(workspaceEdit)
+    
     // Keep checkpoints from all successful buffer edits
     const checkpoints: Array<{ buffer: TextBuffer; checkpoint: number }> = []
 
-    const promises = uris.map(async (uri) => {
-      const path = Convert.uriToPath(uri)
+    const promises = (workspaceEdit.documentChanges || []).map(async (edit): Promise<void> => {
+      if (!TextDocumentEdit.is(edit)) {
+        return ApplyEditAdapter.handleResourceOperation(edit)
+      } 
+      const path = Convert.uriToPath(edit.textDocument.uri)
       const editor = (await atom.workspace.open(path, {
         searchAllPanes: true,
         // Open new editors in the background.
@@ -58,8 +65,7 @@ export default class ApplyEditAdapter {
         activateItem: false,
       })) as TextEditor
       const buffer = editor.getBuffer()
-      // Get an existing editor for the file, or open a new one if it doesn't exist.
-      const edits = Convert.convertLsTextEdits(changes[uri])
+      const edits = Convert.convertLsTextEdits(edit.edits)
       const checkpoint = ApplyEditAdapter.applyEdits(buffer, edits)
       checkpoints.push({ buffer, checkpoint })
     })
@@ -79,6 +85,37 @@ export default class ApplyEditAdapter {
       })
 
     return { applied }
+  }
+
+  private static async handleResourceOperation(edit: (CreateFile | RenameFile | DeleteFile)): Promise<void>
+  {
+    if (DeleteFile.is(edit)) {
+      return fs.promises.unlink(Convert.uriToPath(edit.uri))
+    }
+    if (RenameFile.is(edit)) {
+      return fs.promises.rename(Convert.uriToPath(edit.oldUri), Convert.uriToPath(edit.newUri))
+    }
+    if (CreateFile.is(edit)) {
+      return fs.promises.writeFile(edit.uri, '')
+    }
+  } 
+
+  private static normalize(workspaceEdit: WorkspaceEdit): void {
+    const documentChanges = workspaceEdit.documentChanges || []
+
+    if (!workspaceEdit.hasOwnProperty('documentChanges') && workspaceEdit.hasOwnProperty('changes')) {
+      Object.keys(workspaceEdit.changes || []).forEach((uri: DocumentUri) => {
+        documentChanges.push({
+          textDocument: {
+            version: null,
+            uri: uri
+          },
+          edits: workspaceEdit.changes![uri]
+        })
+      })
+    }
+    
+    workspaceEdit.documentChanges = documentChanges
   }
 
   /** Private: Do some basic sanity checking on the edit ranges. */
