@@ -495,6 +495,22 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /**
+   * Public: Send a `textDocument/prepareRename` request.
+   *
+   * @param params The {PrepareRenameParams} identifying the document containing the symbol to be renamed,
+   *   as well as the position.
+   * @returns A {Promise} containing either:
+   *    - a {Range} of the string to rename and optionally a `placeholder` text of the string content to
+   *      be renamed.
+   *    - `{ defaultBehavior: boolean }` is returned (since 3.16) if the rename position is valid and the client 
+   *      should use its default behavior to compute the rename range. 
+   *    - `null` is returned when it is deemed that a ‘textDocument/rename’ request is not valid at the given position
+   */
+  public prepareRename(params: lsp.PrepareRenameParams): Promise<lsp.Range | { range: lsp.Range, placeholder: string } | { defaultBehavior: boolean } | null> {
+    return this._sendRequest("textDocument/prepareRename", params)
+  }
+
+  /**
    * Public: Send a `textDocument/rename` request.
    *
    * @param params The {RenameParams} identifying the document containing the symbol to be renamed,

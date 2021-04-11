@@ -218,6 +218,7 @@ export default class AutoLanguageClient {
             dynamicRegistration: false,
           },
           rename: {
+            prepareSupport: true,
             dynamicRegistration: false,
           },
           moniker: {
