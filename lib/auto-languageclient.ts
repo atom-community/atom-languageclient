@@ -27,7 +27,7 @@ import { Socket } from "net"
 import { LanguageClientConnection } from "./languageclient"
 import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
 import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
-import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
+import { Disposable, CompositeDisposable, Point, Range, TextEditor, CommandEvent, TextEditorElement } from "atom"
 import * as ac from "atom/autocomplete-plus"
 import Dialog from './views/dialog'
 
@@ -310,6 +310,7 @@ export default class AutoLanguageClient {
       this.getServerName()
     )
     this._serverManager.startListening()
+    this.registerRenameCommands()
     process.on("exit", () => this.exitCleanup.bind(this))
   }
 
@@ -892,6 +893,61 @@ export default class AutoLanguageClient {
       rename: this.getRename.bind(this),
     }
   }
+  
+  public async registerRenameCommands()
+  {                 
+    this._disposable.add(atom.commands.add('atom-text-editor', 'IDE:Rename', async (event: CommandEvent<TextEditorElement>) => {
+      const textEditorElement = event.currentTarget
+      const textEditor = textEditorElement.getModel()
+      const bufferPosition = textEditor.getCursorBufferPosition()
+      const server = await this._serverManager.getServer(textEditor)
+
+      if (!server) {
+        return 
+      }              
+
+      if (!RenameAdapter.canAdapt(server.capabilities)) {
+        atom.notifications.addInfo(`Rename is not supported by ${this.getServerName()}`)
+      }
+      
+      const outcome = { possible: true, label: 'Rename' }
+      if (RenameAdapter.canPrepare(server.capabilities)) {
+        const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)  
+        outcome.possible = possible
+      }
+    
+      if (!outcome.possible) {
+        atom.notifications.addWarning(`Nothing to rename at position at row ${bufferPosition.row+1} and column ${bufferPosition.column+1}`)
+        return;
+      } 
+      const newName = await Dialog.prompt('Enter new name')
+      RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)                
+      return 
+    }))
+
+    this._disposable.add(atom.contextMenu.add({
+      'atom-text-editor': [
+        {
+          label: 'Refactor',
+          submenu: [
+            { label: "Rename", command: "IDE:Rename" }
+          ],
+          created: function (event: MouseEvent) {   
+            const textEditor = atom.workspace.getActiveTextEditor()
+            if (!textEditor) {
+              return
+            }
+
+            const screenPosition = atom.views.getView(textEditor).getComponent().screenPositionForMouseEvent(event)
+            const bufferPosition = textEditor.bufferPositionForScreenPosition(screenPosition)             
+          
+            textEditor.setCursorBufferPosition(bufferPosition)
+          }          
+        }
+      ]
+    }))
+  }
+  
 
   protected async getRename(
     editor: TextEditor,
