@@ -948,6 +948,46 @@ export default class AutoLanguageClient {
     }))
   }
   
+  public provideIntentions() {
+    return {
+      grammarScopes: this.getGrammarScopes(), // [*] would also work
+      getIntentions: async ({ textEditor, bufferPosition }: { textEditor: TextEditor; bufferPosition: Point }) => {
+        const intentions: { title: string, selected: () => void }[] = []
+        const server = await this._serverManager.getServer(textEditor)
+
+        if (server == null) {
+          return intentions
+        }
+
+        if (RenameAdapter.canAdapt(server.capabilities)) {
+          const outcome = { possible: true, label: 'Rename' }
+          if (RenameAdapter.canPrepare(server.capabilities)) {
+            const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)  
+            outcome.possible = possible
+          }
+
+          if (outcome.possible) {
+            intentions.push({
+              title: outcome.label,
+              selected: async () => {
+                const newName = await Dialog.prompt('Enter new name')
+                return RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)
+              }
+            })
+          }
+        }
+
+        intentions.push({
+          title: 'Some dummy intention',
+          selected: async () => {
+            console.log('selected')
+          }
+        })
+
+        return intentions
+      }
+    }
+  }
 
   protected async getRename(
     editor: TextEditor,
