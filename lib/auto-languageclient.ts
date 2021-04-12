@@ -29,6 +29,7 @@ import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
 import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
 import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
+import Dialog from './views/dialog'
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess }
 export type ConnectionType = "stdio" | "socket" | "ipc"
