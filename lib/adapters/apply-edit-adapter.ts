@@ -12,7 +12,8 @@ import {
   DocumentUri
 } from "../languageclient"
 import { TextBuffer, TextEditor } from "atom"
-import * as fs from 'fs';
+import * as fs from "fs"
+import * as rimraf from "rimraf"
 
 /** Public: Adapts workspace/applyEdit commands to editors. */
 export default class ApplyEditAdapter {
@@ -49,14 +50,16 @@ export default class ApplyEditAdapter {
 
   public static async apply(workspaceEdit: WorkspaceEdit): Promise<ApplyWorkspaceEditResponse> {
     ApplyEditAdapter.normalize(workspaceEdit)
-    
+
     // Keep checkpoints from all successful buffer edits
     const checkpoints: Array<{ buffer: TextBuffer; checkpoint: number }> = []
 
     const promises = (workspaceEdit.documentChanges || []).map(async (edit): Promise<void> => {
       if (!TextDocumentEdit.is(edit)) {
-        return ApplyEditAdapter.handleResourceOperation(edit)
-      } 
+        return ApplyEditAdapter.handleResourceOperation(edit).catch((err) => {
+          throw Error(`Error during ${edit.kind} resource operation: ${err.message}`)
+        })
+      }
       const path = Convert.uriToPath(edit.textDocument.uri)
       const editor = (await atom.workspace.open(path, {
         searchAllPanes: true,
@@ -87,23 +90,72 @@ export default class ApplyEditAdapter {
     return { applied }
   }
 
-  private static async handleResourceOperation(edit: (CreateFile | RenameFile | DeleteFile)): Promise<void>
-  {
+  private static async handleResourceOperation(edit: (CreateFile | RenameFile | DeleteFile)): Promise<void> {
     if (DeleteFile.is(edit)) {
-      return fs.promises.unlink(Convert.uriToPath(edit.uri))
+      const path = Convert.uriToPath(edit.uri)
+      const exists = fs.existsSync(path)
+      const ignoreIfNotExists = edit.options?.ignoreIfNotExists
+
+      if (!exists) {
+        if (ignoreIfNotExists) {
+          return
+        }
+        throw Error(`Target doesn't exist.`)
+      }
+
+      const isDirectory = fs.lstatSync(path).isDirectory()
+
+      if (isDirectory) {
+        if (edit.options?.recursive) {
+          return new Promise((resolve, reject) => {
+            rimraf(path, { glob: false }, (err) => {
+              if (err) {
+                reject(err)
+              }
+              resolve()
+            })
+          })
+        }
+        return fs.promises.rmdir(path, { recursive: edit.options?.recursive })
+      }
+
+      return fs.promises.unlink(path)
     }
     if (RenameFile.is(edit)) {
-      return fs.promises.rename(Convert.uriToPath(edit.oldUri), Convert.uriToPath(edit.newUri))
+      const oldPath = Convert.uriToPath(edit.oldUri)
+      const newPath = Convert.uriToPath(edit.newUri)
+      const exists = fs.existsSync(newPath)
+      const ignoreIfExists = edit.options?.ignoreIfExists
+      const overwrite = edit.options?.overwrite
+
+      if (exists && ignoreIfExists && !overwrite) {
+        return
+      }
+
+      if (exists && !ignoreIfExists && !overwrite) {
+        throw Error(`Target exists.`)
+      }
+
+      return fs.promises.rename(oldPath, newPath)
     }
     if (CreateFile.is(edit)) {
-      return fs.promises.writeFile(edit.uri, '')
+      const path = Convert.uriToPath(edit.uri)
+      const exists = fs.existsSync(path)
+      const ignoreIfExists = edit.options?.ignoreIfExists
+      const overwrite = edit.options?.overwrite
+
+      if (exists && ignoreIfExists && !overwrite) {
+        return
+      }
+
+      return fs.promises.writeFile(path, '')
     }
-  } 
+  }
 
   private static normalize(workspaceEdit: WorkspaceEdit): void {
     const documentChanges = workspaceEdit.documentChanges || []
 
-    if (!workspaceEdit.hasOwnProperty('documentChanges') && workspaceEdit.hasOwnProperty('changes')) {
+    if (!('documentChanges' in workspaceEdit) && ('changes' in workspaceEdit)) {
       Object.keys(workspaceEdit.changes || []).forEach((uri: DocumentUri) => {
         documentChanges.push({
           textDocument: {
@@ -114,7 +166,7 @@ export default class ApplyEditAdapter {
         })
       })
     }
-    
+
     workspaceEdit.documentChanges = documentChanges
   }
 

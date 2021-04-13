@@ -25,7 +25,9 @@
   },
   "atomTestRunner": "./test/runner",
   "dependencies": {
+    "@types/rimraf": "^3.0.0",
     "atom-ide-base": "^2.4.0",
+    "rimraf": "^3.0.2",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver-protocol": "3.16.0",
     "vscode-languageserver-types": "3.16.0",
