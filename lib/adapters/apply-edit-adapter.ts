@@ -93,7 +93,7 @@ export default class ApplyEditAdapter {
   private static async handleResourceOperation(edit: (CreateFile | RenameFile | DeleteFile)): Promise<void> {
     if (DeleteFile.is(edit)) {
       const path = Convert.uriToPath(edit.uri)
-      const exists = fs.existsSync(path)
+      const exists = await fs.promises.stat(path).then(() => true).catch(() => false)
       const ignoreIfNotExists = edit.options?.ignoreIfNotExists
 
       if (!exists) {
@@ -124,7 +124,7 @@ export default class ApplyEditAdapter {
     if (RenameFile.is(edit)) {
       const oldPath = Convert.uriToPath(edit.oldUri)
       const newPath = Convert.uriToPath(edit.newUri)
-      const exists = fs.existsSync(newPath)
+      const exists = await fs.promises.stat(newPath).then(() => true).catch(() => false)
       const ignoreIfExists = edit.options?.ignoreIfExists
       const overwrite = edit.options?.overwrite
 
@@ -140,7 +140,7 @@ export default class ApplyEditAdapter {
     }
     if (CreateFile.is(edit)) {
       const path = Convert.uriToPath(edit.uri)
-      const exists = fs.existsSync(path)
+      const exists = await fs.promises.stat(path).then(() => true).catch(() => false)
       const ignoreIfExists = edit.options?.ignoreIfExists
       const overwrite = edit.options?.overwrite
 
