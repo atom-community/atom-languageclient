@@ -10,9 +10,8 @@ type MinimalLanguageServerProcess = Pick<ChildProcess, "stdin" | "stdout" | "std
 
 /**
  * Public: Defines a language server process which is either a ChildProcess, or it is a minimal object that resembles a
- * ChildProcess.
- * `MinimalLanguageServerProcess` is used so that language packages with alternative language server process hosting strategies
- * can return something compatible with `AutoLanguageClient.startServerProcess`.
+ * ChildProcess. `MinimalLanguageServerProcess` is used so that language packages with alternative language server
+ * process hosting strategies can return something compatible with `AutoLanguageClient.startServerProcess`.
  */
 export type LanguageServerProcess = ChildProcess | MinimalLanguageServerProcess
 
@@ -30,10 +29,7 @@ interface RestartCounter {
   timerId: NodeJS.Timer
 }
 
-/**
- * Manages the language server lifecycles and their associated objects necessary
- * for adapting them to Atom IDE.
- */
+/** Manages the language server lifecycles and their associated objects necessary for adapting them to Atom IDE. */
 export class ServerManager {
   private _activeServers: ActiveServer[] = []
   private _startingServerPromises: Map<string, Promise<ActiveServer>> = new Map()

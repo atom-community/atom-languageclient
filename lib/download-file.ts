@@ -5,11 +5,10 @@ import * as fs from "fs"
  *
  * @param sourceUrl Url to download from.
  * @param targetFile File path to save to.
- * @param progressCallback Callback function that will be given a {ByteProgressCallback} object containing
- *   both bytesDone and percent.
- * @param length File length in bytes if you want percentage progress indication and the server is
- *   unable to provide a Content-Length header and whitelist CORS access via a
- *   `Access-Control-Expose-Headers "content-length"` header.
+ * @param progressCallback Callback function that will be given a {ByteProgressCallback} object containing both
+ *   bytesDone and percent.
+ * @param length File length in bytes if you want percentage progress indication and the server is unable to provide a
+ *   Content-Length header and whitelist CORS access via a `Access-Control-Expose-Headers "content-length"` header.
  * @returns A {Promise} that will accept when complete.
  */
 export default (async function downloadFile(
@@ -46,8 +45,8 @@ export default (async function downloadFile(
  * @param length File length in bytes.
  * @param reader A {ReadableStreamReader} to read from.
  * @param writer A {WriteStream} to write to.
- * @param progressCallback Callback function that will be given a {ByteProgressCallback} object containing
- *   both bytesDone and percent.
+ * @param progressCallback Callback function that will be given a {ByteProgressCallback} object containing both
+ *   bytesDone and percent.
  * @returns A {Promise} that will accept when complete.
  */
 async function streamWithProgress(
@@ -84,8 +83,5 @@ async function streamWithProgress(
   }
 }
 
-/**
- * Public: Progress callback function signature indicating the bytesDone and
- * optional percentage when length is known.
- */
+/** Public: Progress callback function signature indicating the bytesDone and optional percentage when length is known. */
 export type ByteProgressCallback = (bytesDone: number, percent?: number) => void

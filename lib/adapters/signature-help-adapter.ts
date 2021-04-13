@@ -17,10 +17,7 @@ export default class SignatureHelpAdapter {
     this._grammarScopes = grammarScopes
   }
 
-  /**
-   * @returns A {Boolean} indicating this adapter can adapt the server based on the
-   *   given serverCapabilities.
-   */
+  /** @returns A {Boolean} indicating this adapter can adapt the server based on the given serverCapabilities. */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
     return serverCapabilities.signatureHelpProvider != null
   }

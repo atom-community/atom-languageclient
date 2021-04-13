@@ -43,7 +43,7 @@ describe("AutoCompleteAdapter", () => {
 
   type getSuggestionParams = Parameters<typeof autoCompleteAdapter.getSuggestions>
 
-  /** Function that stubs `server.connection.completion` and returns the `autoCompleteAdapter.getSuggestions(...)`  */
+  /** Function that stubs `server.connection.completion` and returns the `autoCompleteAdapter.getSuggestions(...)` */
   function getSuggestionsMock(
     items: CompletionItem[],
     request: getSuggestionParams[1],
