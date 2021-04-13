@@ -111,11 +111,13 @@ export default class OutlineViewAdapter {
    * @returns An {OutlineTree} containing the given symbols that the Outline View can display.
    */
   public static createOutlineTrees(symbols: SymbolInformation[]): atomIde.OutlineTree[] {
-    symbols.sort((a, b) =>
-      a.location.range.start.line === b.location.range.start.line
-        ? a.location.range.start.character - b.location.range.start.character
-        : a.location.range.start.line - b.location.range.start.line
-    )
+    symbols.sort((a, b) => {
+      if (a.location.range.start.line === b.location.range.start.line) {
+        return a.location.range.start.character - b.location.range.start.character
+      } else {
+        return a.location.range.start.line - b.location.range.start.line
+      }
+    })
 
     // Temporarily keep containerName through the conversion process
     // Also filter out symbols without a name - it's part of the spec but some don't include it
