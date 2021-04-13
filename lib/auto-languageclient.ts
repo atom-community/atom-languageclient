@@ -428,7 +428,9 @@ export default class AutoLanguageClient {
     lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal))
     lsProcess.on("disconnect", () => this.onSpawnDisconnect())
     lsProcess.on("exit", (code, signal) => this.onSpawnExit(code, signal))
+    // eslint-disable-next-line chai-friendly/no-unused-expressions
     lsProcess.stderr?.setEncoding("utf8")
+    // eslint-disable-next-line chai-friendly/no-unused-expressions
     lsProcess.stderr?.on("data", (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath))
   }
 

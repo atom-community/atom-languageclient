@@ -14,7 +14,8 @@ export default class CommandExecutionAdapter {
     this.commandsCustomCallbacks.set(command, callback)
   }
 
-  public static async executeCommand(
+  /** Returns a {Promise} */
+  public static executeCommand(
     connection: LanguageClientConnection,
     command: string,
     commandArgs?: any[]
@@ -23,8 +24,8 @@ export default class CommandExecutionAdapter {
     const commandCustomCallback = this.commandsCustomCallbacks.get(command)
 
     return commandCustomCallback !== undefined
-      ? await commandCustomCallback(executeCommandParams)
-      : await connection.executeCommand(executeCommandParams)
+      ? commandCustomCallback(executeCommandParams)
+      : connection.executeCommand(executeCommandParams)
   }
 
   private static createExecuteCommandParams(command: string, commandArgs?: any[]): ExecuteCommandParams {
