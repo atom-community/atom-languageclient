@@ -6,8 +6,7 @@ export default class LoggingConsoleAdapter {
   private _consoles: Set<atomIde.ConsoleApi> = new Set()
 
   /**
-   * Create a new {LoggingConsoleAdapter} that will listen for log messages
-   * via the supplied {LanguageClientConnection}.
+   * Create a new {LoggingConsoleAdapter} that will listen for log messages via the supplied {LanguageClientConnection}.
    *
    * @param connection A {LanguageClientConnection} to the language server that will provide log messages.
    */
@@ -37,8 +36,7 @@ export default class LoggingConsoleAdapter {
   /**
    * Log a message using the Atom IDE UI Console API.
    *
-   * @param params The {LogMessageParams} received from the language server
-   *   indicating the details of the message to be loggedd.
+   * @param params The {LogMessageParams} received from the language server indicating the details of the message to be loggedd.
    */
   private logMessage(params: LogMessageParams): void {
     switch (params.type) {

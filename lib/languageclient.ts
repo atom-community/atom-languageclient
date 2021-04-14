@@ -68,10 +68,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Initialize the language server with necessary {InitializeParams}.
    *
-   * @param params The {InitializeParams} containing processId, rootPath, options and
-   *   server capabilities.
-   * @returns A {Promise} containing the {InitializeResult} with details of the server's
-   *   capabilities.
+   * @param params The {InitializeParams} containing processId, rootPath, options and server capabilities.
+   * @returns A {Promise} containing the {InitializeResult} with details of the server's capabilities.
    */
   public initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
     return this._sendRequest("initialize", params)
@@ -96,16 +94,14 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Register a callback for a custom notification
    *
    * @param method A string containing the name of the message to listen for.
-   * @param callback The function to be called when the message is received.
-   *   The payload from the message is passed to the function.
+   * @param callback The function to be called when the message is received. The payload from the message is passed to
+   *   the function.
    */
   public onCustomNotification(method: string, callback: (obj: object) => void): void {
     this._onNotification({ method }, callback)
   }
 
-  /**
-   * @deprecated Use `onCustomNotification` method instead
-   */
+  /** @deprecated Use `onCustomNotification` method instead */
   public onCustom(method: string, callback: (obj: object) => void): void {
     this.onCustomNotification(method, callback)
   }
@@ -114,8 +110,8 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Register a callback for a custom request
    *
    * @param method A string containing the name of the message to listen for.
-   * @param callback The function to be called when the message is received.
-   *   The payload from the message is passed to the function.
+   * @param callback The function to be called when the message is received. The payload from the message is passed to
+   *   the function.
    */
   public onCustomRequest(
     method: string,
@@ -147,8 +143,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `window/showMessage` message.
    *
-   * @param callback The function to be called when the `window/showMessage` message is
-   *   received with {ShowMessageParams} being passed.
+   * @param callback The function to be called when the `window/showMessage` message is received with
+   *   {ShowMessageParams} being passed.
    */
   public onShowMessage(callback: (params: lsp.ShowMessageParams) => void): void {
     this._onNotification({ method: "window/showMessage" }, callback)
@@ -157,8 +153,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `window/showMessageRequest` message.
    *
-   * @param callback The function to be called when the `window/showMessageRequest` message is
-   *   received with {ShowMessageRequestParam}' being passed.
+   * @param callback The function to be called when the `window/showMessageRequest` message is received with
+   *   {ShowMessageRequestParam}' being passed.
    * @returns A {Promise} containing the {MessageActionItem}.
    */
   public onShowMessageRequest(
@@ -170,8 +166,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `window/showDocument` message.
    *
-   * @param callback The function to be called when the `window/showDocument` message is
-   *   received with {ShowDocumentParams} being passed.
+   * @param callback The function to be called when the `window/showDocument` message is received with
+   *   {ShowDocumentParams} being passed.
    */
   public onShowDocument(callback: (params: lsp.ShowDocumentParams) => Promise<lsp.ShowDocumentResult>): void {
     this._onRequest({ method: "window/showDocument" }, callback)
@@ -180,8 +176,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `window/logMessage` message.
    *
-   * @param callback The function to be called when the `window/logMessage` message is
-   *   received with {LogMessageParams} being passed.
+   * @param callback The function to be called when the `window/logMessage` message is received with {LogMessageParams}
+   *   being passed.
    */
   public onLogMessage(callback: (params: lsp.LogMessageParams) => void): void {
     this._onNotification({ method: "window/logMessage" }, callback)
@@ -190,8 +186,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `telemetry/event` message.
    *
-   * @param callback The function to be called when the `telemetry/event` message is
-   *   received with any parameters received being passed on.
+   * @param callback The function to be called when the `telemetry/event` message is received with any parameters
+   *   received being passed on.
    */
   public onTelemetryEvent(callback: (...args: any[]) => void): void {
     this._onNotification({ method: "telemetry/event" }, callback)
@@ -200,8 +196,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `workspace/applyEdit` message.
    *
-   * @param callback The function to be called when the `workspace/applyEdit` message is
-   *   received with {ApplyWorkspaceEditParams} being passed.
+   * @param callback The function to be called when the `workspace/applyEdit` message is received with
+   *   {ApplyWorkspaceEditParams} being passed.
    * @returns A {Promise} containing the {ApplyWorkspaceEditResponse}.
    */
   public onApplyEdit(
@@ -231,8 +227,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/didChange` notification.
    *
-   * @param params The {DidChangeTextDocumentParams} containing the changed text document
-   *   details including the version number and actual text changes.
+   * @param params The {DidChangeTextDocumentParams} containing the changed text document details including the version
+   *   number and actual text changes.
    */
   public didChangeTextDocument(params: lsp.DidChangeTextDocumentParams): void {
     this._sendNotification("textDocument/didChange", params)
@@ -250,8 +246,7 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/willSave` notification.
    *
-   * @param params The {WillSaveTextDocumentParams} containing the to-be-saved text document
-   *   details and the reason for the save.
+   * @param params The {WillSaveTextDocumentParams} containing the to-be-saved text document details and the reason for the save.
    */
   public willSaveTextDocument(params: lsp.WillSaveTextDocumentParams): void {
     this._sendNotification("textDocument/willSave", params)
@@ -260,10 +255,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/willSaveWaitUntil` notification.
    *
-   * @param params The {WillSaveTextDocumentParams} containing the to-be-saved text document
-   *   details and the reason for the save.
-   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the text
-   *   document before it is saved.
+   * @param params The {WillSaveTextDocumentParams} containing the to-be-saved text document details and the reason for the save.
+   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the text document before it is saved.
    */
   public willSaveWaitUntilTextDocument(params: lsp.WillSaveTextDocumentParams): Promise<lsp.TextEdit[] | null> {
     return this._sendRequest("textDocument/willSaveWaitUntil", params)
@@ -281,8 +274,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `workspace/didChangeWatchedFiles` notification.
    *
-   * @param params The {DidChangeWatchedFilesParams} containing the array of {FileEvent}s that
-   *   have been observed upon the watched files.
+   * @param params The {DidChangeWatchedFilesParams} containing the array of {FileEvent}s that have been observed upon
+   *   the watched files.
    */
   public didChangeWatchedFiles(params: lsp.DidChangeWatchedFilesParams): void {
     this._sendNotification("workspace/didChangeWatchedFiles", params)
@@ -291,8 +284,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Register a callback for the `textDocument/publishDiagnostics` message.
    *
-   * @param callback The function to be called when the `textDocument/publishDiagnostics` message is
-   *   received a {PublishDiagnosticsParams} containing new {Diagnostic} messages for a given uri.
+   * @param callback The function to be called when the `textDocument/publishDiagnostics` message is received a
+   *   {PublishDiagnosticsParams} containing new {Diagnostic} messages for a given uri.
    */
   public onPublishDiagnostics(callback: (params: lsp.PublishDiagnosticsParams) => void): void {
     this._onNotification({ method: "textDocument/publishDiagnostics" }, callback)
@@ -301,8 +294,7 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/completion` request.
    *
-   * @param params The {TextDocumentPositionParams} or {CompletionParams} for which
-   *   {CompletionItem}s are desired.
+   * @param params The {TextDocumentPositionParams} or {CompletionParams} for which {CompletionItem}s are desired.
    * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
    * @returns A {Promise} containing either a {CompletionList} or an {Array} of {CompletionItem}s.
    */
@@ -347,8 +339,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/definition` request.
    *
-   * @param params The {TextDocumentPositionParams} of a symbol for which one or more {Location}s
-   *   that define that symbol are required.
+   * @param params The {TextDocumentPositionParams} of a symbol for which one or more {Location}s that define that
+   *   symbol are required.
    * @returns A {Promise} containing either a single {Location} or an {Array} of many {Location}s.
    */
   public gotoDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.Location | lsp.Location[]> {
@@ -358,8 +350,7 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/references` request.
    *
-   * @param params The {TextDocumentPositionParams} of a symbol for which all referring {Location}s
-   *   are desired.
+   * @param params The {TextDocumentPositionParams} of a symbol for which all referring {Location}s are desired.
    * @returns A {Promise} containing an {Array} of {Location}s that reference this symbol.
    */
   public findReferences(params: lsp.ReferenceParams): Promise<lsp.Location[]> {
@@ -370,8 +361,7 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `textDocument/documentHighlight` request.
    *
    * @param params The {TextDocumentPositionParams} of a symbol for which all highlights are desired.
-   * @returns A {Promise} containing an {Array} of {DocumentHighlight}s that can be used to
-   *   highlight this symbol.
+   * @returns A {Promise} containing an {Array} of {DocumentHighlight}s that can be used to highlight this symbol.
    */
   public documentHighlight(params: lsp.TextDocumentPositionParams): Promise<lsp.DocumentHighlight[]> {
     return this._sendRequest("textDocument/documentHighlight", params)
@@ -380,12 +370,9 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/documentSymbol` request.
    *
-   * @param params The {DocumentSymbolParams} that identifies the document for which
-   *   symbols are desired.
-   * @param cancellationToken The {CancellationToken} that is used to cancel this request if
-   *   necessary.
-   * @returns A {Promise} containing an {Array} of {SymbolInformation}s that can be used to
-   *   navigate this document.
+   * @param params The {DocumentSymbolParams} that identifies the document for which symbols are desired.
+   * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
+   * @returns A {Promise} containing an {Array} of {SymbolInformation}s that can be used to navigate this document.
    */
   public documentSymbol(
     params: lsp.DocumentSymbolParams,
@@ -398,8 +385,8 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `workspace/symbol` request.
    *
    * @param params The {WorkspaceSymbolParams} containing the query string to search the workspace for.
-   * @returns A {Promise} containing an {Array} of {SymbolInformation}s that identify where the query
-   *   string occurs within the workspace.
+   * @returns A {Promise} containing an {Array} of {SymbolInformation}s that identify where the query string occurs
+   *   within the workspace.
    */
   public workspaceSymbol(params: lsp.WorkspaceSymbolParams): Promise<lsp.SymbolInformation[]> {
     return this._sendRequest("workspace/symbol", params)
@@ -409,8 +396,7 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `textDocument/codeAction` request.
    *
    * @param params The {CodeActionParams} identifying the document, range and context for the code action.
-   * @returns A {Promise} containing an {Array} of {Commands}s that can be performed against the given
-   *   documents range.
+   * @returns A {Promise} containing an {Array} of {Commands}s that can be performed against the given documents range.
    */
   public codeAction(params: lsp.CodeActionParams): Promise<Array<lsp.Command | lsp.CodeAction>> {
     return this._sendRequest("textDocument/codeAction", params)
@@ -420,8 +406,8 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `textDocument/codeLens` request.
    *
    * @param params The {CodeLensParams} identifying the document for which code lens commands are desired.
-   * @returns A {Promise} containing an {Array} of {CodeLens}s that associate commands and data with
-   *   specified ranges within the document.
+   * @returns A {Promise} containing an {Array} of {CodeLens}s that associate commands and data with specified ranges
+   *   within the document.
    */
   public codeLens(params: lsp.CodeLensParams): Promise<lsp.CodeLens[]> {
     return this._sendRequest("textDocument/codeLens", params)
@@ -441,8 +427,7 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `textDocument/documentLink` request.
    *
    * @param params The {DocumentLinkParams} identifying the document for which links should be identified.
-   * @returns A {Promise} containing an {Array} of {DocumentLink}s relating uri's to specific ranges
-   *   within the document.
+   * @returns A {Promise} containing an {Array} of {DocumentLink}s relating uri's to specific ranges within the document.
    */
   public documentLink(params: lsp.DocumentLinkParams): Promise<lsp.DocumentLink[]> {
     return this._sendRequest("textDocument/documentLink", params)
@@ -461,10 +446,9 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/formatting` request.
    *
-   * @param params The {DocumentFormattingParams} identifying the document to be formatted as well as
-   *   additional formatting preferences.
-   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to
-   *   correctly reformat it.
+   * @param params The {DocumentFormattingParams} identifying the document to be formatted as well as additional
+   *   formatting preferences.
+   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to correctly reformat it.
    */
   public documentFormatting(params: lsp.DocumentFormattingParams): Promise<lsp.TextEdit[]> {
     return this._sendRequest("textDocument/formatting", params)
@@ -473,10 +457,9 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/rangeFormatting` request.
    *
-   * @param params The {DocumentRangeFormattingParams} identifying the document and range to be formatted
-   *   as well as additional formatting preferences.
-   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to
-   *   correctly reformat it.
+   * @param params The {DocumentRangeFormattingParams} identifying the document and range to be formatted as well as
+   *   additional formatting preferences.
+   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to correctly reformat it.
    */
   public documentRangeFormatting(params: lsp.DocumentRangeFormattingParams): Promise<lsp.TextEdit[]> {
     return this._sendRequest("textDocument/rangeFormatting", params)
@@ -485,10 +468,9 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/onTypeFormatting` request.
    *
-   * @param params The {DocumentOnTypeFormattingParams} identifying the document to be formatted,
-   *   the character that was typed and at what position as well as additional formatting preferences.
-   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to
-   *   correctly reformat it.
+   * @param params The {DocumentOnTypeFormattingParams} identifying the document to be formatted, the character that was
+   *   typed and at what position as well as additional formatting preferences.
+   * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to correctly reformat it.
    */
   public documentOnTypeFormatting(params: lsp.DocumentOnTypeFormattingParams): Promise<lsp.TextEdit[]> {
     return this._sendRequest("textDocument/onTypeFormatting", params)
@@ -497,11 +479,10 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `textDocument/rename` request.
    *
-   * @param params The {RenameParams} identifying the document containing the symbol to be renamed,
-   *   as well as the position and new name.
-   * @returns A {Promise} containing an {WorkspaceEdit} that contains a list of {TextEdit}s either
-   *   on the changes property (keyed by uri) or the documentChanges property containing
-   *   an {Array} of {TextDocumentEdit}s (preferred).
+   * @param params The {RenameParams} identifying the document containing the symbol to be renamed, as well as the
+   *   position and new name.
+   * @returns A {Promise} containing an {WorkspaceEdit} that contains a list of {TextEdit}s either on the changes
+   *   property (keyed by uri) or the documentChanges property containing an {Array} of {TextDocumentEdit}s (preferred).
    */
   public rename(params: lsp.RenameParams): Promise<lsp.WorkspaceEdit> {
     return this._sendRequest("textDocument/rename", params)
@@ -510,9 +491,8 @@ export class LanguageClientConnection extends EventEmitter {
   /**
    * Public: Send a `workspace/executeCommand` request.
    *
-   * @param params The {ExecuteCommandParams} specifying the command and arguments
-   *   the language server should execute (these commands are usually from {CodeLens}
-   *   or {CodeAction} responses).
+   * @param params The {ExecuteCommandParams} specifying the command and arguments the language server should execute
+   *   (these commands are usually from {CodeLens} or {CodeAction} responses).
    * @returns A {Promise} containing anything.
    */
   public executeCommand(params: lsp.ExecuteCommandParams): Promise<any> {
@@ -580,29 +560,23 @@ export class LanguageClientConnection extends EventEmitter {
 
 export type DiagnosticCode = number | string
 
-/**
- * Contains additional information about the context in which a completion request is triggered.
- */
+/** Contains additional information about the context in which a completion request is triggered. */
 export interface CompletionContext {
-  /**
-   * How the completion was triggered.
-   */
+  /** How the completion was triggered. */
   triggerKind: lsp.CompletionTriggerKind
 
   /**
-   * The trigger character (a single character) that has trigger code complete.
-   * Is undefined if `triggerKind !== CompletionTriggerKind.TriggerCharacter`
+   * The trigger character (a single character) that has trigger code complete. Is undefined if `triggerKind !==
+   * CompletionTriggerKind.TriggerCharacter`
    */
   triggerCharacter?: string
 }
 
-/**
- * Completion parameters
- */
+/** Completion parameters */
 export interface CompletionParams extends lsp.TextDocumentPositionParams {
   /**
-   * The completion context. This is only available it the client specifies
-   * to send this using `ClientCapabilities.textDocument.completion.contextSupport === true`
+   * The completion context. This is only available it the client specifies to send this using
+   * `ClientCapabilities.textDocument.completion.contextSupport === true`
    */
   context?: CompletionContext
 }
