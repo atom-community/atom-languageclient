@@ -122,6 +122,7 @@ export default class AutoLanguageClient {
             documentChanges: true,
             normalizesLineEndings: false,
             changeAnnotationSupport: undefined,
+            resourceOperations: ["create", "rename", "delete"],
           },
           workspaceFolders: false,
           didChangeConfiguration: {
