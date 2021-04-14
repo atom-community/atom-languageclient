@@ -29,7 +29,7 @@ export default class ApplyEditAdapter {
       // Sort edits in reverse order to prevent edit conflicts.
       edits.sort((edit1, edit2) => -edit1.oldRange.compare(edit2.oldRange))
       edits.reduce((previous: atomIde.TextEdit | null, current) => {
-        ApplyEditAdapter.validateEdit(buffer, current, previous)
+        validateEdit(buffer, current, previous)
         buffer.setTextInRange(current.oldRange, current.newText)
         return current
       }, null)
@@ -46,7 +46,7 @@ export default class ApplyEditAdapter {
   }
 
   public static async apply(workspaceEdit: WorkspaceEdit): Promise<ApplyWorkspaceEditResponse> {
-    ApplyEditAdapter.normalize(workspaceEdit)
+    normalize(workspaceEdit)
 
     // Keep checkpoints from all successful buffer edits
     const checkpoints: Array<{ buffer: TextBuffer; checkpoint: number }> = []
@@ -154,36 +154,35 @@ export default class ApplyEditAdapter {
       return fsp.writeFile(path, "")
     }
   }
+}
 
-  private static normalize(workspaceEdit: WorkspaceEdit): void {
-    const documentChanges = workspaceEdit.documentChanges || []
+function normalize(workspaceEdit: WorkspaceEdit): void {
+  const documentChanges = workspaceEdit.documentChanges || []
 
-    if (!("documentChanges" in workspaceEdit) && "changes" in workspaceEdit) {
-      Object.keys(workspaceEdit.changes || []).forEach((uri: DocumentUri) => {
-        documentChanges.push({
-          textDocument: {
-            version: null,
-            uri,
-          },
-          edits: workspaceEdit.changes![uri],
-        })
+  if (!("documentChanges" in workspaceEdit) && "changes" in workspaceEdit) {
+    Object.keys(workspaceEdit.changes || []).forEach((uri: DocumentUri) => {
+      documentChanges.push({
+        textDocument: {
+          version: null,
+          uri,
+        },
+        edits: workspaceEdit.changes![uri],
       })
-    }
-
-    workspaceEdit.documentChanges = documentChanges
+    })
   }
 
-  /** Private: Do some basic sanity checking on the edit ranges. */
-  private static validateEdit(buffer: TextBuffer, edit: atomIde.TextEdit, prevEdit: atomIde.TextEdit | null): void {
-    const path = buffer.getPath() || ""
-    if (prevEdit && edit.oldRange.end.compare(prevEdit.oldRange.start) > 0) {
-      throw Error(`Found overlapping edit ranges in ${path}`)
-    }
-    const startRow = edit.oldRange.start.row
-    const startCol = edit.oldRange.start.column
-    const lineLength = buffer.lineLengthForRow(startRow)
-    if (lineLength == null || startCol > lineLength) {
-      throw Error(`Out of range edit on ${path}:${startRow + 1}:${startCol + 1}`)
-    }
+  workspaceEdit.documentChanges = documentChanges
+}
+
+function validateEdit(buffer: TextBuffer, edit: atomIde.TextEdit, prevEdit: atomIde.TextEdit | null): void {
+  const path = buffer.getPath() || ""
+  if (prevEdit && edit.oldRange.end.compare(prevEdit.oldRange.start) > 0) {
+    throw Error(`Found overlapping edit ranges in ${path}`)
+  }
+  const startRow = edit.oldRange.start.row
+  const startCol = edit.oldRange.start.column
+  const lineLength = buffer.lineLengthForRow(startRow)
+  if (lineLength == null || startCol > lineLength) {
+    throw Error(`Out of range edit on ${path}:${startRow + 1}:${startCol + 1}`)
   }
 }
