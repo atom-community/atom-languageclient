@@ -31,12 +31,12 @@ describe("AutoLanguageClient", () => {
     })
 
     it("does not select documents in unsupported language", () => {
-      const editor = mockEditor("/path/to/somewhere", client.getGrammarScopes()[0] + "-dummy")
+      const editor = mockEditor("/path/to/somewhere", `${client.getGrammarScopes()[0]}-dummy`)
       expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).equals(false)
     })
 
     it("does not select documents in unsupported language outside of project", () => {
-      const editor = mockEditor("/path/to/elsewhere/file", client.getGrammarScopes()[0] + "-dummy")
+      const editor = mockEditor("/path/to/elsewhere/file", `${client.getGrammarScopes()[0]}-dummy`)
       expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).equals(false)
     })
   })

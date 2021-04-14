@@ -10,21 +10,23 @@ import { createSpyConnection } from "../helpers"
 
 describe("ShowDocumentAdapter", () => {
   describe("can attach to a server", () => {
-    it("subscribes to onShowDocument", async () => {
+    it("subscribes to onShowDocument", () => {
       const connection = createSpyConnection()
       const lcc = new LanguageClientConnection(connection)
 
       const spy = sinon.spy()
-      lcc["_onRequest"] = spy
+      // eslint-disable-next-line dot-notation
+      lcc["_onRequest"] = spy // private method access
 
       ShowDocumentAdapter.attach(lcc)
+      // eslint-disable-next-line dot-notation
       expect((lcc["_onRequest"] as sinon.SinonSpy).calledOnce).to.be.true
       const spyArgs = spy.firstCall.args
       expect(spyArgs[0]).to.deep.equal({ method: "window/showDocument" })
       expect(spyArgs[1]).to.equal(ShowDocumentAdapter.showDocument)
     })
 
-    it("onRequest connection is called", async () => {
+    it("onRequest connection is called", () => {
       const connection = createSpyConnection()
       const lcc = new LanguageClientConnection(connection)
 
@@ -39,7 +41,7 @@ describe("ShowDocumentAdapter", () => {
     })
   })
   describe("can show documents", () => {
-    describe("shows the document inside Atom", async () => {
+    describe("shows the document inside Atom", () => {
       const helloPath = join(dirname(__dirname), "fixtures", "hello.js")
 
       async function canShowDocumentInAtom(params: ShowDocumentParams) {

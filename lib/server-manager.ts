@@ -138,7 +138,8 @@ export class ServerManager {
     if (startingPromise) {
       return startingPromise
     }
-
+    // TODO remove eslint-disable
+    // eslint-disable-next-line no-return-await
     return shouldStart && this._startForEditor(textEditor) ? await this.startServer(finalProjectPath) : null
   }
 

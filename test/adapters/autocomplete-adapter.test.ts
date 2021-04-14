@@ -44,7 +44,7 @@ describe("AutoCompleteAdapter", () => {
   type getSuggestionParams = Parameters<typeof autoCompleteAdapter.getSuggestions>
 
   /** Function that stubs `server.connection.completion` and returns the `autoCompleteAdapter.getSuggestions(...)`  */
-  async function getSuggestionsMock(
+  function getSuggestionsMock(
     items: CompletionItem[],
     request: getSuggestionParams[1],
     onDidConvertCompletionItem?: getSuggestionParams[2],
@@ -288,7 +288,7 @@ describe("AutoCompleteAdapter", () => {
 
     it("respects onDidConvertCompletionItem", async () => {
       const results = await getSuggestionsMock([{ label: "label" }], createRequest({}), (c, a, r) => {
-        ;(a as ac.TextSuggestion).text = c.label + " ok"
+        ;(a as ac.TextSuggestion).text = `${c.label} ok`
         a.displayText = r.scopeDescriptor.getScopesArray()[0]
       })
 
@@ -448,7 +448,7 @@ describe("AutoCompleteAdapter", () => {
       expect(result.replacementPrefix).equals("")
     })
 
-    describe("applies changes from TextEdit to text", async () => {
+    describe("applies changes from TextEdit to text", () => {
       const customRequest = createRequest({ prefix: "", position: new Point(0, 10) })
       customRequest.editor.setText("foo #align bar")
 
@@ -473,7 +473,7 @@ describe("AutoCompleteAdapter", () => {
         expect((results[0] as TextSuggestion).customReplacmentPrefix).equals("#align")
       })
 
-      describe("applies the change if shouldReplace is true", async () => {
+      describe("applies the change if shouldReplace is true", () => {
         it("1", async () => {
           const results = await getSuggestionsMock(
             [
@@ -575,7 +575,7 @@ describe("AutoCompleteAdapter", () => {
         })
       })
 
-      describe("applies the change if shouldReplace is false", async () => {
+      describe("applies the change if shouldReplace is false", () => {
         it("1", async () => {
           const results = await getSuggestionsMock(
             [
