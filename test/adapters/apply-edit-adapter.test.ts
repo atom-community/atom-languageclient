@@ -11,7 +11,7 @@ const TEST_PATH1 = normalizeDriveLetterName(path.join(__dirname, "test.txt"))
 const TEST_PATH2 = normalizeDriveLetterName(path.join(__dirname, "test2.txt"))
 const TEST_PATH3 = normalizeDriveLetterName(path.join(__dirname, "test3.txt"))
 const TEST_PATH4 = normalizeDriveLetterName(path.join(__dirname, "test4.txt"))
-const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'atom-languageclient-tests'))
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "atom-languageclient-tests"))
 
 function normalizeDriveLetterName(filePath: string): string {
   if (process.platform === "win32") {
@@ -194,23 +194,23 @@ describe("ApplyEditAdapter", () => {
       const directory = fs.mkdtempSync(tempDir)
       const oldUri = path.join(directory, "test.txt")
       const newUri = path.join(directory, "test-renamed.txt")
-      fs.writeFileSync(oldUri, 'abcd')
+      fs.writeFileSync(oldUri, "abcd")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
           documentChanges: [
             {
               kind: "rename",
-              oldUri: oldUri,
-              newUri: newUri,
-            }
-          ]
+              oldUri,
+              newUri,
+            },
+          ],
         },
       })
 
       expect(result.applied).to.equal(true)
       expect(fs.existsSync(newUri)).to.equal(true)
-      expect(fs.readFileSync(newUri).toString()).to.equal('abcd')
+      expect(fs.readFileSync(newUri).toString()).to.equal("abcd")
       expect(fs.existsSync(oldUri)).to.equal(false)
     })
 
@@ -218,81 +218,81 @@ describe("ApplyEditAdapter", () => {
       const directory = fs.mkdtempSync(tempDir)
       const oldUri = path.join(directory, "test.txt")
       const newUri = path.join(directory, "test-renamed.txt")
-      fs.writeFileSync(oldUri, 'abcd')
-      fs.writeFileSync(newUri, 'efgh')
+      fs.writeFileSync(oldUri, "abcd")
+      fs.writeFileSync(newUri, "efgh")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
           documentChanges: [
             {
               kind: "rename",
-              oldUri: oldUri,
-              newUri: newUri,
+              oldUri,
+              newUri,
               options: {
-                ignoreIfExists: true
-              }
-            }
-          ]
+                ignoreIfExists: true,
+              },
+            },
+          ],
         },
       })
 
       expect(result.applied).to.equal(true)
       expect(fs.existsSync(oldUri)).to.equal(true)
-      expect(fs.readFileSync(newUri).toString()).to.equal('efgh')
+      expect(fs.readFileSync(newUri).toString()).to.equal("efgh")
     })
 
     it("handles rename operation with overwrite option", async () => {
       const directory = fs.mkdtempSync(tempDir)
       const oldUri = path.join(directory, "test.txt")
       const newUri = path.join(directory, "test-renamed.txt")
-      fs.writeFileSync(oldUri, 'abcd')
-      fs.writeFileSync(newUri, 'efgh')
+      fs.writeFileSync(oldUri, "abcd")
+      fs.writeFileSync(newUri, "efgh")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
           documentChanges: [
             {
               kind: "rename",
-              oldUri: oldUri,
-              newUri: newUri,
+              oldUri,
+              newUri,
               options: {
                 overwrite: true,
-                ignoreIfExists: true // Overwrite wins over ignoreIfExists
-              }
-            }
-          ]
+                ignoreIfExists: true, // Overwrite wins over ignoreIfExists
+              },
+            },
+          ],
         },
       })
 
       expect(result.applied).to.equal(true)
       expect(fs.existsSync(oldUri)).to.equal(false)
-      expect(fs.readFileSync(newUri).toString()).to.equal('abcd')
+      expect(fs.readFileSync(newUri).toString()).to.equal("abcd")
     })
 
     it("throws an error on rename operation if target exists", async () => {
       const directory = fs.mkdtempSync(tempDir)
       const oldUri = path.join(directory, "test.txt")
       const newUri = path.join(directory, "test-renamed.txt")
-      fs.writeFileSync(oldUri, 'abcd')
-      fs.writeFileSync(newUri, 'efgh')
+      fs.writeFileSync(oldUri, "abcd")
+      fs.writeFileSync(newUri, "efgh")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
           documentChanges: [
             {
               kind: "rename",
-              oldUri: oldUri,
-              newUri: newUri,
-            }
-          ]
+              oldUri,
+              newUri,
+            },
+          ],
         },
       })
 
       expect(result.applied).to.equal(false)
       expect(fs.existsSync(oldUri)).to.equal(true)
-      expect(fs.readFileSync(oldUri).toString()).to.equal('abcd')
+      expect(fs.readFileSync(oldUri).toString()).to.equal("abcd")
       expect(fs.existsSync(newUri)).to.equal(true)
-      expect(fs.readFileSync(newUri).toString()).to.equal('efgh')
+      expect(fs.readFileSync(newUri).toString()).to.equal("efgh")
 
       expect(
         (atom as any).notifications.addError.calledWith("workspace/applyEdits failed", {
@@ -305,16 +305,16 @@ describe("ApplyEditAdapter", () => {
     it("handles delete resource operations on files", async () => {
       const directory = fs.mkdtempSync(tempDir)
       const uri = path.join(directory, "test.txt")
-      fs.writeFileSync(uri, 'abcd')
+      fs.writeFileSync(uri, "abcd")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
           documentChanges: [
             {
               kind: "delete",
-              uri: uri
-            }
-          ]
+              uri,
+            },
+          ],
         },
       })
 
@@ -324,10 +324,10 @@ describe("ApplyEditAdapter", () => {
 
     it("handles delete resource operations on directories", async () => {
       const directory = fs.mkdtempSync(tempDir)
-      const file1 = path.join(directory, '1.txt')
-      const file2 = path.join(directory, '2.txt')
-      fs.writeFileSync(file1, '1')
-      fs.writeFileSync(file2, '2')
+      const file1 = path.join(directory, "1.txt")
+      const file2 = path.join(directory, "2.txt")
+      fs.writeFileSync(file1, "1")
+      fs.writeFileSync(file2, "2")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
@@ -336,10 +336,10 @@ describe("ApplyEditAdapter", () => {
               kind: "delete",
               uri: directory,
               options: {
-                recursive: true
-              }
-            }
-          ]
+                recursive: true,
+              },
+            },
+          ],
         },
       })
 
@@ -351,10 +351,10 @@ describe("ApplyEditAdapter", () => {
 
     it("throws an error when deleting a non-empty directory without recursive option", async () => {
       const directory = fs.mkdtempSync(tempDir)
-      const file1 = path.join(directory, '1.txt')
-      const file2 = path.join(directory, '2.txt')
-      fs.writeFileSync(file1, '1')
-      fs.writeFileSync(file2, '2')
+      const file1 = path.join(directory, "1.txt")
+      const file2 = path.join(directory, "2.txt")
+      fs.writeFileSync(file1, "1")
+      fs.writeFileSync(file2, "2")
 
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
@@ -363,10 +363,10 @@ describe("ApplyEditAdapter", () => {
               kind: "delete",
               uri: directory,
               options: {
-                recursive: false
-              }
-            }
-          ]
+                recursive: false,
+              },
+            },
+          ],
         },
       })
 
@@ -379,7 +379,6 @@ describe("ApplyEditAdapter", () => {
       expect(errorCalls[0].args[1].detail).to.match(/Error during delete resource operation: (.*)/)
     })
 
-
     it("throws an error on delete operation if target doesnt exist", async () => {
       const result = await ApplyEditAdapter.onApplyEdit({
         edit: {
@@ -387,8 +386,8 @@ describe("ApplyEditAdapter", () => {
             {
               kind: "delete",
               uri: path.join(tempDir, "unexisting.txt"),
-            }
-          ]
+            },
+          ],
         },
       })
       //
@@ -410,9 +409,9 @@ describe("ApplyEditAdapter", () => {
           documentChanges: [
             {
               kind: "create",
-              uri: uri
-            }
-          ]
+              uri,
+            },
+          ],
         },
       })
 

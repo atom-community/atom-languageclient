@@ -9,7 +9,7 @@ import {
   CreateFile,
   RenameFile,
   DeleteFile,
-  DocumentUri
+  DocumentUri,
 } from "../languageclient"
 import { TextBuffer, TextEditor } from "atom"
 import * as fs from "fs"
@@ -51,24 +51,26 @@ export default class ApplyEditAdapter {
     // Keep checkpoints from all successful buffer edits
     const checkpoints: Array<{ buffer: TextBuffer; checkpoint: number }> = []
 
-    const promises = (workspaceEdit.documentChanges || []).map(async (edit): Promise<void> => {
-      if (!TextDocumentEdit.is(edit)) {
-        return ApplyEditAdapter.handleResourceOperation(edit).catch((err) => {
-          throw Error(`Error during ${edit.kind} resource operation: ${err.message}`)
-        })
+    const promises = (workspaceEdit.documentChanges || []).map(
+      async (edit): Promise<void> => {
+        if (!TextDocumentEdit.is(edit)) {
+          return ApplyEditAdapter.handleResourceOperation(edit).catch((err) => {
+            throw Error(`Error during ${edit.kind} resource operation: ${err.message}`)
+          })
+        }
+        const path = Convert.uriToPath(edit.textDocument.uri)
+        const editor = (await atom.workspace.open(path, {
+          searchAllPanes: true,
+          // Open new editors in the background.
+          activatePane: false,
+          activateItem: false,
+        })) as TextEditor
+        const buffer = editor.getBuffer()
+        const edits = Convert.convertLsTextEdits(edit.edits)
+        const checkpoint = ApplyEditAdapter.applyEdits(buffer, edits)
+        checkpoints.push({ buffer, checkpoint })
       }
-      const path = Convert.uriToPath(edit.textDocument.uri)
-      const editor = (await atom.workspace.open(path, {
-        searchAllPanes: true,
-        // Open new editors in the background.
-        activatePane: false,
-        activateItem: false,
-      })) as TextEditor
-      const buffer = editor.getBuffer()
-      const edits = Convert.convertLsTextEdits(edit.edits)
-      const checkpoint = ApplyEditAdapter.applyEdits(buffer, edits)
-      checkpoints.push({ buffer, checkpoint })
-    })
+    )
 
     // Apply all edits or fail and revert everything
     const applied = await Promise.all(promises)
@@ -87,22 +89,20 @@ export default class ApplyEditAdapter {
     return { applied }
   }
 
-  private static async handleResourceOperation(edit: (CreateFile | RenameFile | DeleteFile)): Promise<void> {
+  private static async handleResourceOperation(edit: CreateFile | RenameFile | DeleteFile): Promise<void> {
     if (DeleteFile.is(edit)) {
       const path = Convert.uriToPath(edit.uri)
-      const exists = await fs.promises.stat(path).then(() => true).catch(() => false)
+      const stats: boolean | fs.Stats = await fs.promises.lstat(path).catch(() => false)
       const ignoreIfNotExists = edit.options?.ignoreIfNotExists
 
-      if (!exists) {
+      if (!stats) {
         if (ignoreIfNotExists) {
           return
         }
         throw Error(`Target doesn't exist.`)
       }
 
-      const isDirectory = fs.lstatSync(path).isDirectory()
-
-      if (isDirectory) {
+      if (stats.isDirectory()) {
         if (edit.options?.recursive) {
           return new Promise((resolve, reject) => {
             rimraf(path, { glob: false }, (err) => {
@@ -121,7 +121,10 @@ export default class ApplyEditAdapter {
     if (RenameFile.is(edit)) {
       const oldPath = Convert.uriToPath(edit.oldUri)
       const newPath = Convert.uriToPath(edit.newUri)
-      const exists = await fs.promises.stat(newPath).then(() => true).catch(() => false)
+      const exists = await fs.promises
+        .access(newPath)
+        .then(() => true)
+        .catch(() => false)
       const ignoreIfExists = edit.options?.ignoreIfExists
       const overwrite = edit.options?.overwrite
 
@@ -137,7 +140,10 @@ export default class ApplyEditAdapter {
     }
     if (CreateFile.is(edit)) {
       const path = Convert.uriToPath(edit.uri)
-      const exists = await fs.promises.stat(path).then(() => true).catch(() => false)
+      const exists = await fs.promises
+        .access(path)
+        .then(() => true)
+        .catch(() => false)
       const ignoreIfExists = edit.options?.ignoreIfExists
       const overwrite = edit.options?.overwrite
 
@@ -145,21 +151,21 @@ export default class ApplyEditAdapter {
         return
       }
 
-      return fs.promises.writeFile(path, '')
+      return fs.promises.writeFile(path, "")
     }
   }
 
   private static normalize(workspaceEdit: WorkspaceEdit): void {
     const documentChanges = workspaceEdit.documentChanges || []
 
-    if (!('documentChanges' in workspaceEdit) && ('changes' in workspaceEdit)) {
+    if (!("documentChanges" in workspaceEdit) && "changes" in workspaceEdit) {
       Object.keys(workspaceEdit.changes || []).forEach((uri: DocumentUri) => {
         documentChanges.push({
           textDocument: {
             version: null,
-            uri: uri
+            uri,
           },
-          edits: workspaceEdit.changes![uri]
+          edits: workspaceEdit.changes![uri],
         })
       })
     }
