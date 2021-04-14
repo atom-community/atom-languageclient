@@ -6,17 +6,14 @@ import * as ac from "atom/autocomplete-plus"
 /** Adds LSP specific properties to the Atom SuggestionBase type */
 interface SuggestionBase extends ac.SuggestionBase {
   /**
-   * A string that is used when filtering and sorting a set of
-   * completion items with a prefix present. When `falsy` the
-   * [displayText](#ac.SuggestionBase.displayText) is used. When
-   * no prefix, the `sortText` property is used.
+   * A string that is used when filtering and sorting a set of completion items with a prefix present. When `falsy` the
+   * [displayText](#ac.SuggestionBase.displayText) is used. When no prefix, the `sortText` property is used.
    */
   filterText?: string
 
   /**
-   * String representing the replacement prefix from the suggestion's
-   * custom start point to the original buffer position the suggestion
-   * was gathered from.
+   * String representing the replacement prefix from the suggestion's custom start point to the original buffer position
+   * the suggestion was gathered from.
    */
   customReplacmentPrefix?: string
 }

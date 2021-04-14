@@ -13,9 +13,7 @@ const ShowDocumentAdapter = {
 // for consistency with other adapters
 export default ShowDocumentAdapter
 
-/**
- * Public: Attach to a {LanguageClientConnection} to recieve requests to show documents.
- */
+/** Public: Attach to a {LanguageClientConnection} to recieve requests to show documents. */
 export function attach(connection: LanguageClientConnection): void {
   connection.onShowDocument(showDocument)
 }
@@ -23,10 +21,10 @@ export function attach(connection: LanguageClientConnection): void {
 /**
  * Public: show documents inside Atom text editor or in external programs
  *
- * @param params The {ShowDocumentParams} received from the language server
- *   indicating the document to be displayed as well as other metadata.
- * @returns {Promise<ShowDocumentResult>} with a `success: boolean` property specifying if the operation was sucessful
- * {@inheritDoc ShowDocumentParams}
+ * @param params The {ShowDocumentParams} received from the language server indicating the document to be displayed as
+ *   well as other metadata.
+ * @returns {Promise<ShowDocumentResult>} With a `success: boolean` property specifying if the operation was sucessful
+ *   {@inheritDoc ShowDocumentParams}
  */
 export async function showDocument(params: ShowDocumentParams): Promise<ShowDocumentResult> {
   try {

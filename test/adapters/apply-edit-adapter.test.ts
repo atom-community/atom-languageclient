@@ -15,7 +15,7 @@ const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'atom-languageclient-tests
 
 function normalizeDriveLetterName(filePath: string): string {
   if (process.platform === "win32") {
-    return filePath.replace(/^([a-z]):/, ([driveLetter]) => driveLetter.toUpperCase() + ":")
+    return filePath.replace(/^([a-z]):/, ([driveLetter]) => `${driveLetter.toUpperCase()}:`)
   } else {
     return filePath
   }

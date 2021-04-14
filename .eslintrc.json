@@ -1,7 +1,17 @@
 {
-  "extends": "eslint-config-atomic/strict",
+  "extends": ["eslint-config-atomic/strict", "plugin:chai-friendly/recommended"],
   "ignorePatterns": ["build/", "node_modules/"],
   "rules": {
+    "no-eq-null": "warn",
+    "eqeqeq": "warn",
+    "no-empty-function": "warn",
+    "class-methods-use-this": "warn",
+    "default-case": "warn",
+    "no-new": "warn",
+    "no-shadow": "warn",
+    "no-invalid-this": "warn",
+    "require-await": "warn",
+    "no-useless-constructor": "warn",
     "@typescript-eslint/ban-types": [
       "error",
       {
@@ -16,7 +26,7 @@
         "allowArgumentsExplicitlyTypedAsAny": true
       }
     ],
-    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-empty-function": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",

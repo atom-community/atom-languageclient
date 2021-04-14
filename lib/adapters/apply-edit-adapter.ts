@@ -22,10 +22,7 @@ export default class ApplyEditAdapter {
     connection.onApplyEdit((m) => ApplyEditAdapter.onApplyEdit(m))
   }
 
-  /**
-   * Tries to apply edits and reverts if anything goes wrong.
-   * Returns the checkpoint, so the caller can revert changes if needed.
-   */
+  /** Tries to apply edits and reverts if anything goes wrong. Returns the checkpoint, so the caller can revert changes if needed. */
   public static applyEdits(buffer: TextBuffer, edits: atomIde.TextEdit[]): number {
     const checkpoint = buffer.createCheckpoint()
     try {
