@@ -386,6 +386,9 @@ describe("ApplyEditAdapter", () => {
             {
               kind: "delete",
               uri: path.join(tempDir, "unexisting.txt"),
+              options: {
+                ignoreIfNotExists: false,
+              },
             },
           ],
         },

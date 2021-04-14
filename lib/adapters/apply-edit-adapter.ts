@@ -12,7 +12,7 @@ import {
   DocumentUri,
 } from "../languageclient"
 import { TextBuffer, TextEditor } from "atom"
-import * as fs from "fs"
+import { promises as fsp, Stats } from "fs"
 import * as rimraf from "rimraf"
 
 /** Public: Adapts workspace/applyEdit commands to editors. */
@@ -92,11 +92,11 @@ export default class ApplyEditAdapter {
   private static async handleResourceOperation(edit: CreateFile | RenameFile | DeleteFile): Promise<void> {
     if (DeleteFile.is(edit)) {
       const path = Convert.uriToPath(edit.uri)
-      const stats: boolean | fs.Stats = await fs.promises.lstat(path).catch(() => false)
+      const stats: boolean | Stats = await fsp.lstat(path).catch(() => false)
       const ignoreIfNotExists = edit.options?.ignoreIfNotExists
 
       if (!stats) {
-        if (ignoreIfNotExists) {
+        if (ignoreIfNotExists !== false) {
           return
         }
         throw Error(`Target doesn't exist.`)
@@ -113,15 +113,15 @@ export default class ApplyEditAdapter {
             })
           })
         }
-        return fs.promises.rmdir(path, { recursive: edit.options?.recursive })
+        return fsp.rmdir(path, { recursive: edit.options?.recursive })
       }
 
-      return fs.promises.unlink(path)
+      return fsp.unlink(path)
     }
     if (RenameFile.is(edit)) {
       const oldPath = Convert.uriToPath(edit.oldUri)
       const newPath = Convert.uriToPath(edit.newUri)
-      const exists = await fs.promises
+      const exists = await fsp
         .access(newPath)
         .then(() => true)
         .catch(() => false)
@@ -136,11 +136,11 @@ export default class ApplyEditAdapter {
         throw Error(`Target exists.`)
       }
 
-      return fs.promises.rename(oldPath, newPath)
+      return fsp.rename(oldPath, newPath)
     }
     if (CreateFile.is(edit)) {
       const path = Convert.uriToPath(edit.uri)
-      const exists = await fs.promises
+      const exists = await fsp
         .access(path)
         .then(() => true)
         .catch(() => false)
@@ -151,7 +151,7 @@ export default class ApplyEditAdapter {
         return
       }
 
-      return fs.promises.writeFile(path, "")
+      return fsp.writeFile(path, "")
     }
   }
 
