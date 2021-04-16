@@ -5,10 +5,7 @@ import { CancellationToken, CancellationTokenSource } from "vscode-jsonrpc"
 
 export type ReportBusyWhile = <T>(title: string, f: () => Promise<T>) => Promise<T>
 
-/**
- * Obtain the range of the word at the given editor position.
- * Uses the non-word characters from the position's grammar scope.
- */
+/** Obtain the range of the word at the given editor position. Uses the non-word characters from the position's grammar scope. */
 export function getWordAtPosition(editor: TextEditor, position: Point): Range {
   const nonWordCharacters = escapeRegExp(editor.getNonWordCharacters(position))
   const range = _getRegexpRangeAtPosition(
@@ -52,9 +49,8 @@ function _getRegexpRangeAtPosition(buffer: TextBuffer, position: Point, wordRege
 }
 
 /**
- * For the given connection and cancellationTokens map, cancel the existing
- * CancellationToken for that connection then create and store a new
- * CancellationToken to be used for the current request.
+ * For the given connection and cancellationTokens map, cancel the existing CancellationToken for that connection then
+ * create and store a new CancellationToken to be used for the current request.
  */
 export function cancelAndRefreshCancellationToken<T extends object>(
   key: T,
@@ -107,13 +103,14 @@ export function promiseWithTimeout<T>(ms: number, promise: Promise<T>): Promise<
 export const rootPathDefault = join("bin", `${process.platform}-${process.arch}`)
 export const exeExtentionDefault = process.platform === "win32" ? ".exe" : ""
 
-/** Finds an exe file in the package assuming it is placed under `rootPath/platform-arch/exe`. If the exe file did not exist,
- * the given name is returned.
- * For example on Windows x64, if the `exeName` is `serve-d`, it returns the absolute path to `./bin/win32-x64/exeName.exe`, and
- * if the file did not exist, `serve-d` is returned.
- * @param exeName name of the exe file
- * @param rootPath the path of the folder of the exe file. Defaults to 'join("bin", `${process.platform}-${process.arch}`)'
- * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
+/**
+ * Finds an exe file in the package assuming it is placed under `rootPath/platform-arch/exe`. If the exe file did not
+ * exist, the given name is returned. For example on Windows x64, if the `exeName` is `serve-d`, it returns the absolute
+ * path to `./bin/win32-x64/exeName.exe`, and if the file did not exist, `serve-d` is returned.
+ *
+ * @param exeName Name of the exe file
+ * @param rootPath The path of the folder of the exe file. Defaults to 'join("bin", `${process.platform}-${process.arch}`)'
+ * @param exeExtention The extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
  */
 export function getExePath(exeName: string, rootPath = rootPathDefault, exeExtention = exeExtentionDefault): string {
   const exePath = resolve(join(rootPath, `${exeName}${exeExtention}`))

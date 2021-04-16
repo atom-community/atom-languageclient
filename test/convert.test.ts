@@ -132,7 +132,7 @@ describe("Convert", () => {
     it("uses getath which returns a path to create the URI", () => {
       const path = "/c/d/e/f/g/h/i/j.txt"
       const identifier = Convert.editorToTextDocumentIdentifier(createFakeEditor(path))
-      expect(identifier.uri).equals("file://" + path)
+      expect(identifier.uri).equals(`file://${path}`)
     })
   })
 
@@ -142,7 +142,7 @@ describe("Convert", () => {
       const editor = createFakeEditor(path, "abc\ndefgh\nijkl")
       editor.setCursorBufferPosition(new Point(1, 2))
       const params = Convert.editorToTextDocumentPositionParams(editor)
-      expect(params.textDocument.uri).equals("file://" + path)
+      expect(params.textDocument.uri).equals(`file://${path}`)
       expect(params.position).deep.equals({ line: 1, character: 2 })
     })
 
@@ -152,7 +152,7 @@ describe("Convert", () => {
       const editor = createFakeEditor(path, "abcdef\nghijkl\nmnopq")
       editor.setCursorBufferPosition(new Point(1, 1))
       const params = Convert.editorToTextDocumentPositionParams(editor, specifiedPoint)
-      expect(params.textDocument.uri).equals("file://" + path)
+      expect(params.textDocument.uri).equals(`file://${path}`)
       expect(params.position).deep.equals({ line: 911, character: 112 })
     })
   })

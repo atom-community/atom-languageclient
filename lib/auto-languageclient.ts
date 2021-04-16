@@ -41,9 +41,9 @@ export interface ServerAdapters {
 }
 
 /**
- * Public: AutoLanguageClient provides a simple way to have all the supported
- * Atom-IDE services wired up entirely for you by just subclassing it and
- * implementing at least
+ * Public: AutoLanguageClient provides a simple way to have all the supported Atom-IDE services wired up entirely for
+ * you by just subclassing it and implementing at least
+ *
  * - `startServerProcess`
  * - `getGrammarScopes`
  * - `getLanguageName`
@@ -123,6 +123,7 @@ export default class AutoLanguageClient {
             documentChanges: true,
             normalizesLineEndings: false,
             changeAnnotationSupport: undefined,
+            resourceOperations: ["create", "rename", "delete"],
           },
           workspaceFolders: false,
           didChangeConfiguration: {
@@ -327,16 +328,16 @@ export default class AutoLanguageClient {
   }
 
   /**
-   * Spawn a general language server.
-   * Use this inside the `startServerProcess` override if the language server is a general executable.
-   * Also see the `spawnChildNode` method.
-   * If the name is provided as the first argument, it checks `bin/platform-arch/exeName` by default, and if doesn't exists uses the exe on PATH.
-   * For example on Windows x64, by passing `serve-d`, `bin/win32-x64/exeName.exe` is spawned by default.
-   * @param exe the `name` or `path` of the executable
-   * @param args args passed to spawn the exe. Defaults to `[]`.
-   * @param options: child process spawn options. Defaults to `{}`.
-   * @param rootPath the path of the folder of the exe file. Defaults to `join("bin", `${process.platform}-${process.arch}`)`.
-   * @param exeExtention the extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
+   * Spawn a general language server. Use this inside the `startServerProcess` override if the language server is a
+   * general executable. Also see the `spawnChildNode` method. If the name is provided as the first argument, it checks
+   * `bin/platform-arch/exeName` by default, and if doesn't exists uses the exe on PATH. For example on Windows x64, by
+   * passing `serve-d`, `bin/win32-x64/exeName.exe` is spawned by default.
+   *
+   * @param exe The `name` or `path` of the executable
+   * @param args Args passed to spawn the exe. Defaults to `[]`.
+   * @param options: Child process spawn options. Defaults to `{}`.
+   * @param rootPath The path of the folder of the exe file. Defaults to `join("bin", `${process.platform}-${process.arch} `)`.
+   * @param exeExtention The extention of the exe file. Defaults to `process.platform === "win32" ? ".exe" : ""`
    */
   protected spawn(
     exe: string,
@@ -349,9 +350,9 @@ export default class AutoLanguageClient {
     return cp.spawn(Utils.getExePath(exe, rootPath, exeExtention), args, options)
   }
 
-  /** Spawn a language server using Atom's Nodejs process
-   *  Use this inside the `startServerProcess` override if the language server is a JavaScript file.
-   *  Also see the `spawn` method
+  /**
+   * Spawn a language server using Atom's Nodejs process Use this inside the `startServerProcess` override if the
+   * language server is a JavaScript file. Also see the `spawn` method
    */
   protected spawnChildNode(args: string[], options: cp.SpawnOptions = {}): LanguageServerProcess {
     this.logger.debug(`starting child Node "${args.join(" ")}"`)
@@ -431,12 +432,15 @@ export default class AutoLanguageClient {
     lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal))
     lsProcess.on("disconnect", () => this.onSpawnDisconnect())
     lsProcess.on("exit", (code, signal) => this.onSpawnExit(code, signal))
+    // eslint-disable-next-line chai-friendly/no-unused-expressions
     lsProcess.stderr?.setEncoding("utf8")
+    // eslint-disable-next-line chai-friendly/no-unused-expressions
     lsProcess.stderr?.on("data", (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath))
   }
 
-  /** The function called whenever the spawned server `error`s.
-   *  Extend (call super.onSpawnError) or override this if you need custom error handling
+  /**
+   * The function called whenever the spawned server `error`s. Extend (call super.onSpawnError) or override this if you
+   * need custom error handling
    */
   protected onSpawnError(err: Error): void {
     atom.notifications.addError(
@@ -448,8 +452,9 @@ export default class AutoLanguageClient {
     )
   }
 
-  /** The function called whenever the spawned server `close`s.
-   *  Extend (call super.onSpawnClose) or override this if you need custom close handling
+  /**
+   * The function called whenever the spawned server `close`s. Extend (call super.onSpawnClose) or override this if you
+   * need custom close handling
    */
   protected onSpawnClose(code: number | null, signal: NodeJS.Signals | null): void {
     if (code !== 0 && signal === null) {
@@ -459,22 +464,25 @@ export default class AutoLanguageClient {
     }
   }
 
-  /** The function called whenever the spawned server `disconnect`s.
-   *  Extend (call super.onSpawnDisconnect) or override this if you need custom disconnect handling
+  /**
+   * The function called whenever the spawned server `disconnect`s. Extend (call super.onSpawnDisconnect) or override
+   * this if you need custom disconnect handling
    */
   protected onSpawnDisconnect(): void {
     this.logger.debug(`${this.getServerName()} language server for ${this.getLanguageName()} got disconnected.`)
   }
 
-  /** The function called whenever the spawned server `exit`s.
-   *  Extend (call super.onSpawnExit) or override this if you need custom exit handling
+  /**
+   * The function called whenever the spawned server `exit`s. Extend (call super.onSpawnExit) or override this if you
+   * need custom exit handling
    */
   protected onSpawnExit(code: number | null, signal: NodeJS.Signals | null): void {
     this.logger.debug(`exit: code ${code} signal ${signal}`)
   }
 
-  /** The function called whenever the spawned server returns `data` in `stderr`
-   *  Extend (call super.onSpawnStdErrData) or override this if you need custom stderr data handling
+  /**
+   * The function called whenever the spawned server returns `data` in `stderr` Extend (call super.onSpawnStdErrData) or
+   * override this if you need custom stderr data handling
    */
   protected onSpawnStdErrData(chunk: Buffer, projectPath: string): void {
     const errorString = chunk.toString()
@@ -581,7 +589,8 @@ export default class AutoLanguageClient {
    * A method to override to return an array of grammar scopes that should not be used for autocompletion.
    *
    * Usually that's used for disabling autocomplete inside comments,
-   * @example if the grammar scopes are [ '.source.js' ], `getAutocompleteDisabledScopes` may return [ '.source.js .comment' ].
+   *
+   * @example If the grammar scopes are [ '.source.js' ], `getAutocompleteDisabledScopes` may return [ '.source.js .comment' ].
    */
   protected getAutocompleteDisabledScopes(): Array<string> {
     return []
@@ -1022,8 +1031,9 @@ export default class AutoLanguageClient {
 
   /**
    * `didChangeWatchedFiles` message filtering, override for custom logic.
+   *
    * @param filePath Path of a file that has changed in the project path
-   * @returns `false` => message will not be sent to the language server
+   * @returns  `false` => message will not be sent to the language server
    */
   protected filterChangeWatchedFiles(_filePath: string): boolean {
     return true
@@ -1031,6 +1041,7 @@ export default class AutoLanguageClient {
 
   /**
    * Called on language server stderr output.
+   *
    * @param stderr A chunk of stderr from a language server instance
    */
   protected handleServerStderr(stderr: string, _projectPath: string): void {

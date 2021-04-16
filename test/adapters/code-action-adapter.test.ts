@@ -57,7 +57,7 @@ describe("CodeActionAdapter", () => {
       expect((languageClient as any).codeAction.called).to.be.true
       const args = (languageClient as any).codeAction.getCalls()[0].args
       const params: ls.CodeActionParams = args[0]
-      expect(params.textDocument.uri).to.equal("file://" + testPath)
+      expect(params.textDocument.uri).to.equal(`file://${testPath}`)
       expect(params.range).to.deep.equal({
         start: { line: 1, character: 2 },
         end: { line: 3, character: 4 },

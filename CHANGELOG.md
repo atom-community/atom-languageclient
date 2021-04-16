@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.6.0...v1.7.0) (2021-04-14)
+
+
+### Features
+
+* support resource operations ([#140](https://github.com/atom-ide-community/atom-languageclient/issues/140)) ([0c1c7e9](https://github.com/atom-ide-community/atom-languageclient/commit/0c1c7e90e3b018f8e710a5e5c5510f9e8c75ce28))
+
 # [1.6.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.5.0...v1.6.0) (2021-03-21)
 
 
