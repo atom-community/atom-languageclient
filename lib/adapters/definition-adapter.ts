@@ -69,13 +69,13 @@ export default class DefinitionAdapter {
    * @returns An {Array} of {Location}s or {null} if the locationResult was null.
    */
   public static normalizeLocations(
-    locationResult: Location | (Location | LocationLink)[]
-  ): (Location | LocationLink)[] | null {
+    locationResult: Location | Location[] | LocationLink[] | null
+  ): Location[] | LocationLink[] | null {
     if (locationResult == null) {
       return null
     }
-    return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter(
-      (d) => ("range" in d ? d.range : d.targetRange).start != null
+    return (Array.isArray(locationResult) ? locationResult as any[] : [locationResult]).filter(
+      (d: Location | LocationLink) => ("range" in d ? d.range : d.targetRange).start != null
     )
   }
 
@@ -87,10 +87,10 @@ export default class DefinitionAdapter {
    * @returns An {Array} of {Definition}s that represented the converted {Location}s.
    */
   public static convertLocationsToDefinitions(
-    locations: (Location | LocationLink)[],
+    locations: Location[] | LocationLink[],
     languageName: string
   ): atomIde.Definition[] {
-    return locations.map((d) => ({
+    return (locations as any[]).map((d: Location | LocationLink) => ({
       path: Convert.uriToPath("uri" in d ? d.uri : d.targetUri),
       position: Convert.positionToPoint(("range" in d ? d.range : d.targetRange).start),
       range: Range.fromObject(Convert.lsRangeToAtomRange("range" in d ? d.range : d.targetRange)),
