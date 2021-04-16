@@ -1,7 +1,7 @@
 import type * as atomIde from "atom-ide-base"
 import Convert from "../convert"
 import * as Utils from "../utils"
-import { LanguageClientConnection, Location, LocationLink, ServerCapabilities } from "../languageclient.ts"
+import { LanguageClientConnection, Location, LocationLink, ServerCapabilities } from "../languageclient"
 import { Point, TextEditor, Range } from "atom"
 
 /**
