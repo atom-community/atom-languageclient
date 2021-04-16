@@ -74,7 +74,7 @@ export default class DefinitionAdapter {
     if (locationResult == null) {
       return null
     }
-    return (Array.isArray(locationResult) ? locationResult as any[] : [locationResult]).filter(
+    return (Array.isArray(locationResult) ? (locationResult as any[]) : [locationResult]).filter(
       (d: Location | LocationLink) => ("range" in d ? d.range : d.targetRange).start != null
     )
   }
