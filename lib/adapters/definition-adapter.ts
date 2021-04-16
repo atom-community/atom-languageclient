@@ -68,11 +68,11 @@ export default class DefinitionAdapter {
    * @param locationResult Either a single {Location} object or an {Array} of {Locations}.
    * @returns An {Array} of {Location}s or {null} if the locationResult was null.
    */
-  public static normalizeLocations(locationResult: Location | Location[] | LocationLink[]): Location[] | LocationLink[] | null {
+  public static normalizeLocations(locationResult: Location | (Location | LocationLink)[]): (Location | LocationLink)[] | null {
     if (locationResult == null) {
       return null
     }
-    return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => (d.range||d.targetRange).start != null)
+    return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => ('range' in d?d.range:d.targetRange).start != null)
   }
 
   /**
@@ -82,11 +82,11 @@ export default class DefinitionAdapter {
    * @param languageName The name of the language these objects are written in.
    * @returns An {Array} of {Definition}s that represented the converted {Location}s.
    */
-  public static convertLocationsToDefinitions(locations: Location[] | LocationLink[], languageName: string): atomIde.Definition[] {
+  public static convertLocationsToDefinitions(locations: (Location | LocationLink)[], languageName: string): atomIde.Definition[] {
     return locations.map((d) => ({
-      path: Convert.uriToPath(d.uri||d.targetUri),
-      position: Convert.positionToPoint((d.range||d.targetRange).start),
-      range: Range.fromObject(Convert.lsRangeToAtomRange(d.range||d.targetRange)),
+      path: Convert.uriToPath('uri' in d?d.uri:d.targetUri),
+      position: Convert.positionToPoint(('range' in d?d.range:d.targetRange).start),
+      range: Range.fromObject(Convert.lsRangeToAtomRange('range' in d?d.range:d.targetRange)),
       language: languageName,
     }))
   }
