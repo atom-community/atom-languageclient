@@ -343,7 +343,9 @@ export class LanguageClientConnection extends EventEmitter {
    *   symbol are required.
    * @returns A {Promise} containing either a single {Location} or an {Array} of many {Location}s.
    */
-  public gotoDefinition(params: lsp.TextDocumentPositionParams): Promise<lsp.Location | lsp.Location[]> {
+  public gotoDefinition(
+    params: lsp.TextDocumentPositionParams
+  ): Promise<lsp.Location | lsp.Location[] | lsp.LocationLink[] | null> {
     return this._sendRequest("textDocument/definition", params)
   }
 
