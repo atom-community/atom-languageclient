@@ -107,6 +107,6 @@ export default class DefinitionAdapter {
     }))
   }
   private static isLocationLinkArray(value: any): value is LocationLink[] {
-    return Array.isArray(value) && LocationLink.is(value[0])
+    return Array.isArray(value) && value.every((v) => LocationLink.is(v))
   }
 }
