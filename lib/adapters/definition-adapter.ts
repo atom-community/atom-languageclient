@@ -72,8 +72,10 @@ export default class DefinitionAdapter {
     locationResult: Location | Location[] | LocationLink[] | null
   ): Location[] | LocationLink[] | null {
     if (locationResult == null) {
+      // TODO use ===
       return null
     }
+    // TODO `d.targetRange.start` never becomes `null` according to the types
     if (isLocationLinkArray(locationResult)) {
       return locationResult.filter((d) => d.targetRange.start != null)
     }
