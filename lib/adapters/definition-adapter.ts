@@ -74,9 +74,10 @@ export default class DefinitionAdapter {
     if (locationResult == null) {
       return null
     }
-    return (Array.isArray(locationResult) ? (locationResult as any[]) : [locationResult]).filter(
-      (d: Location | LocationLink) => ("range" in d ? d.range : d.targetRange).start != null
-    )
+    if (this.isLocationLinkArray(locationResult)) {
+      return locationResult.filter((d) => d.targetRange.start != null)
+    }
+    return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => d.range.start != null)
   }
 
   /**
@@ -90,11 +91,22 @@ export default class DefinitionAdapter {
     locations: Location[] | LocationLink[],
     languageName: string
   ): atomIde.Definition[] {
-    return (locations as any[]).map((d: Location | LocationLink) => ({
-      path: Convert.uriToPath("uri" in d ? d.uri : d.targetUri),
-      position: Convert.positionToPoint(("range" in d ? d.range : d.targetRange).start),
-      range: Range.fromObject(Convert.lsRangeToAtomRange("range" in d ? d.range : d.targetRange)),
+    if (this.isLocationLinkArray(locations)) {
+      return locations.map((d) => ({
+        path: Convert.uriToPath(d.targetUri),
+        position: Convert.positionToPoint(d.targetRange.start),
+        range: Range.fromObject(Convert.lsRangeToAtomRange(d.targetRange)),
+        language: languageName,
+      }))
+    }
+    return locations.map((d) => ({
+      path: Convert.uriToPath(d.uri),
+      position: Convert.positionToPoint(d.range.start),
+      range: Range.fromObject(Convert.lsRangeToAtomRange(d.range)),
       language: languageName,
     }))
+  }
+  private static isLocationLinkArray(value: any): value is LocationLink[] {
+    return Array.isArray(value) && LocationLink.is(value[0])
   }
 }
