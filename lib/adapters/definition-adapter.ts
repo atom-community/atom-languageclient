@@ -74,7 +74,7 @@ export default class DefinitionAdapter {
     if (locationResult == null) {
       return null
     }
-    if (this.isLocationLinkArray(locationResult)) {
+    if (isLocationLinkArray(locationResult)) {
       return locationResult.filter((d) => d.targetRange.start != null)
     }
     return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => d.range.start != null)
@@ -91,7 +91,7 @@ export default class DefinitionAdapter {
     locations: Location[] | LocationLink[],
     languageName: string
   ): atomIde.Definition[] {
-    if (this.isLocationLinkArray(locations)) {
+    if (isLocationLinkArray(locations)) {
       return locations.map((d) => ({
         path: Convert.uriToPath(d.targetUri),
         position: Convert.positionToPoint(d.targetRange.start),
@@ -106,7 +106,8 @@ export default class DefinitionAdapter {
       language: languageName,
     }))
   }
-  private static isLocationLinkArray(value: any): value is LocationLink[] {
-    return Array.isArray(value) && value.every((v) => LocationLink.is(v))
-  }
+}
+
+function isLocationLinkArray(value: any): value is LocationLink[] {
+  return Array.isArray(value) && LocationLink.is(value[0])
 }
