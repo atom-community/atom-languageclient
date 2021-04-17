@@ -1,3 +1,22 @@
+# [1.8.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.7.0...v1.8.0) (2021-04-17)
+
+
+### Bug Fixes
+
+* eliminate casting ([d753510](https://github.com/atom-ide-community/atom-languageclient/commit/d753510ca60b31a80007ec102448b86463ef581e))
+* fix import statement ([19614ce](https://github.com/atom-ide-community/atom-languageclient/commit/19614ce547e50b977b6fd9f456c71bdfbc90e29c))
+* format ([5291209](https://github.com/atom-ide-community/atom-languageclient/commit/52912091bd890bd9362c5a9c96d0f972cd612a73))
+* modify the type to pass the test ([df5c53c](https://github.com/atom-ide-community/atom-languageclient/commit/df5c53ce859e39d3b1ede56c299e73dd4fd79997))
+* should check only the first of the array / Moved isLocationLinkArray function ([080f4ce](https://github.com/atom-ide-community/atom-languageclient/commit/080f4cef9d1b686f77f8b011555d6cdf7d920782))
+* type definition ([f4f60cd](https://github.com/atom-ide-community/atom-languageclient/commit/f4f60cdc9f4eebb4b210849b3c5485b0a5604f9e))
+* type of `normalizeLocations` and `convertLocationsToDefinitions` ([6b38b93](https://github.com/atom-ide-community/atom-languageclient/commit/6b38b93f74ede31284b34ef7ad10cb6ad42be3db))
+* use Array.prototype.every() for the isLocationLinkArray function ([5d132b0](https://github.com/atom-ide-community/atom-languageclient/commit/5d132b04baca8bf054943e12979254d87e4d4daa))
+
+
+### Features
+
+* add `LocationLink` support for definition-adapter ([06612be](https://github.com/atom-ide-community/atom-languageclient/commit/06612beeccba4c9615a742e475d5e1e5951ed3a5))
+
 # [1.7.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.6.0...v1.7.0) (2021-04-14)
 
 
