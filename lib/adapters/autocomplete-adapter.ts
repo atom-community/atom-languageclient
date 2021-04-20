@@ -492,7 +492,7 @@ export default class AutocompleteAdapter {
    */
   public static applySnippetToSuggestion(item: CompletionItem, suggestion: SnippetSuggestion): void {
     if (item.insertTextFormat === InsertTextFormat.Snippet) {
-      suggestion.snippet = item.textEdit != null ? item.textEdit.newText : item.insertText || ""
+      suggestion.snippet = item.textEdit != null ? item.textEdit.newText : item.insertText || item.label
     }
   }
 
