@@ -51,7 +51,7 @@ export default (async function downloadFile(
  */
 async function streamWithProgress(
   length: number,
-  reader: ReadableStreamReader,
+  reader: ReadableStreamReader<Uint8Array>,
   writer: fs.WriteStream,
   progressCallback?: ByteProgressCallback
 ): Promise<void> {
