@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.0...v1.8.1) (2021-04-21)
+
+
+### Bug Fixes
+
+* set the correct fallback for Snippet completion ([#148](https://github.com/atom-ide-community/atom-languageclient/issues/148)) ([d3e06ee](https://github.com/atom-ide-community/atom-languageclient/commit/d3e06ee19a7689340660b1d004fac602a72f5e16))
+
 # [1.8.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.7.0...v1.8.0) (2021-04-17)
 
 
