@@ -248,6 +248,11 @@ describe("AutoCompleteAdapter", () => {
           value: "documentation",
         },
       },
+      {
+        label: "sorawo",
+        sortText: "f",
+        insertTextFormat: ls.InsertTextFormat.Snippet,
+      },
     ]
 
     beforeEach(() => {
@@ -284,6 +289,9 @@ describe("AutoCompleteAdapter", () => {
       expect(results[4].description).is.undefined
       expect(results[4].descriptionMarkdown).equals("documentation")
       expect(results[4].rightLabel).equals("details")
+
+      expect(results[5].displayText).equals("sorawo")
+      expect((results[5] as SnippetSuggestion).snippet).equals("sorawo")
     })
 
     it("respects onDidConvertCompletionItem", async () => {
