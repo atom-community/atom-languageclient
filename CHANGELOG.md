@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.1...v1.8.2) (2021-04-21)
+
+
+### Bug Fixes
+
+* update deps ([#149](https://github.com/atom-ide-community/atom-languageclient/issues/149)) ([4e16378](https://github.com/atom-ide-community/atom-languageclient/commit/4e163780fbdb8357012dd1d4731f7187aee96e2b))
+
 ## [1.8.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.0...v1.8.1) (2021-04-21)
 
 
