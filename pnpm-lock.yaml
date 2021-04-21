@@ -22,7 +22,7 @@ specifiers:
   vscode-jsonrpc: 6.0.0
   vscode-languageserver-protocol: 3.16.0
   vscode-languageserver-types: 3.16.0
-  zadeh: 2.1.0
+  zadeh: 3.0.0-beta.2
 
 dependencies:
   '@types/rimraf': 3.0.0
@@ -31,7 +31,7 @@ dependencies:
   vscode-jsonrpc: 6.0.0
   vscode-languageserver-protocol: 3.16.0
   vscode-languageserver-types: 3.16.0
-  zadeh: 2.1.0
+  zadeh: 3.0.0-beta.2
 
 devDependencies:
   '@atom/mocha-test-runner': 1.6.1
@@ -3880,8 +3880,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zadeh/2.1.0:
-    resolution: {integrity: sha512-BY8U9RWUi1BVV9Xt4mylP4YvGMswSP0PFN3JF7Ib2ON6yLWbLzEoi8d9yKr2GsjQAv1zCc1uxen7AmWLB2iqvA==}
+  /zadeh/3.0.0-beta.2:
+    resolution: {integrity: sha512-HHLvrzoeegMkuXaXrQUlQJVRTM2nl23g/obw0ENfMu+xQL+VJA3SQl7cQ73btyUNAQZsrWf9FMegbVLLHOhORg==}
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
