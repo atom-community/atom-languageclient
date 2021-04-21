@@ -133,7 +133,7 @@ export default class AutocompleteAdapter {
     }
 
     const filtered = !(request.prefix === "" || (triggerChar !== "" && triggerOnly))
-    return filtered ? filter(suggestions, request.prefix, { key: "filterText" }) : suggestions
+    return filtered ? filter<any>(suggestions, request.prefix, { key: "filterText" }) : suggestions
   }
 
   private shouldTrigger(request: ac.SuggestionsRequestedEvent, triggerChar: string, minWordLength: number): boolean {
