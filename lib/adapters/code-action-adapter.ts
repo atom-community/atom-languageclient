@@ -47,7 +47,7 @@ export default class CodeActionAdapter {
 
     const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics)
     const actions = await connection.codeAction(params)
-    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection))
+    return (actions||[]).map((action) => CodeActionAdapter.createCodeAction(action, connection))
   }
 
   private static createCodeAction(
