@@ -37,7 +37,7 @@ describe("LanguageClientConnection", () => {
       await lc.initialize(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("initialize")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("initialize")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -45,14 +45,14 @@ describe("LanguageClientConnection", () => {
       await lc.shutdown()
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("shutdown")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("shutdown")
     })
 
     it("sends a request for completion", async () => {
       await lc.completion(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/completion")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/completion")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -61,7 +61,7 @@ describe("LanguageClientConnection", () => {
       await lc.completionItemResolve(completionItem)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("completionItem/resolve")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("completionItem/resolve")
       expect(lc._sendRequest.getCall(0).args[1]).equals(completionItem)
     })
 
@@ -69,7 +69,7 @@ describe("LanguageClientConnection", () => {
       await lc.hover(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/hover")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/hover")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -77,7 +77,7 @@ describe("LanguageClientConnection", () => {
       await lc.signatureHelp(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/signatureHelp")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/signatureHelp")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -85,7 +85,7 @@ describe("LanguageClientConnection", () => {
       await lc.gotoDefinition(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/definition")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/definition")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -93,7 +93,7 @@ describe("LanguageClientConnection", () => {
       await lc.findReferences(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/references")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/references")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -101,7 +101,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentHighlight(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/documentHighlight")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/documentHighlight")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -109,7 +109,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentSymbol(textDocumentPositionParams)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/documentSymbol")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/documentSymbol")
       expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
     })
 
@@ -118,7 +118,7 @@ describe("LanguageClientConnection", () => {
       await lc.workspaceSymbol(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("workspace/symbol")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("workspace/symbol")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -134,7 +134,7 @@ describe("LanguageClientConnection", () => {
       await lc.codeAction(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/codeAction")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/codeAction")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -145,7 +145,7 @@ describe("LanguageClientConnection", () => {
       await lc.codeLens(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/codeLens")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/codeLens")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -159,7 +159,7 @@ describe("LanguageClientConnection", () => {
       await lc.codeLensResolve(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("codeLens/resolve")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("codeLens/resolve")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -170,7 +170,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentLink(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/documentLink")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/documentLink")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -185,7 +185,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentLinkResolve(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("documentLink/resolve")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("documentLink/resolve")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -197,7 +197,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentFormatting(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/formatting")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/formatting")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -213,7 +213,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentRangeFormatting(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/rangeFormatting")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/rangeFormatting")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -227,7 +227,7 @@ describe("LanguageClientConnection", () => {
       await lc.documentOnTypeFormatting(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/onTypeFormatting")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/onTypeFormatting")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
 
@@ -240,7 +240,7 @@ describe("LanguageClientConnection", () => {
       await lc.rename(params)
 
       expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0]).equals("textDocument/rename")
+      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/rename")
       expect(lc._sendRequest.getCall(0).args[1]).equals(params)
     })
   })
@@ -268,7 +268,7 @@ describe("LanguageClientConnection", () => {
       lc.exit()
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("exit")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("exit")
       expect(lc._sendNotification.getCall(0).args.length).equals(1)
     })
 
@@ -276,7 +276,7 @@ describe("LanguageClientConnection", () => {
       lc.initialized()
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("initialized")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("initialized")
       const expected: ls.InitializedParams = {}
       expect(lc._sendNotification.getCall(0).args[1]).to.deep.equal(expected)
     })
@@ -288,7 +288,7 @@ describe("LanguageClientConnection", () => {
       lc.didChangeConfiguration(params)
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("workspace/didChangeConfiguration")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("workspace/didChangeConfiguration")
       expect(lc._sendNotification.getCall(0).args[1]).equals(params)
     })
 
@@ -299,7 +299,7 @@ describe("LanguageClientConnection", () => {
       lc.didOpenTextDocument(params)
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("textDocument/didOpen")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didOpen")
       expect(lc._sendNotification.getCall(0).args[1]).equals(params)
     })
 
@@ -311,7 +311,7 @@ describe("LanguageClientConnection", () => {
       lc.didChangeTextDocument(params)
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("textDocument/didChange")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didChange")
       expect(lc._sendNotification.getCall(0).args[1]).equals(params)
     })
 
@@ -322,7 +322,7 @@ describe("LanguageClientConnection", () => {
       lc.didCloseTextDocument(params)
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("textDocument/didClose")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didClose")
       expect(lc._sendNotification.getCall(0).args[1]).equals(params)
     })
 
@@ -333,7 +333,7 @@ describe("LanguageClientConnection", () => {
       lc.didSaveTextDocument(params)
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("textDocument/didSave")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didSave")
       expect(lc._sendNotification.getCall(0).args[1]).equals(params)
     })
 
@@ -342,7 +342,7 @@ describe("LanguageClientConnection", () => {
       lc.didChangeWatchedFiles(params)
 
       expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0]).equals("workspace/didChangeWatchedFiles")
+      expect(lc._sendNotification.getCall(0).args[0].method).equals("workspace/didChangeWatchedFiles")
       expect(lc._sendNotification.getCall(0).args[1]).equals(params)
     })
   })
