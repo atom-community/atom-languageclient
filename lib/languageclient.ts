@@ -343,9 +343,7 @@ export class LanguageClientConnection extends EventEmitter {
    *   symbol are required.
    * @returns A {Promise} containing either a single {Location} or an {Array} of many {Location}s.
    */
-  public gotoDefinition(
-    params: lsp.TextDocumentPositionParams
-  ) {
+  public gotoDefinition(params: lsp.TextDocumentPositionParams) {
     return this._sendRequest(lsp.DefinitionRequest.type, params)
   }
 
@@ -376,10 +374,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
    * @returns A {Promise} containing an {Array} of {SymbolInformation}s that can be used to navigate this document.
    */
-  public documentSymbol(
-    params: lsp.DocumentSymbolParams,
-    _cancellationToken?: jsonrpc.CancellationToken
-  ) {
+  public documentSymbol(params: lsp.DocumentSymbolParams, _cancellationToken?: jsonrpc.CancellationToken) {
     return this._sendRequest(lsp.DocumentSymbolRequest.type, params)
   }
 
@@ -525,7 +520,7 @@ export class LanguageClientConnection extends EventEmitter {
     protocol: lsp.ProtocolNotificationType<P, RO> | lsp.ProtocolNotificationType0<RO>,
     args?: P
   ): void {
-    const {method} = protocol
+    const { method } = protocol
     this._log.debug(`rpc.sendNotification ${method}`, args)
     this._rpc.sendNotification(method, args)
   }
@@ -535,7 +530,7 @@ export class LanguageClientConnection extends EventEmitter {
     args?: P,
     cancellationToken?: jsonrpc.CancellationToken
   ): Promise<R> {
-    const {method} = protocol
+    const { method } = protocol
     this._log.debug(`rpc.sendRequest ${method} sending`, args)
     try {
       const start = performance.now()

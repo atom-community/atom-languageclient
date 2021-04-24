@@ -935,7 +935,7 @@ export default class AutoLanguageClient {
    * `didChangeWatchedFiles` message filtering, override for custom logic.
    *
    * @param filePath Path of a file that has changed in the project path
-   * @returns  `false` => message will not be sent to the language server
+   * @returns `false` => message will not be sent to the language server
    */
   protected filterChangeWatchedFiles(_filePath: string): boolean {
     return true
