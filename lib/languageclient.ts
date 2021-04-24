@@ -71,7 +71,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {InitializeParams} containing processId, rootPath, options and server capabilities.
    * @returns A {Promise} containing the {InitializeResult} with details of the server's capabilities.
    */
-  public initialize(params: lsp.InitializeParams) {
+  public initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
     return this._sendRequest(lsp.InitializeRequest.type, params)
   }
 
@@ -81,7 +81,7 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /** Public: Send a `shutdown` request to the language server. */
-  public shutdown() {
+  public shutdown(): Promise<void> {
     return this._sendRequest(lsp.ShutdownRequest.type)
   }
 
@@ -126,7 +126,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param method A string containing the name of the request message.
    * @param params The method's parameters
    */
-  public sendCustomRequest(method: string, params?: any[] | object) {
+  public sendCustomRequest(method: string, params?: any[] | object): Promise<any> {
     return this._sendRequest(new lsp.ProtocolRequestType<typeof params, any, any, void, any>(method), params)
   }
 
@@ -258,7 +258,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {WillSaveTextDocumentParams} containing the to-be-saved text document details and the reason for the save.
    * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the text document before it is saved.
    */
-  public willSaveWaitUntilTextDocument(params: lsp.WillSaveTextDocumentParams) {
+  public willSaveWaitUntilTextDocument(params: lsp.WillSaveTextDocumentParams): Promise<lsp.TextEdit[] | null> {
     return this._sendRequest(lsp.WillSaveTextDocumentWaitUntilRequest.type, params)
   }
 
@@ -301,7 +301,7 @@ export class LanguageClientConnection extends EventEmitter {
   public completion(
     params: lsp.TextDocumentPositionParams | CompletionParams,
     cancellationToken?: jsonrpc.CancellationToken
-  ) {
+  ): Promise<lsp.CompletionItem[] | lsp.CompletionList | null> {
     // Cancel prior request if necessary
     return this._sendRequest(lsp.CompletionRequest.type, params, cancellationToken)
   }
@@ -312,7 +312,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {CompletionItem} for which a fully resolved {CompletionItem} is desired.
    * @returns A {Promise} containing a fully resolved {CompletionItem}.
    */
-  public completionItemResolve(params: lsp.CompletionItem) {
+  public completionItemResolve(params: lsp.CompletionItem): Promise<lsp.CompletionItem> {
     return this._sendRequest(lsp.CompletionResolveRequest.type, params)
   }
 
@@ -322,7 +322,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {TextDocumentPositionParams} for which a {Hover} is desired.
    * @returns A {Promise} containing a {Hover}.
    */
-  public hover(params: lsp.TextDocumentPositionParams) {
+  public hover(params: lsp.TextDocumentPositionParams): Promise<lsp.Hover | null> {
     return this._sendRequest(lsp.HoverRequest.type, params)
   }
 
@@ -332,7 +332,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {TextDocumentPositionParams} for which a {SignatureHelp} is desired.
    * @returns A {Promise} containing a {SignatureHelp}.
    */
-  public signatureHelp(params: lsp.TextDocumentPositionParams) {
+  public signatureHelp(params: lsp.TextDocumentPositionParams): Promise<lsp.SignatureHelp | null> {
     return this._sendRequest(lsp.SignatureHelpRequest.type, params)
   }
 
@@ -343,7 +343,9 @@ export class LanguageClientConnection extends EventEmitter {
    *   symbol are required.
    * @returns A {Promise} containing either a single {Location} or an {Array} of many {Location}s.
    */
-  public gotoDefinition(params: lsp.TextDocumentPositionParams) {
+  public gotoDefinition(
+    params: lsp.TextDocumentPositionParams
+  ): Promise<lsp.Location | lsp.Location[] | lsp.LocationLink[] | null> {
     return this._sendRequest(lsp.DefinitionRequest.type, params)
   }
 
@@ -353,7 +355,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {TextDocumentPositionParams} of a symbol for which all referring {Location}s are desired.
    * @returns A {Promise} containing an {Array} of {Location}s that reference this symbol.
    */
-  public findReferences(params: lsp.ReferenceParams) {
+  public findReferences(params: lsp.ReferenceParams): Promise<lsp.Location[] | null> {
     return this._sendRequest(lsp.ReferencesRequest.type, params)
   }
 
@@ -363,7 +365,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {TextDocumentPositionParams} of a symbol for which all highlights are desired.
    * @returns A {Promise} containing an {Array} of {DocumentHighlight}s that can be used to highlight this symbol.
    */
-  public documentHighlight(params: lsp.TextDocumentPositionParams) {
+  public documentHighlight(params: lsp.TextDocumentPositionParams): Promise<lsp.DocumentHighlight[] | null> {
     return this._sendRequest(lsp.DocumentHighlightRequest.type, params)
   }
 
@@ -374,7 +376,10 @@ export class LanguageClientConnection extends EventEmitter {
    * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
    * @returns A {Promise} containing an {Array} of {SymbolInformation}s that can be used to navigate this document.
    */
-  public documentSymbol(params: lsp.DocumentSymbolParams, _cancellationToken?: jsonrpc.CancellationToken) {
+  public documentSymbol(
+    params: lsp.DocumentSymbolParams,
+    _cancellationToken?: jsonrpc.CancellationToken
+  ): Promise<lsp.SymbolInformation[] | lsp.DocumentSymbol[] | null> {
     return this._sendRequest(lsp.DocumentSymbolRequest.type, params)
   }
 
@@ -385,7 +390,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @returns A {Promise} containing an {Array} of {SymbolInformation}s that identify where the query string occurs
    *   within the workspace.
    */
-  public workspaceSymbol(params: lsp.WorkspaceSymbolParams) {
+  public workspaceSymbol(params: lsp.WorkspaceSymbolParams): Promise<lsp.SymbolInformation[] | null> {
     return this._sendRequest(lsp.WorkspaceSymbolRequest.type, params)
   }
 
@@ -395,7 +400,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {CodeActionParams} identifying the document, range and context for the code action.
    * @returns A {Promise} containing an {Array} of {Commands}s that can be performed against the given documents range.
    */
-  public codeAction(params: lsp.CodeActionParams) {
+  public codeAction(params: lsp.CodeActionParams): Promise<Array<lsp.Command | lsp.CodeAction> | null> {
     return this._sendRequest(lsp.CodeActionRequest.type, params)
   }
 
@@ -406,7 +411,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @returns A {Promise} containing an {Array} of {CodeLens}s that associate commands and data with specified ranges
    *   within the document.
    */
-  public codeLens(params: lsp.CodeLensParams) {
+  public codeLens(params: lsp.CodeLensParams): Promise<lsp.CodeLens[] | null> {
     return this._sendRequest(lsp.CodeLensRequest.type, params)
   }
 
@@ -416,7 +421,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {CodeLens} identifying the code lens to be resolved with full detail.
    * @returns A {Promise} containing the {CodeLens} fully resolved.
    */
-  public codeLensResolve(params: lsp.CodeLens) {
+  public codeLensResolve(params: lsp.CodeLens): Promise<lsp.CodeLens> {
     return this._sendRequest(lsp.CodeLensResolveRequest.type, params)
   }
 
@@ -426,7 +431,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {DocumentLinkParams} identifying the document for which links should be identified.
    * @returns A {Promise} containing an {Array} of {DocumentLink}s relating uri's to specific ranges within the document.
    */
-  public documentLink(params: lsp.DocumentLinkParams) {
+  public documentLink(params: lsp.DocumentLinkParams): Promise<lsp.DocumentLink[] | null> {
     return this._sendRequest(lsp.DocumentLinkRequest.type, params)
   }
 
@@ -436,7 +441,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @param params The {DocumentLink} identifying the document link to be resolved with full detail.
    * @returns A {Promise} containing the {DocumentLink} fully resolved.
    */
-  public documentLinkResolve(params: lsp.DocumentLink) {
+  public documentLinkResolve(params: lsp.DocumentLink): Promise<lsp.DocumentLink> {
     return this._sendRequest(lsp.DocumentLinkResolveRequest.type, params)
   }
 
@@ -447,7 +452,7 @@ export class LanguageClientConnection extends EventEmitter {
    *   formatting preferences.
    * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to correctly reformat it.
    */
-  public documentFormatting(params: lsp.DocumentFormattingParams) {
+  public documentFormatting(params: lsp.DocumentFormattingParams): Promise<lsp.TextEdit[] | null> {
     return this._sendRequest(lsp.DocumentFormattingRequest.type, params)
   }
 
@@ -458,7 +463,7 @@ export class LanguageClientConnection extends EventEmitter {
    *   additional formatting preferences.
    * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to correctly reformat it.
    */
-  public documentRangeFormatting(params: lsp.DocumentRangeFormattingParams) {
+  public documentRangeFormatting(params: lsp.DocumentRangeFormattingParams): Promise<lsp.TextEdit[] | null> {
     return this._sendRequest(lsp.DocumentRangeFormattingRequest.type, params)
   }
 
@@ -469,7 +474,7 @@ export class LanguageClientConnection extends EventEmitter {
    *   typed and at what position as well as additional formatting preferences.
    * @returns A {Promise} containing an {Array} of {TextEdit}s to be applied to the document to correctly reformat it.
    */
-  public documentOnTypeFormatting(params: lsp.DocumentOnTypeFormattingParams) {
+  public documentOnTypeFormatting(params: lsp.DocumentOnTypeFormattingParams): Promise<lsp.TextEdit[] | null> {
     return this._sendRequest(lsp.DocumentOnTypeFormattingRequest.type, params)
   }
 
@@ -481,7 +486,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @returns A {Promise} containing an {WorkspaceEdit} that contains a list of {TextEdit}s either on the changes
    *   property (keyed by uri) or the documentChanges property containing an {Array} of {TextDocumentEdit}s (preferred).
    */
-  public rename(params: lsp.RenameParams) {
+  public rename(params: lsp.RenameParams): Promise<lsp.WorkspaceEdit | null> {
     return this._sendRequest(lsp.RenameRequest.type, params)
   }
 
@@ -492,7 +497,7 @@ export class LanguageClientConnection extends EventEmitter {
    *   (these commands are usually from {CodeLens} or {CodeAction} responses).
    * @returns A {Promise} containing anything.
    */
-  public executeCommand(params: lsp.ExecuteCommandParams) {
+  public executeCommand(params: lsp.ExecuteCommandParams): Promise<any> {
     return this._sendRequest(lsp.ExecuteCommandRequest.type, params)
   }
 
