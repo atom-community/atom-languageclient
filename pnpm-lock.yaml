@@ -10,7 +10,7 @@ specifiers:
   '@types/sinon': ^10.0.0
   atom-ide-base: ^2.6.0
   chai: ^4.3.4
-  eslint-config-atomic: ^1.14.1
+  eslint-config-atomic: ^1.14.2
   eslint-plugin-chai-friendly: ^0.6.0
   mocha: ^8.3.2
   mocha-appveyor-reporter: ^0.4.2
@@ -41,7 +41,7 @@ devDependencies:
   '@types/node': 14.14.41
   '@types/sinon': 10.0.0
   chai: 4.3.4
-  eslint-config-atomic: 1.14.1
+  eslint-config-atomic: 1.14.2
   eslint-plugin-chai-friendly: 0.6.0
   mocha: 8.3.2
   mocha-appveyor-reporter: 0.4.2
@@ -103,6 +103,20 @@ packages:
       source-map: 0.5.7
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@babel/eslint-parser/7.13.14_@babel+core@7.13.1+eslint@7.20.0:
+    resolution: {integrity: sha512-I0HweR36D73Ibn/FfrRDMKlMqJHFwidIUgYdMpH+aXYuQC+waq59YaJ6t9e9N36axJ82v1jR041wwqDrDXEwRA==}
+    engines: {node: ^10.13.0 || ^12.13.0 || >=14.0.0}
+    peerDependencies:
+      '@babel/core': '>=7.11.0'
+      eslint: '>=7.5.0'
+    dependencies:
+      '@babel/core': 7.13.1
+      eslint: 7.20.0
+      eslint-scope: 5.1.1
+      eslint-visitor-keys: 1.3.0
+      semver: 6.3.0
     dev: true
 
   /@babel/generator/7.13.0:
@@ -770,24 +784,6 @@ packages:
       chalk: 1.1.3
       esutils: 2.0.3
       js-tokens: 3.0.2
-    dev: true
-
-  /babel-eslint/10.1.0_eslint@7.20.0:
-    resolution: {integrity: sha512-ifWaTHQ0ce+448CYop8AdrQiBsGrnC+bMgfyKFdi6EsPLTAWG+QfyDeM6OH+FmWnKvEq5NnBMLvlBUPKQZoDSg==}
-    engines: {node: '>=6'}
-    deprecated: babel-eslint is now @babel/eslint-parser. This package will no longer receive updates.
-    peerDependencies:
-      eslint: '>= 4.12.1'
-    dependencies:
-      '@babel/code-frame': 7.12.13
-      '@babel/parser': 7.13.0
-      '@babel/traverse': 7.13.0
-      '@babel/types': 7.13.0
-      eslint: 7.20.0
-      eslint-visitor-keys: 1.3.0
-      resolve: 1.20.0
-    transitivePeerDependencies:
-      - supports-color
     dev: true
 
   /babel-eslint/7.2.3:
@@ -1467,13 +1463,13 @@ packages:
       object.entries: 1.1.3
     dev: true
 
-  /eslint-config-atomic/1.14.1:
-    resolution: {integrity: sha512-ZE2e6nMwNR7KMY3dePFT35IkNOQzFlbkMilNIY4M9I4KYxKv2O9kRZqJ5LAXtm6jQ7vjpRy/BLOg1z7W7wCAGw==}
+  /eslint-config-atomic/1.14.2:
+    resolution: {integrity: sha512-6P4KhGc2qWd+WHJ+UnhB5DZFapUxMStOpxJ6Hmhyo8VoUNXAKXdZ5NQW6k8lYBeMwtY/xirc2CGMgX8LzTGmvA==}
     dependencies:
       '@babel/core': 7.13.1
+      '@babel/eslint-parser': 7.13.14_@babel+core@7.13.1+eslint@7.20.0
       '@typescript-eslint/eslint-plugin': 4.22.0_d6a8db96dd36cd64286b4f2776180d94
       '@typescript-eslint/parser': 4.22.0_eslint@7.20.0+typescript@4.2.4
-      babel-eslint: 10.1.0_eslint@7.20.0
       coffeescript: 1.12.7
       eslint: 7.20.0
       eslint-config-prettier: 8.2.0_eslint@7.20.0
