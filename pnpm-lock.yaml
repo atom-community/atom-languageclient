@@ -14,7 +14,7 @@ specifiers:
   eslint-plugin-chai-friendly: ^0.6.0
   mocha: ^8.3.2
   mocha-appveyor-reporter: ^0.4.2
-  prettier-config-atomic: ^2.0.2
+  prettier-config-atomic: ^2.0.3
   rimraf: ^3.0.2
   shx: ^0.3.3
   sinon: ^10.0.0
@@ -45,7 +45,7 @@ devDependencies:
   eslint-plugin-chai-friendly: 0.6.0
   mocha: 8.3.2
   mocha-appveyor-reporter: 0.4.2
-  prettier-config-atomic: 2.0.2
+  prettier-config-atomic: 2.0.3
   shx: 0.3.3
   sinon: 10.0.0
   typescript: 4.2.4
@@ -3008,17 +3008,17 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-config-atomic/2.0.2:
-    resolution: {integrity: sha512-wnDfuHUKZrtsR4iOnDax2Ty6VgKueqIs9Xbl0s8ci1Aap0RI/UH/2hNWnUjn2EVeMsufpAO9ezq8LdZtgAnmEQ==}
+  /prettier-config-atomic/2.0.3:
+    resolution: {integrity: sha512-t4ILoW9A6JrzPA64XtXcLxZ1DrsEh/7RuKblGrqy7aEBXbHOjBLfaIeOcQa1dRgZc9gphwB65FZxhcN9HfXBRw==}
     dependencies:
       prettier: 2.2.1
-      prettier-plugin-jsdoc: 0.3.19_prettier@2.2.1
+      prettier-plugin-jsdoc: 0.3.21_prettier@2.2.1
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /prettier-plugin-jsdoc/0.3.19_prettier@2.2.1:
-    resolution: {integrity: sha512-pkzQSmQX9tXGScRGjXC1eV9YZ+Ze0nsZwRaFQ6T0pLzeopOJ+fkEapNiA5PK+3DLezZMzwPMAb2dB5fCqHItbQ==}
+  /prettier-plugin-jsdoc/0.3.21_prettier@2.2.1:
+    resolution: {integrity: sha512-QiYtjym/lcpbwgGERfvwd7z73GW2NNEpfz0EwiqnPtYM3xrxbskuD7oquLKrRmEuN0DhiWomXFwIBquE26Rjrw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       prettier: '>=2.1.2'
