@@ -39,7 +39,7 @@ export default class CodeActionAdapter {
     editor: TextEditor,
     range: Range,
     diagnostics: atomIde.Diagnostic[]
-  ): Promise<atomIde.CodeAction[] | null> {
+  ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return []
     }
@@ -48,7 +48,7 @@ export default class CodeActionAdapter {
     const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics)
     const actions = await connection.codeAction(params)
     if (!actions) {
-      return null
+      return []
     }
     return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection))
   }
