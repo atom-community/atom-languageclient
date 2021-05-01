@@ -75,8 +75,8 @@ describe("CodeActionAdapter", () => {
         },
       ])
 
-      expect((actions as any).length).to.equal(1)
-      const codeAction = (actions as any)[0]
+      expect(actions.length).to.equal(1)
+      const codeAction = actions[0]
       expect(await codeAction.getTitle()).to.equal("Test Command")
       await codeAction.apply()
       expect((languageClient as any).executeCommand.called).to.be.true
