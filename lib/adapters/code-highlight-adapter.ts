@@ -27,7 +27,7 @@ export default class CodeHighlightAdapter {
   ): Promise<Range[]> {
     assert(serverCapabilities.documentHighlightProvider, "Must have the documentHighlight capability")
     const highlights = await connection.documentHighlight(Convert.editorToTextDocumentPositionParams(editor, position))
-    if (!highlights) {
+    if (highlights === null) {
       return []
     }
     return highlights.map((highlight) => {

@@ -38,7 +38,7 @@ export default class OutlineViewAdapter {
       connection.documentSymbol({ textDocument: Convert.editorToTextDocumentIdentifier(editor) }, cancellationToken)
     )
 
-    if (!results || results.length === 0) {
+    if (results === null || results.length === 0) {
       return {
         outlineTrees: [],
       }
