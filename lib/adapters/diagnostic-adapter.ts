@@ -4,19 +4,20 @@ import * as ls from "../languageclient"
 import Convert from "../convert"
 import LinterPushV2Adapter from "./linter-push-v2-adapter"
 
-/** @deprecated use Linter V2 service */
+/** @deprecated Use Linter V2 service */
 export type DiagnosticCode = number | string
 
-/** @deprecated use Linter V2 service */
+/** @deprecated Use Linter V2 service */
 export default class IdeDiagnosticAdapter extends LinterPushV2Adapter {
   private _diagnosticCodes: Map<string, Map<string, DiagnosticCode | null>> = new Map()
 
   /**
-   * Public: Capture the diagnostics sent from a langguage server, convert them to the
-   * Linter V2 format and forward them on to any attached {V2IndieDelegate}s.
-   * @deprecated use Linter V2 service
-   * @param params The {PublishDiagnosticsParams} received from the language server that should
-   *   be captured and forwarded on to any attached {V2IndieDelegate}s.
+   * Public: Capture the diagnostics sent from a langguage server, convert them to the Linter V2 format and forward them
+   * on to any attached {V2IndieDelegate}s.
+   *
+   * @deprecated Use Linter V2 service
+   * @param params The {PublishDiagnosticsParams} received from the language server that should be captured and
+   *   forwarded on to any attached {V2IndieDelegate}s.
    */
   public captureDiagnostics(params: ls.PublishDiagnosticsParams): void {
     const path = Convert.uriToPath(params.uri)
@@ -31,11 +32,13 @@ export default class IdeDiagnosticAdapter extends LinterPushV2Adapter {
     this._indies.forEach((i) => i.setMessages(path, messages))
   }
 
-  /** Public: get diagnostics for the given linter messages
-   * @deprecated use Linter V2 service
-   * @param linterMessages an array of linter {V2Message}
+  /**
+   * Public: get diagnostics for the given linter messages
+   *
+   * @deprecated Use Linter V2 service
+   * @param linterMessages An array of linter {V2Message}
    * @param editor
-   * @returns an array of LS {Diagnostic[]}
+   * @returns An array of LS {Diagnostic[]}
    */
   public getLSDiagnosticsForIdeDiagnostics(
     diagnostics: atomIde.Diagnostic[],
@@ -46,7 +49,8 @@ export default class IdeDiagnosticAdapter extends LinterPushV2Adapter {
 
   /**
    * Public: Get the {Diagnostic} that is associated with the given {atomIde.Diagnostic}.
-   * @deprecated use Linter V2 service
+   *
+   * @deprecated Use Linter V2 service
    * @param diagnostic The {atomIde.Diagnostic} object to fetch the {Diagnostic} for.
    * @param editor
    * @returns The associated {Diagnostic}.
@@ -66,10 +70,9 @@ export default class IdeDiagnosticAdapter extends LinterPushV2Adapter {
   }
 
   /**
-   * Private: Get the recorded diagnostic code for a range/message.
-   * Diagnostic codes are tricky because there's no suitable place in the Linter API for them.
-   * For now, we'll record the original code for each range/message combination and retrieve it
-   * when needed (e.g. for passing back into code actions)
+   * Private: Get the recorded diagnostic code for a range/message. Diagnostic codes are tricky because there's no
+   * suitable place in the Linter API for them. For now, we'll record the original code for each range/message
+   * combination and retrieve it when needed (e.g. for passing back into code actions)
    */
   private getDiagnosticCode(editor: atom.TextEditor, range: atom.Range, text: string): DiagnosticCode | null {
     const path = editor.getPath()
@@ -83,7 +86,7 @@ export default class IdeDiagnosticAdapter extends LinterPushV2Adapter {
   }
 }
 
-/** @deprecated use Linter V2 service */
+/** @deprecated Use Linter V2 service */
 export function atomIdeDiagnosticToLSDiagnostic(diagnostic: atomIde.Diagnostic): ls.Diagnostic {
   // TODO: support diagnostic codes and codeDescriptions
   // TODO!: support data
@@ -95,7 +98,7 @@ export function atomIdeDiagnosticToLSDiagnostic(diagnostic: atomIde.Diagnostic):
   }
 }
 
-/** @deprecated use Linter V2 service */
+/** @deprecated Use Linter V2 service */
 export function diagnosticTypeToLSSeverity(type: atomIde.DiagnosticType): ls.DiagnosticSeverity {
   switch (type) {
     case "Error":

@@ -419,8 +419,8 @@ export class LanguageClientConnection extends EventEmitter {
    * Public: Send a `textDocument/codeAction` request.
    *
    * @param params The {CodeActionParams} identifying the document, range and context for the code action.
-   * @returns A {Promise} containing an {Array} of {Command}s or {CodeAction}s that can be performed
-   *   against the given documents range.
+   * @returns A {Promise} containing an {Array} of {Command}s or {CodeAction}s that can be performed against the given
+   *   documents range.
    */
   public codeAction(params: lsp.CodeActionParams): Promise<Array<lsp.Command | lsp.CodeAction> | null> {
     return this._sendRequest(lsp.CodeActionRequest.type, params)
@@ -597,9 +597,7 @@ export class LanguageClientConnection extends EventEmitter {
   }
 }
 
-/**
- * Contains additional information about the context in which a completion request is triggered.
- */
+/** Contains additional information about the context in which a completion request is triggered. */
 export interface CompletionContext {
   /** How the completion was triggered. */
   triggerKind: lsp.CompletionTriggerKind

@@ -180,13 +180,13 @@ export default class Convert {
     }
   }
 
-  /** @deprecated use Linter V2 service */
+  /** @deprecated Use Linter V2 service */
   public static atomIdeDiagnosticToLSDiagnostic(diagnostic: atomIde.Diagnostic): ls.Diagnostic {
     // eslint-disable-next-line import/no-deprecated
     return atomIdeDiagnosticToLSDiagnostic(diagnostic)
   }
 
-  /** @deprecated use Linter V2 service */
+  /** @deprecated Use Linter V2 service */
   public static diagnosticTypeToLSSeverity(type: atomIde.DiagnosticType): ls.DiagnosticSeverity {
     // eslint-disable-next-line import/no-deprecated
     return diagnosticTypeToLSSeverity(type)

@@ -9,8 +9,8 @@ import {
 } from "../languageclient"
 
 /**
- * Public: Listen to diagnostics messages from the language server and publish them
- * to the user by way of the Linter Push (Indie) v2 API provided by the Base Linter package.
+ * Public: Listen to diagnostics messages from the language server and publish them to the user by way of the Linter
+ * Push (Indie) v2 API provided by the Base Linter package.
  */
 export default class LinterPushV2Adapter {
   /*
@@ -18,14 +18,12 @@ export default class LinterPushV2Adapter {
    */
   protected _diagnosticMap: Map<string, linter.Message[]> = new Map()
   /**
-   * A map from file path {linter.Message["location"]["file"]} to a Map of all Message keys to Diagnostics ${Map<linter.Message["key"], Diagnostic>}
-   * It has to be stored separately because a {Message} object cannot hold all of the information
-   * that a {Diagnostic} provides, thus we store the original {Diagnostic} object.
+   * A map from file path {linter.Message["location"]["file"]} to a Map of all Message keys to Diagnostics
+   * ${Map<linter.Message["key"], Diagnostic>} It has to be stored separately because a {Message} object cannot hold all
+   * of the information that a {Diagnostic} provides, thus we store the original {Diagnostic} object.
    */
-  protected _lsDiagnosticMap: Map<
-    linter.Message["location"]["file"],
-    Map<linter.Message["key"], Diagnostic>
-  > = new Map()
+  protected _lsDiagnosticMap: Map<linter.Message["location"]["file"], Map<linter.Message["key"], Diagnostic>> =
+    new Map()
   protected _indies: Set<linter.IndieDelegate> = new Set()
 
   /**
@@ -101,9 +99,11 @@ export default class LinterPushV2Adapter {
     }
   }
 
-  /** Public: get diagnostics for the given linter messages
-   * @param linterMessages an array of linter {V2Message}
-   * @returns an array of LS {Diagnostic[]}
+  /**
+   * Public: get diagnostics for the given linter messages
+   *
+   * @param linterMessages An array of linter {V2Message}
+   * @returns An array of LS {Diagnostic[]}
    */
   public getLSDiagnosticsForMessages(linterMessages: linter.Message[]): Diagnostic[] {
     return (
@@ -125,8 +125,8 @@ export default class LinterPushV2Adapter {
   }
 
   /**
-   * Public: Convert a diagnostic severity number obtained from the language server into
-   * the textual equivalent for a Linter {V2Message}.
+   * Public: Convert a diagnostic severity number obtained from the language server into the textual equivalent for a
+   * Linter {V2Message}.
    *
    * @param severity A number representing the severity of the diagnostic.
    * @returns A string of 'error', 'warning' or 'info' depending on the severity.
@@ -146,8 +146,7 @@ export default class LinterPushV2Adapter {
 }
 
 /**
- * Public: Convert a single {Diagnostic} received from a language server into a single
- * {Message} expected by the Linter V2 API.
+ * Public: Convert a single {Diagnostic} received from a language server into a single {Message} expected by the Linter V2 API.
  *
  * @param path A string representing the path of the file the diagnostic belongs to.
  * @param diagnostics A {Diagnostic} object received from the language server.
@@ -171,8 +170,8 @@ function lsDiagnosticToV2Message(path: string, diagnostic: Diagnostic): linter.M
 }
 
 /**
- * Convert a severity level of an LSP {Diagnostic} to that of a Base Linter v2 {Message}.
- * Note: this conversion is lossy due to the v2 Message not being able to represent hints.
+ * Convert a severity level of an LSP {Diagnostic} to that of a Base Linter v2 {Message}. Note: this conversion is lossy
+ * due to the v2 Message not being able to represent hints.
  *
  * @param severity A severity level of of an LSP {Diagnostic} to be converted.
  * @returns A severity level a Base Linter v2 {Message}.
@@ -213,8 +212,7 @@ function iconForLSSeverity(severity: DiagnosticSeverity): string | undefined {
 }
 
 /**
- * Convert the related information from a diagnostic into
- * a reference point for a Linter {V2Message}.
+ * Convert the related information from a diagnostic into a reference point for a Linter {V2Message}.
  *
  * @param relatedInfo Several related information objects (only the first is used).
  * @returns A value that is suitable for using as {V2Message}.reference.
@@ -235,6 +233,7 @@ function relatedInformationToReference(
 
 /**
  * Get a unique key for a Linter v2 Message
+ *
  * @param message A {Message} object
  * @returns ${string} a unique key
  */
@@ -247,6 +246,7 @@ function getMessageKey(message: linter.Message): string {
 
 /**
  * Construct an unique key for a Linter v2 Message and store it in `Message.key`
+ *
  * @param message A {Message} object to serialize.
  * @returns ${string} a unique key
  */

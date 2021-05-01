@@ -31,8 +31,8 @@ export default class CodeActionAdapter {
    * @param serverCapabilities The {ServerCapabilities} of the language server that will be used.
    * @param editor The Atom {TextEditor} containing the diagnostics.
    * @param range The Atom {Range} to fetch code actions for.
-   * @param linterMessages An {Array<linter$Message>} to fetch code actions for.
-   *   This is typically a list of messages intersecting `range`.
+   * @param linterMessages An {Array<linter$Message>} to fetch code actions for. This is typically a list of messages
+   *   intersecting `range`.
    * @returns A {Promise} of an {Array} of {atomIde$CodeAction}s to display.
    */
   public static async getCodeActions(
