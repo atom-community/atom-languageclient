@@ -1,3 +1,18 @@
+## [1.8.3](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.2...v1.8.3) (2021-05-01)
+
+
+### Bug Fixes
+
+* "object is possibly 'null'.ts(2531)" in codeaction test ([1f61f73](https://github.com/atom-ide-community/atom-languageclient/commit/1f61f7316199a039229d731f7bb1b2575e5b3bb7))
+* add null check ([e20bba5](https://github.com/atom-ide-community/atom-languageclient/commit/e20bba5a4fe06b4f1a24f2063b1a60fcd5da1514))
+* early null check instead of empty array at codeActio provider ([e7c26b4](https://github.com/atom-ide-community/atom-languageclient/commit/e7c26b4f22dbf58ae17788b2a66fa04abeafc466))
+* fixed test because the argument of _sendRequest function was changed ([f2f09f0](https://github.com/atom-ide-community/atom-languageclient/commit/f2f09f03a137c5e267af3334d51ca320570ce10e))
+* format ([c9876c6](https://github.com/atom-ide-community/atom-languageclient/commit/c9876c63dc30e93739dedd7ce09e7361b9de56f7))
+* lint(Missing return type on function) ([d665159](https://github.com/atom-ide-community/atom-languageclient/commit/d6651593ff1072629d325866408c894cc70c1402))
+* make highlight null-safe ([a80e4d9](https://github.com/atom-ide-community/atom-languageclient/commit/a80e4d98b5f317f7fdf861cf75f2034d9138af95))
+* match type definition to specification ([85cc505](https://github.com/atom-ide-community/atom-languageclient/commit/85cc505a5c9999e4da044996aa49e436d32d017a))
+* use lsp package for type definition ([1a31014](https://github.com/atom-ide-community/atom-languageclient/commit/1a31014ef37c1da8bb7463e508f65465019a954b))
+
 ## [1.8.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.1...v1.8.2) (2021-04-21)
 
 
