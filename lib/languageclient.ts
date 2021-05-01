@@ -433,7 +433,7 @@ export class LanguageClientConnection extends EventEmitter {
    * @returns A resolved {CodeAction} that can be applied immediately.
    */
   public codeActionResolve(params: lsp.CodeAction): Promise<lsp.CodeAction> {
-    return this._sendRequest("codeAction/resolve", params)
+    return this._sendRequest(lsp.CodeActionResolveRequest.type, params)
   }
 
   /**
