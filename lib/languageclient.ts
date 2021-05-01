@@ -539,7 +539,7 @@ export class LanguageClientConnection extends EventEmitter {
     this._log.debug(`rpc.sendRequest ${method} sending`, args)
     try {
       const start = performance.now()
-      let result
+      let result: R
       if (cancellationToken) {
         result = await this._rpc.sendRequest(method, args, cancellationToken)
       } else {
@@ -551,7 +551,7 @@ export class LanguageClientConnection extends EventEmitter {
 
       const took = performance.now() - start
       this._log.debug(`rpc.sendRequest ${method} received (${Math.floor(took)}ms)`, result)
-      return result as R
+      return result
     } catch (e) {
       const responseError = e as jsonrpc.ResponseError<any>
       if (cancellationToken && responseError.code === lsp.LSPErrorCodes.RequestCancelled) {
