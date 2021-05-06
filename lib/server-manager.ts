@@ -6,7 +6,7 @@ import { Logger } from "./logger"
 import { CompositeDisposable, FilesystemChangeEvent, TextEditor } from "atom"
 import { ReportBusyWhile } from "./utils"
 
-type MinimalLanguageServerProcess = Pick<ChildProcess, "stdin" | "stdout" | "stderr" | "pid" | "kill" | "on">
+export type MinimalLanguageServerProcess = Pick<ChildProcess, "stdin" | "stdout" | "stderr" | "pid" | "kill" | "on">
 
 /**
  * Public: Defines a language server process which is either a ChildProcess, or it is a minimal object that resembles a
@@ -253,7 +253,7 @@ export class ServerManager {
   }
 
   public updateNormalizedProjectPaths(): void {
-    this._normalizedProjectPaths = atom.project.getDirectories().map((d) => this.normalizePath(d.getPath()))
+    this._normalizedProjectPaths = atom.project.getDirectories().map((d) => normalizePath(d.getPath()))
   }
 
   public getProjectPaths(): string[] {
@@ -277,12 +277,11 @@ export class ServerManager {
     }
   }
 
-  public normalizePath(projectPath: string): string {
-    return !projectPath.endsWith(path.sep) ? path.join(projectPath, path.sep) : projectPath
-  }
+  /** @deprecated Use the exported `normalizePath` function */
+  public normalizePath = normalizePath
 
   public async projectPathsChanged(projectPaths: string[]): Promise<void> {
-    const pathsAll = projectPaths.map(this.normalizePath)
+    const pathsAll = projectPaths.map(normalizePath)
 
     const previousPaths = this.getProjectPaths()
     const pathsRemoved = previousPaths.filter((projectPath) => !pathsAll.includes(projectPath))
@@ -337,4 +336,8 @@ export function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceF
     uri: Convert.pathToUri(projectPath),
     name: path.basename(projectPath),
   }
+}
+
+export function normalizePath(projectPath: string): string {
+  return !projectPath.endsWith(path.sep) ? path.join(projectPath, path.sep) : projectPath
 }
