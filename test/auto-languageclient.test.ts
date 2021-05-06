@@ -88,6 +88,16 @@ describe("AutoLanguageClient", () => {
               removed: [],
             },
           })
+
+          atom.project.removePath(projectPath2)
+          expect(stub.calledTwice).to.be.true
+
+          expect(stub.secondCall.args[0]).to.deep.equal({
+            event: {
+              added: [],
+              removed: [workspaceFolder2],
+            },
+          })
         })
       })
     })
