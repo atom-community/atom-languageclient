@@ -253,7 +253,7 @@ export class ServerManager {
   }
 
   public updateNormalizedProjectPaths(): void {
-    this._normalizedProjectPaths = atom.project.getDirectories().map((d) => normalizePath(d.getPath()))
+    this._normalizedProjectPaths = atom.project.getPaths().map(normalizePath)
   }
 
   public getNormalizedProjectPaths(): string[] {
