@@ -272,12 +272,7 @@ export class ServerManager {
       // only a single file is open
       return Promise.resolve(null)
     } else {
-      return Promise.resolve(
-        projectPaths.map((projectPath) => ({
-          uri: Convert.pathToUri(projectPath),
-          name: path.basename(projectPath),
-        }))
-      )
+      return Promise.resolve(projectPaths.map(projectPathToWorkspaceFolder))
     }
   }
 
@@ -315,5 +310,12 @@ export class ServerManager {
         activeServer.connection.didChangeWatchedFiles({ changes })
       }
     }
+  }
+}
+
+function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceFolder {
+  return {
+    uri: Convert.pathToUri(projectPath),
+    name: path.basename(projectPath),
   }
 }
