@@ -573,33 +573,11 @@ export default class AutoLanguageClient {
 
     ShowDocumentAdapter.attach(server.connection)
 
-    server.connection.onWorkspaceFolders(() => this.getWorkspaceFolders())
+    server.connection.onWorkspaceFolders(() => this._serverManager.getWorkspaceFolders())
   }
 
   public shouldSyncForEditor(editor: TextEditor, projectPath: string): boolean {
     return this.isFileInProject(editor, projectPath) && this.shouldStartForEditor(editor)
-  }
-
-  /**
-   * Public: fetch the current open list of workspace folders
-   *
-   * @param getProjectPaths A method that returns the open atom projects. This is passed from {ServerManager.getProjectPaths}
-   * @returns A {Promise} containing an {Array} of {lsp.WorkspaceFolder[]} or {null} if only a single file is open in the tool.
-   */
-  public getWorkspaceFolders(): Promise<ls.WorkspaceFolder[] | null> {
-    // NOTE the method must return a Promise based on the specification
-    const projectPaths = this._serverManager.getProjectPaths()
-    if (projectPaths.length === 0) {
-      // only a single file is open
-      return Promise.resolve(null)
-    } else {
-      return Promise.resolve(
-        projectPaths.map((projectPath) => ({
-          uri: Convert.pathToUri(projectPath),
-          name: basename(projectPath),
-        }))
-      )
-    }
   }
 
   protected isFileInProject(editor: TextEditor, projectPath: string): boolean {

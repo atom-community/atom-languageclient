@@ -259,6 +259,28 @@ export class ServerManager {
     return this._normalizedProjectPaths
   }
 
+  /**
+   * Public: fetch the current open list of workspace folders
+   *
+   * @param getProjectPaths A method that returns the open atom projects. This is passed from {ServerManager.getProjectPaths}
+   * @returns A {Promise} containing an {Array} of {lsp.WorkspaceFolder[]} or {null} if only a single file is open in the tool.
+   */
+  public getWorkspaceFolders(): Promise<ls.WorkspaceFolder[] | null> {
+    // NOTE the method must return a Promise based on the specification
+    const projectPaths = this.getProjectPaths()
+    if (projectPaths.length === 0) {
+      // only a single file is open
+      return Promise.resolve(null)
+    } else {
+      return Promise.resolve(
+        projectPaths.map((projectPath) => ({
+          uri: Convert.pathToUri(projectPath),
+          name: path.basename(projectPath),
+        }))
+      )
+    }
+  }
+
   public normalizePath(projectPath: string): string {
     return !projectPath.endsWith(path.sep) ? path.join(projectPath, path.sep) : projectPath
   }
