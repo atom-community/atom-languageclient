@@ -39,7 +39,7 @@ export function createFakeEditor(path?: string): TextEditor {
 }
 
 export function createFakeLanguageServerProcess(): LanguageServerProcess {
-  spawn("lsp").exit(0).stdout("hello form lsp")
+  spawn("lsp").exit(0).stdout("hello from lsp")
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   return require("child_process").spawn("lsp") as ChildProcess
 }

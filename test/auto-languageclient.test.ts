@@ -1,8 +1,9 @@
 import AutoLanguageClient from "../lib/auto-languageclient"
-import { projectPathToWorkspaceFolder, normalizePath } from "../lib/server-manager"
+import { projectPathToWorkspaceFolder, normalizePath, ServerManager } from "../lib/server-manager"
 import { expect } from "chai"
 import { FakeAutoLanguageClient } from "./helpers"
 import { dirname } from "path"
+import * as sinon from "sinon"
 
 function mockEditor(uri: string, scopeName: string): any {
   return {
@@ -15,14 +16,27 @@ function mockEditor(uri: string, scopeName: string): any {
 
 describe("AutoLanguageClient", () => {
   describe("ServerManager", () => {
-    const client = new FakeAutoLanguageClient()
-
-    client.activate()
-
-    /* eslint-disable-next-line dot-notation */
-    const serverManager = client["_serverManager"]
-
     describe("WorkspaceFolders", () => {
+      let client: FakeAutoLanguageClient
+      let serverManager: ServerManager
+
+      beforeEach(() => {
+        client = new FakeAutoLanguageClient()
+        client.activate()
+
+        /* eslint-disable-next-line dot-notation */
+        serverManager = client["_serverManager"]
+      })
+
+      afterEach(async () => {
+        serverManager.stopListening()
+        await serverManager.stopAllServers()
+        serverManager.terminate()
+        for (const project of atom.project.getPaths()) {
+          atom.project.removePath(project)
+        }
+      })
+
       describe("getWorkspaceFolders", () => {
         it("returns null when no server is running", async () => {
           const workspaceFolders = await serverManager.getWorkspaceFolders()
@@ -50,6 +64,30 @@ describe("AutoLanguageClient", () => {
           expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder])
           await serverManager.startServer(projectPath)
           expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder, workspaceFolder2])
+        })
+      })
+      describe("didChangeWorkspaceFolders", () => {
+        it("gives a notification if the projects change", async () => {
+          const projectPath = __dirname
+          const projectPath2 = dirname(__dirname)
+
+          const workspaceFolder2 = projectPathToWorkspaceFolder(normalizePath(projectPath2))
+
+          atom.project.addPath(projectPath)
+          const server = await serverManager.startServer(projectPath)
+
+          const spy = sinon.spy()
+          server.connection.didChangeWorkspaceFolders = spy
+
+          atom.project.addPath(projectPath2)
+
+          expect(spy.calledOnce).to.be.true
+          expect(spy.firstCall.args[0]).to.deep.equal({
+            event: {
+              added: [workspaceFolder2],
+              removed: [],
+            },
+          })
         })
       })
     })
