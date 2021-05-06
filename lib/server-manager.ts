@@ -281,14 +281,17 @@ export class ServerManager {
   }
 
   public async projectPathsChanged(projectPaths: string[]): Promise<void> {
-    const pathsSet = projectPaths.map(this.normalizePath)
-    const pathsRemoved = this.getProjectPaths().filter((projectPath) => !pathsSet.includes(projectPath))
+    const pathsAll = projectPaths.map(this.normalizePath)
+
+    const previousPaths = this.getProjectPaths()
+    const pathsRemoved = previousPaths.filter((projectPath) => !pathsAll.includes(projectPath))
+    const pathsAdded = pathsAll.filter((projectPath) => !previousPaths.includes(projectPath))
 
     // send didChangeWorkspaceFolders
     for (const activeServer of this._activeServers) {
       activeServer.connection.didChangeWorkspaceFolders({
         event: {
-          added: pathsSet.map(projectPathToWorkspaceFolder),
+          added: pathsAdded.map(projectPathToWorkspaceFolder),
           removed: pathsRemoved.map(projectPathToWorkspaceFolder),
         },
       })
