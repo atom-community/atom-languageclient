@@ -277,9 +277,6 @@ export class ServerManager {
     }
   }
 
-  /** @deprecated Use the exported `normalizePath` function */
-  public normalizePath = normalizePath
-
   public async projectPathsChanged(projectPaths: string[]): Promise<void> {
     const pathsAll = projectPaths.map(normalizePath)
 
@@ -333,6 +330,9 @@ export class ServerManager {
       }
     }
   }
+
+  /** @deprecated Use the exported `normalizePath` function */
+  public normalizePath = normalizePath
 }
 
 export function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceFolder {
