@@ -1,6 +1,9 @@
 import * as sinon from "sinon"
 import * as rpc from "vscode-jsonrpc"
 import { TextEditor } from "atom"
+import AutoLanguageClient from "../lib/auto-languageclient"
+import { LanguageClientConnection } from "../lib/languageclient"
+import { LanguageServerProcess } from "../lib/server-manager"
 import { spawn } from "spawk"
 import { ChildProcess } from "child_process"
 
@@ -41,3 +44,23 @@ export function createFakeLanguageServerProcess(): LanguageServerProcess {
   return require("child_process").spawn("lsp") as ChildProcess
 }
 
+/* eslint-disable class-methods-use-this */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+
+export class FakeAutoLanguageClient extends AutoLanguageClient {
+  public getLanguageName() {
+    return "JavaScript"
+  }
+  public getServerName() {
+    return "JavaScriptTest"
+  }
+  public getGrammarScopes() {
+    return ["source.javascript"]
+  }
+  public startServerProcess() {
+    return createFakeLanguageServerProcess()
+  }
+  public preInitialization(connection: LanguageClientConnection) {
+    connection.initialize = sinon.stub().returns(Promise.resolve({ capabilities: {} }))
+  }
+}
