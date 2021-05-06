@@ -1,6 +1,8 @@
 import * as sinon from "sinon"
 import * as rpc from "vscode-jsonrpc"
 import { TextEditor } from "atom"
+import { spawn } from "spawk"
+import { ChildProcess } from "child_process"
 
 export function createSpyConnection(): rpc.MessageConnection {
   return {
@@ -32,3 +34,10 @@ export function createFakeEditor(path?: string): TextEditor {
   editor.getBuffer().setPath(path || "/a/b/c/d.js")
   return editor
 }
+
+export function createFakeLanguageServerProcess(): LanguageServerProcess {
+  spawn("lsp").exit(0).stdout("hello form lsp")
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return require("child_process").spawn("lsp") as ChildProcess
+}
+
