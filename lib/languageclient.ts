@@ -282,6 +282,17 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /**
+   * Public: Register a callback for the `workspace.workspaceFolders` request. This request is sent from the server to
+   * Atom to fetch the current open list of workspace folders
+   *
+   * @param A Callback which returns a {Promise} containing an {Array} of {lsp.WorkspaceFolder[]} or {null} if only a
+   *   single file is open in the tool.
+   */
+  public onWorkspaceFolders(callback: () => Promise<lsp.WorkspaceFolder[] | null>): void {
+    return this._onRequest(lsp.WorkspaceFoldersRequest.type, callback)
+  }
+
+  /**
    * Public: Register a callback for the `textDocument/publishDiagnostics` message.
    *
    * @param callback The function to be called when the `textDocument/publishDiagnostics` message is received a

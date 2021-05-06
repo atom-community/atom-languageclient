@@ -255,6 +255,10 @@ export class ServerManager {
     this._normalizedProjectPaths = atom.project.getDirectories().map((d) => this.normalizePath(d.getPath()))
   }
 
+  public getProjectPaths(): string[] {
+    return this._normalizedProjectPaths
+  }
+
   public normalizePath(projectPath: string): string {
     return !projectPath.endsWith(path.sep) ? path.join(projectPath, path.sep) : projectPath
   }
