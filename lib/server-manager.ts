@@ -328,7 +328,7 @@ export class ServerManager {
   }
 }
 
-function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceFolder {
+export function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceFolder {
   return {
     uri: Convert.pathToUri(projectPath),
     name: path.basename(projectPath),
