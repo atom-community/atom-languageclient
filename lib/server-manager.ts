@@ -60,6 +60,7 @@ export class ServerManager {
         this._disposable.add(atom.project.onDidChangeFiles(this.projectFilesChanged.bind(this)))
       }
     }
+    this._isStarted = true
   }
 
   public stopListening(): void {
