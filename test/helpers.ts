@@ -5,7 +5,6 @@ import AutoLanguageClient from "../lib/auto-languageclient"
 import { LanguageClientConnection } from "../lib/languageclient"
 import { LanguageServerProcess } from "../lib/server-manager"
 import { spawn } from "spawk"
-import { ChildProcess } from "child_process"
 
 export function createSpyConnection(): rpc.MessageConnection {
   return {
@@ -41,7 +40,7 @@ export function createFakeEditor(path?: string): TextEditor {
 export function createFakeLanguageServerProcess(): LanguageServerProcess {
   spawn("lsp").exit(0).stdout("hello from lsp")
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require("child_process").spawn("lsp") as ChildProcess
+  return require("child_process").spawn("lsp")
 }
 
 /* eslint-disable class-methods-use-this */
