@@ -112,8 +112,8 @@ export class ServerManager {
     }
   }
 
-  public getActiveServers(): ActiveServer[] {
-    return this._activeServers.slice()
+  public getActiveServers(): Readonly<ActiveServer[]> {
+    return this._activeServers
   }
 
   public async getServer(
@@ -256,7 +256,7 @@ export class ServerManager {
     this._normalizedProjectPaths = atom.project.getPaths().map(normalizePath)
   }
 
-  public getNormalizedProjectPaths(): string[] {
+  public getNormalizedProjectPaths(): Readonly<string[]> {
     return this._normalizedProjectPaths
   }
 
