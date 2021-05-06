@@ -337,10 +337,7 @@ export class ServerManager {
 
 export function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceFolder {
   const normalizedProjectPath = normalizePath(projectPath)
-  return {
-    uri: Convert.pathToUri(normalizedProjectPath),
-    name: path.basename(normalizedProjectPath),
-  }
+  return normalizedProjectPathToWorkspaceFolder(normalizedProjectPath)
 }
 
 export function normalizedProjectPathToWorkspaceFolder(normalizedProjectPath: string): ls.WorkspaceFolder {
