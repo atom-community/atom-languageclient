@@ -1,6 +1,8 @@
 import AutoLanguageClient from "../lib/auto-languageclient"
-import { projectPathToWorkspaceFolder } from "../lib/server-manager"
+import { projectPathToWorkspaceFolder, normalizePath } from "../lib/server-manager"
 import { expect } from "chai"
+import { FakeAutoLanguageClient } from "./helpers"
+import { dirname } from "path"
 
 function mockEditor(uri: string, scopeName: string): any {
   return {
@@ -11,23 +13,9 @@ function mockEditor(uri: string, scopeName: string): any {
   }
 }
 
-/* eslint-disable class-methods-use-this */
-
 describe("AutoLanguageClient", () => {
   describe("ServerManager", () => {
-    class CustomAutoLanguageClient extends AutoLanguageClient {
-      public getLanguageName() {
-        return "JavaScript"
-      }
-      public getServerName() {
-        return "JavaScriptTest"
-      }
-      public getGrammarScopes() {
-        return ["source.javascript"]
-      }
-    }
-
-    const client = new CustomAutoLanguageClient()
+    const client = new FakeAutoLanguageClient()
 
     client.activate()
 
@@ -46,16 +34,29 @@ describe("AutoLanguageClient", () => {
           expect(workspaceFolders).to.be.null
         })
         it("gives the open workspace folders", async () => {
-          atom.project.addPath(__dirname)
-          serverManager.startServer(__dirname)
-          const workspaceFolders = await serverManager.getWorkspaceFolders()
-          expect(workspaceFolders).to.equal([projectPathToWorkspaceFolder(__dirname)])
+          const projectPath = __dirname
+          const projectPath2 = dirname(__dirname)
+
+          const workspaceFolder = projectPathToWorkspaceFolder(normalizePath(projectPath))
+          const workspaceFolder2 = projectPathToWorkspaceFolder(normalizePath(projectPath2))
+
+          // gives the open workspace folder
+          atom.project.addPath(projectPath)
+          await serverManager.startServer(projectPath)
+          expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder])
+
+          // doesn't give the workspace folder if it the server is not started for that project
+          atom.project.addPath(projectPath2)
+          expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder])
+          await serverManager.startServer(projectPath)
+          expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder, workspaceFolder2])
         })
       })
     })
   })
 
   describe("shouldSyncForEditor", () => {
+    /* eslint-disable class-methods-use-this */
     class CustomAutoLanguageClient extends AutoLanguageClient {
       public getLanguageName() {
         return "Java"
@@ -64,6 +65,8 @@ describe("AutoLanguageClient", () => {
         return ["Java", "Python"]
       }
     }
+    /* eslint-enable class-methods-use-this */
+
     const client = new CustomAutoLanguageClient()
 
     it("selects documents in project and in supported language", () => {
