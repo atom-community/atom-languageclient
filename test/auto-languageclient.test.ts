@@ -35,6 +35,7 @@ describe("AutoLanguageClient", () => {
         for (const project of atom.project.getPaths()) {
           atom.project.removePath(project)
         }
+        await client.deactivate()
       })
 
       describe("getWorkspaceFolders", () => {
