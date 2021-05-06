@@ -287,13 +287,14 @@ export class ServerManager {
     const pathsAdded = pathsAll.filter((projectPath) => !previousPaths.includes(projectPath))
 
     // send didChangeWorkspaceFolders
+    const didChangeWorkspaceFoldersParams = {
+      event: {
+        added: pathsAdded.map(normalizedProjectPathToWorkspaceFolder),
+        removed: pathsRemoved.map(normalizedProjectPathToWorkspaceFolder),
+      },
+    }
     for (const activeServer of this._activeServers) {
-      activeServer.connection.didChangeWorkspaceFolders({
-        event: {
-          added: pathsAdded.map(normalizedProjectPathToWorkspaceFolder),
-          removed: pathsRemoved.map(normalizedProjectPathToWorkspaceFolder),
-        },
-      })
+      activeServer.connection.didChangeWorkspaceFolders(didChangeWorkspaceFoldersParams)
     }
 
     // stop the servers that don't have projectPath
