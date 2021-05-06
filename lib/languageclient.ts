@@ -293,6 +293,16 @@ export class LanguageClientConnection extends EventEmitter {
   }
 
   /**
+   * Public: Send a `workspace/didChangeWorkspaceFolders` notification.
+   *
+   * @param {DidChangeWorkspaceFoldersParams} params An object that contains the actual workspace folder change event
+   *   ({WorkspaceFoldersChangeEvent}) in its {event} property
+   */
+  public didChangeWorkspaceFolders(params: lsp.DidChangeWorkspaceFoldersParams): void {
+    this._sendNotification(lsp.DidChangeWorkspaceFoldersNotification.type, params)
+  }
+
+  /**
    * Public: Register a callback for the `textDocument/publishDiagnostics` message.
    *
    * @param callback The function to be called when the `textDocument/publishDiagnostics` message is received a

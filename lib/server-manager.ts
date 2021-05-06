@@ -281,9 +281,24 @@ export class ServerManager {
   }
 
   public async projectPathsChanged(projectPaths: string[]): Promise<void> {
-    const pathsSet = new Set(projectPaths.map(this.normalizePath))
-    const serversToStop = this._activeServers.filter((s) => !pathsSet.has(s.projectPath))
+    const pathsSet = projectPaths.map(this.normalizePath)
+    const pathsRemoved = this.getProjectPaths().filter((projectPath) => !pathsSet.includes(projectPath))
+
+    // send didChangeWorkspaceFolders
+    for (const activeServer of this._activeServers) {
+      activeServer.connection.didChangeWorkspaceFolders({
+        event: {
+          added: pathsSet.map(projectPathToWorkspaceFolder),
+          removed: pathsRemoved.map(projectPathToWorkspaceFolder),
+        },
+      })
+    }
+
+    // stop the servers that don't have projectPath
+    const serversToStop = this._activeServers.filter((server) => pathsRemoved.includes(server.projectPath))
     await Promise.all(serversToStop.map((s) => this.stopServer(s)))
+
+    // update this._normalizedProjectPaths
     this.updateNormalizedProjectPaths()
   }
 
