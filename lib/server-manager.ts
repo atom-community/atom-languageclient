@@ -38,6 +38,7 @@ export class ServerManager {
   private _disposable: CompositeDisposable = new CompositeDisposable()
   private _editorToServer: Map<TextEditor, ActiveServer> = new Map()
   private _normalizedProjectPaths: string[] = []
+  private _previousNormalizedProjectPaths: string[] | undefined = undefined // TODO we should not hold a separate cache
   private _isStarted = false
 
   constructor(
@@ -282,9 +283,12 @@ export class ServerManager {
   public async projectPathsChanged(projectPaths: string[]): Promise<void> {
     const pathsAll = projectPaths.map(normalizePath)
 
-    const previousPaths = this.getNormalizedProjectPaths()
+    const previousPaths = this._previousNormalizedProjectPaths ?? this.getNormalizedProjectPaths()
     const pathsRemoved = previousPaths.filter((projectPath) => !pathsAll.includes(projectPath))
     const pathsAdded = pathsAll.filter((projectPath) => !previousPaths.includes(projectPath))
+
+    // update cache
+    this._previousNormalizedProjectPaths = pathsAll
 
     // send didChangeWorkspaceFolders
     const didChangeWorkspaceFoldersParams = {
