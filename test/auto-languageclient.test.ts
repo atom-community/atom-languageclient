@@ -1,5 +1,5 @@
 import AutoLanguageClient from "../lib/auto-languageclient"
-import { projectPathToWorkspaceFolder, normalizePath, ServerManager } from "../lib/server-manager"
+import { projectPathToWorkspaceFolder, ServerManager } from "../lib/server-manager"
 import { expect } from "chai"
 import { FakeAutoLanguageClient } from "./helpers"
 import { dirname } from "path"
@@ -52,8 +52,8 @@ describe("AutoLanguageClient", () => {
           const projectPath = __dirname
           const projectPath2 = dirname(__dirname)
 
-          const workspaceFolder = projectPathToWorkspaceFolder(normalizePath(projectPath))
-          const workspaceFolder2 = projectPathToWorkspaceFolder(normalizePath(projectPath2))
+          const workspaceFolder = projectPathToWorkspaceFolder(projectPath)
+          const workspaceFolder2 = projectPathToWorkspaceFolder(projectPath2)
 
           // gives the open workspace folder
           atom.project.addPath(projectPath)
@@ -72,18 +72,17 @@ describe("AutoLanguageClient", () => {
           const projectPath = __dirname
           const projectPath2 = dirname(__dirname)
 
-          const workspaceFolder2 = projectPathToWorkspaceFolder(normalizePath(projectPath2))
+          const workspaceFolder2 = projectPathToWorkspaceFolder(projectPath2)
 
           atom.project.addPath(projectPath)
           const server = await serverManager.startServer(projectPath)
 
-          const spy = sinon.spy()
-          server.connection.didChangeWorkspaceFolders = spy
+          const stub = sinon.stub(server.connection, "didChangeWorkspaceFolders")
 
           atom.project.addPath(projectPath2)
 
-          expect(spy.calledOnce).to.be.true
-          expect(spy.firstCall.args[0]).to.deep.equal({
+          expect(stub.calledOnce).to.be.true
+          expect(stub.firstCall.args[0]).to.deep.equal({
             event: {
               added: [workspaceFolder2],
               removed: [],

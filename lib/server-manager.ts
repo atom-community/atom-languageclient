@@ -256,24 +256,23 @@ export class ServerManager {
     this._normalizedProjectPaths = atom.project.getDirectories().map((d) => normalizePath(d.getPath()))
   }
 
-  public getProjectPaths(): string[] {
+  public getNormalizedProjectPaths(): string[] {
     return this._normalizedProjectPaths
   }
 
   /**
    * Public: fetch the current open list of workspace folders
    *
-   * @param getProjectPaths A method that returns the open atom projects. This is passed from {ServerManager.getProjectPaths}
    * @returns A {Promise} containing an {Array} of {lsp.WorkspaceFolder[]} or {null} if only a single file is open in the tool.
    */
   public getWorkspaceFolders(): Promise<ls.WorkspaceFolder[] | null> {
     // NOTE the method must return a Promise based on the specification
-    const projectPaths = this.getProjectPaths()
+    const projectPaths = this.getNormalizedProjectPaths()
     if (projectPaths.length === 0) {
       // only a single file is open
       return Promise.resolve(null)
     } else {
-      return Promise.resolve(projectPaths.map(projectPathToWorkspaceFolder))
+      return Promise.resolve(projectPaths.map(normalizedProjectPathToWorkspaceFolder))
     }
   }
 
@@ -283,7 +282,7 @@ export class ServerManager {
   public async projectPathsChanged(projectPaths: string[]): Promise<void> {
     const pathsAll = projectPaths.map(normalizePath)
 
-    const previousPaths = this.getProjectPaths()
+    const previousPaths = this.getNormalizedProjectPaths()
     const pathsRemoved = previousPaths.filter((projectPath) => !pathsAll.includes(projectPath))
     const pathsAdded = pathsAll.filter((projectPath) => !previousPaths.includes(projectPath))
 
@@ -291,8 +290,8 @@ export class ServerManager {
     for (const activeServer of this._activeServers) {
       activeServer.connection.didChangeWorkspaceFolders({
         event: {
-          added: pathsAdded.map(projectPathToWorkspaceFolder),
-          removed: pathsRemoved.map(projectPathToWorkspaceFolder),
+          added: pathsAdded.map(normalizedProjectPathToWorkspaceFolder),
+          removed: pathsRemoved.map(normalizedProjectPathToWorkspaceFolder),
         },
       })
     }
@@ -332,9 +331,17 @@ export class ServerManager {
 }
 
 export function projectPathToWorkspaceFolder(projectPath: string): ls.WorkspaceFolder {
+  const normalizedProjectPath = normalizePath(projectPath)
   return {
-    uri: Convert.pathToUri(projectPath),
-    name: path.basename(projectPath),
+    uri: Convert.pathToUri(normalizedProjectPath),
+    name: path.basename(normalizedProjectPath),
+  }
+}
+
+export function normalizedProjectPathToWorkspaceFolder(normalizedProjectPath: string): ls.WorkspaceFolder {
+  return {
+    uri: Convert.pathToUri(normalizedProjectPath),
+    name: path.basename(normalizedProjectPath),
   }
 }
 
