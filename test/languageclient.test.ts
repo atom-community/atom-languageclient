@@ -1,6 +1,4 @@
 import * as ls from "../lib/languageclient"
-import * as sinon from "sinon"
-import { expect } from "chai"
 import { createSpyConnection } from "./helpers.js"
 import { NullLogger } from "../lib/logger"
 
@@ -9,15 +7,15 @@ describe("LanguageClientConnection", () => {
     const rpc = createSpyConnection()
 
     new ls.LanguageClientConnection(rpc, new NullLogger())
-    expect((rpc as any).listen.called).equals(true)
+    expect((rpc as any).listen).toHaveBeenCalled()
   })
 
   it("disposes of the connection when it is disposed", () => {
     const rpc = createSpyConnection()
     const lc = new ls.LanguageClientConnection(rpc, new NullLogger())
-    expect((rpc as any).dispose.called).equals(false)
+    expect((rpc as any).dispose).not.toHaveBeenCalled()
     lc.dispose()
-    expect((rpc as any).dispose.called).equals(true)
+    expect((rpc as any).dispose).toHaveBeenCalled()
   })
 
   describe("send requests", () => {
@@ -29,97 +27,97 @@ describe("LanguageClientConnection", () => {
 
     beforeEach(() => {
       lc = new ls.LanguageClientConnection(createSpyConnection(), new NullLogger())
-      sinon.spy(lc, "_sendRequest")
+      spyOn(lc, "_sendRequest").and.callThrough()
     })
 
     it("sends a request for initialize", async () => {
       const params = { capabilities: {} }
       await lc.initialize(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("initialize")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("initialize")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for shutdown", async () => {
       await lc.shutdown()
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("shutdown")
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("shutdown")
     })
 
     it("sends a request for completion", async () => {
       await lc.completion(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/completion")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/completion")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for completionItemResolve", async () => {
       const completionItem: ls.CompletionItem = { label: "abc" }
       await lc.completionItemResolve(completionItem)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("completionItem/resolve")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(completionItem)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("completionItem/resolve")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(completionItem)
     })
 
     it("sends a request for hover", async () => {
       await lc.hover(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/hover")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/hover")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for signatureHelp", async () => {
       await lc.signatureHelp(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/signatureHelp")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/signatureHelp")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for gotoDefinition", async () => {
       await lc.gotoDefinition(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/definition")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/definition")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for findReferences", async () => {
       await lc.findReferences(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/references")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/references")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for documentHighlight", async () => {
       await lc.documentHighlight(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/documentHighlight")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/documentHighlight")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for documentSymbol", async () => {
       await lc.documentSymbol(textDocumentPositionParams)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/documentSymbol")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(textDocumentPositionParams)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/documentSymbol")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(textDocumentPositionParams)
     })
 
     it("sends a request for workspaceSymbol", async () => {
       const params: ls.WorkspaceSymbolParams = { query: "something" }
       await lc.workspaceSymbol(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("workspace/symbol")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("workspace/symbol")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for codeAction", async () => {
@@ -133,9 +131,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.codeAction(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/codeAction")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/codeAction")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for codeLens", async () => {
@@ -144,9 +142,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.codeLens(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/codeLens")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/codeLens")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for codeLensResolve", async () => {
@@ -158,9 +156,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.codeLensResolve(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("codeLens/resolve")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("codeLens/resolve")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for documentLink", async () => {
@@ -169,9 +167,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.documentLink(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/documentLink")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/documentLink")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for documentLinkResolve", async () => {
@@ -184,9 +182,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.documentLinkResolve(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("documentLink/resolve")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("documentLink/resolve")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for documentFormatting", async () => {
@@ -196,9 +194,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.documentFormatting(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/formatting")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/formatting")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for documentRangeFormatting", async () => {
@@ -212,9 +210,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.documentRangeFormatting(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/rangeFormatting")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/rangeFormatting")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for documentOnTypeFormatting", async () => {
@@ -226,9 +224,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.documentOnTypeFormatting(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/onTypeFormatting")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/onTypeFormatting")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("sends a request for rename", async () => {
@@ -239,9 +237,9 @@ describe("LanguageClientConnection", () => {
       }
       await lc.rename(params)
 
-      expect(lc._sendRequest.called).equals(true)
-      expect(lc._sendRequest.getCall(0).args[0].method).equals("textDocument/rename")
-      expect(lc._sendRequest.getCall(0).args[1]).equals(params)
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/rename")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
   })
 
@@ -261,24 +259,24 @@ describe("LanguageClientConnection", () => {
 
     beforeEach(() => {
       lc = new ls.LanguageClientConnection(createSpyConnection(), new NullLogger())
-      sinon.stub(lc, "_sendNotification")
+      spyOn(lc, "_sendNotification")
     })
 
     it("exit sends notification", () => {
       lc.exit()
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("exit")
-      expect(lc._sendNotification.getCall(0).args.length).equals(1)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("exit")
+      expect(lc._sendNotification.calls.argsFor(0).length).toBe(1)
     })
 
     it("initialized sends notification", () => {
       lc.initialized()
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("initialized")
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("initialized")
       const expected: ls.InitializedParams = {}
-      expect(lc._sendNotification.getCall(0).args[1]).to.deep.equal(expected)
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toEqual(expected)
     })
 
     it("didChangeConfiguration sends notification", () => {
@@ -287,9 +285,9 @@ describe("LanguageClientConnection", () => {
       }
       lc.didChangeConfiguration(params)
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("workspace/didChangeConfiguration")
-      expect(lc._sendNotification.getCall(0).args[1]).equals(params)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("workspace/didChangeConfiguration")
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("didOpenTextDocument sends notification", () => {
@@ -298,9 +296,9 @@ describe("LanguageClientConnection", () => {
       }
       lc.didOpenTextDocument(params)
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didOpen")
-      expect(lc._sendNotification.getCall(0).args[1]).equals(params)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("textDocument/didOpen")
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("didChangeTextDocument sends notification", () => {
@@ -310,9 +308,9 @@ describe("LanguageClientConnection", () => {
       }
       lc.didChangeTextDocument(params)
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didChange")
-      expect(lc._sendNotification.getCall(0).args[1]).equals(params)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("textDocument/didChange")
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("didCloseTextDocument sends notification", () => {
@@ -321,9 +319,9 @@ describe("LanguageClientConnection", () => {
       }
       lc.didCloseTextDocument(params)
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didClose")
-      expect(lc._sendNotification.getCall(0).args[1]).equals(params)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("textDocument/didClose")
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("didSaveTextDocument sends notification", () => {
@@ -332,18 +330,18 @@ describe("LanguageClientConnection", () => {
       }
       lc.didSaveTextDocument(params)
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("textDocument/didSave")
-      expect(lc._sendNotification.getCall(0).args[1]).equals(params)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("textDocument/didSave")
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toBe(params)
     })
 
     it("didChangeWatchedFiles sends notification", () => {
       const params: ls.DidChangeWatchedFilesParams = { changes: [] }
       lc.didChangeWatchedFiles(params)
 
-      expect(lc._sendNotification.called).equals(true)
-      expect(lc._sendNotification.getCall(0).args[0].method).equals("workspace/didChangeWatchedFiles")
-      expect(lc._sendNotification.getCall(0).args[1]).equals(params)
+      expect(lc._sendNotification).toHaveBeenCalled()
+      expect(lc._sendNotification.calls.argsFor(0)[0].method).toBe("workspace/didChangeWatchedFiles")
+      expect(lc._sendNotification.calls.argsFor(0)[1]).toBe(params)
     })
   })
 
@@ -353,7 +351,7 @@ describe("LanguageClientConnection", () => {
 
     beforeEach(() => {
       lc = new ls.LanguageClientConnection(createSpyConnection(), new NullLogger())
-      sinon.stub(lc, "_onNotification").callsFake((message, callback) => {
+      spyOn(lc, "_onNotification").and.callFake((message: any, callback: any) => {
         eventMap[message.method] = callback
       })
     })
@@ -364,7 +362,7 @@ describe("LanguageClientConnection", () => {
         called = true
       })
       eventMap["window/showMessage"]()
-      expect(called).equals(true)
+      expect(called).toBe(true)
     })
   })
 })

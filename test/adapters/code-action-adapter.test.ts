@@ -1,6 +1,4 @@
 import { Range } from "atom"
-import { expect } from "chai"
-import * as sinon from "sinon"
 import * as ls from "../../lib/languageclient"
 import CodeActionAdapter from "../../lib/adapters/code-action-adapter"
 import LinterPushV2Adapter from "../../lib/adapters/linter-push-v2-adapter"
@@ -12,12 +10,12 @@ describe("CodeActionAdapter", () => {
       const result = CodeActionAdapter.canAdapt({
         codeActionProvider: true,
       })
-      expect(result).to.be.true
+      expect(result).toBe(true)
     })
 
     it("returns false it no formatting supported", () => {
       const result = CodeActionAdapter.canAdapt({})
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
   })
 
@@ -30,11 +28,11 @@ describe("CodeActionAdapter", () => {
         title: "Test Command",
         arguments: ["a", "b"],
       }
-      sinon.stub(languageClient, "codeAction").returns(Promise.resolve([testCommand]))
-      sinon.spy(languageClient, "executeCommand")
+      spyOn(languageClient, "codeAction").and.returnValue(Promise.resolve([testCommand]))
+      spyOn(languageClient, "executeCommand").and.callThrough()
 
       const linterAdapter = new LinterPushV2Adapter(languageClient)
-      sinon.stub(linterAdapter, "getDiagnosticCode").returns("test code")
+      spyOn(linterAdapter, "getDiagnosticCode").and.returnValue("test code")
 
       const testPath = "/test.txt"
       const actions = await CodeActionAdapter.getCodeActions(
@@ -54,15 +52,15 @@ describe("CodeActionAdapter", () => {
         ]
       )
 
-      expect((languageClient as any).codeAction.called).to.be.true
-      const args = (languageClient as any).codeAction.getCalls()[0].args
+      expect((languageClient as any).codeAction).toHaveBeenCalled()
+      const args = (languageClient as any).codeAction.calls.all()[0].args
       const params: ls.CodeActionParams = args[0]
-      expect(params.textDocument.uri).to.equal(`file://${testPath}`)
-      expect(params.range).to.deep.equal({
+      expect(params.textDocument.uri).toBe(`file://${testPath}`)
+      expect(params.range).toEqual({
         start: { line: 1, character: 2 },
         end: { line: 3, character: 4 },
       })
-      expect(params.context.diagnostics).to.deep.equal([
+      expect(params.context.diagnostics).toEqual([
         {
           range: {
             start: { line: 1, character: 2 },
@@ -75,12 +73,12 @@ describe("CodeActionAdapter", () => {
         },
       ])
 
-      expect(actions.length).to.equal(1)
+      expect(actions.length).toBe(1)
       const codeAction = actions[0]
-      expect(await codeAction.getTitle()).to.equal("Test Command")
+      expect(await codeAction.getTitle()).toBe("Test Command")
       await codeAction.apply()
-      expect((languageClient as any).executeCommand.called).to.be.true
-      expect((languageClient as any).executeCommand.getCalls()[0].args).to.deep.equal([
+      expect((languageClient as any).executeCommand).toHaveBeenCalled()
+      expect((languageClient as any).executeCommand.calls.all()[0].args).toEqual([
         {
           command: "testCommand",
           arguments: ["a", "b"],

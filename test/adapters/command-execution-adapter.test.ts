@@ -1,5 +1,3 @@
-import { expect } from "chai"
-import * as sinon from "sinon"
 import * as ls from "../../lib/languageclient"
 import CommandExecutionAdapter, { CommandCustomCallbackFunction } from "../../lib/adapters/command-execution-adapter"
 import { createSpyConnection } from "../helpers.js"
@@ -11,12 +9,12 @@ describe("CommandExecutionAdapter", () => {
       const result = CommandExecutionAdapter.canAdapt({
         executeCommandProvider: { commands: [] },
       })
-      expect(result).to.be.true
+      expect(result).toBe(true)
     })
 
     it("returns false it no formatting supported", () => {
       const result = CommandExecutionAdapter.canAdapt({})
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
   })
 
@@ -28,7 +26,7 @@ describe("CommandExecutionAdapter", () => {
         command: "testCommand",
         arguments: ["a", "b"],
       }
-      sinon.stub(languageClient, "executeCommand").returns(Promise.resolve(testCommand))
+      spyOn(languageClient, "executeCommand").and.returnValue(Promise.resolve(testCommand))
 
       const result = await CommandExecutionAdapter.executeCommand(
         languageClient,
@@ -36,11 +34,11 @@ describe("CommandExecutionAdapter", () => {
         testCommand.arguments
       )
 
-      expect(result.command).to.equal(testCommand.command)
-      expect(result.arguments).to.equal(testCommand.arguments)
+      expect(result.command).toBe(testCommand.command)
+      expect(result.arguments).toBe(testCommand.arguments)
 
-      expect((languageClient as any).executeCommand.called).to.be.true
-      expect((languageClient as any).executeCommand.getCalls()[0].args).to.deep.equal([
+      expect((languageClient as any).executeCommand).toHaveBeenCalled()
+      expect((languageClient as any).executeCommand.calls.all()[0].args).toEqual([
         {
           command: testCommand.command,
           arguments: testCommand.arguments,
@@ -60,8 +58,8 @@ describe("CommandExecutionAdapter", () => {
         arguments: ["a", "b"],
       }
 
-      const spiedCallback = sinon.spy(testCallback)
-      sinon.spy(languageClient, "executeCommand")
+      const spiedCallback = jasmine.createSpy("testCallback").and.callFake(testCallback)
+      spyOn(languageClient, "executeCommand").and.callThrough()
 
       CommandExecutionAdapter.registerCustomCallbackForCommand(testCommand.command, spiedCallback)
 
@@ -71,11 +69,11 @@ describe("CommandExecutionAdapter", () => {
         testCommand.arguments
       )
 
-      expect(spiedCallback.called).to.be.true
+      expect(spiedCallback).toHaveBeenCalled()
 
-      expect((languageClient as any).executeCommand.called).to.be.false
+      expect((languageClient as any).executeCommand).not.toHaveBeenCalled()
 
-      expect(result).to.equal(testCommand.command)
+      expect(result).toBe(testCommand.command)
     })
   })
 })

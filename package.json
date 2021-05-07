@@ -19,6 +19,7 @@
     "clean": "shx rm -rf build && mkdirp build",
     "copy.typings": "shx cp -r ./typings ./build",
     "compile": "npm run copy.typings && tsc",
+    "build": "npm run clean && npm run compile",
     "watch": "npm run compile -- --watch",
     "prepare": "npm run clean && npm run compile",
     "test": "npm run compile && atom --test build/test"
@@ -35,20 +36,12 @@
     "zadeh": "3.0.0-beta.2"
   },
   "devDependencies": {
-    "@atom/mocha-test-runner": "^1.6.1",
     "@types/atom": "^1.40.10",
-    "@types/chai": "^4.2.16",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "14.14.41",
-    "@types/sinon": "^10.0.0",
-    "chai": "^4.3.4",
-    "eslint-config-atomic": "^1.14.1",
-    "eslint-plugin-chai-friendly": "^0.6.0",
-    "mocha": "^8.3.2",
-    "mocha-appveyor-reporter": "^0.4.2",
-    "prettier-config-atomic": "^2.0.3",
+    "@types/node": "15.0.2",
+    "atom-jasmine3-test-runner": "^5.2.4",
+    "eslint-config-atomic": "^1.14.3",
+    "prettier-config-atomic": "^2.0.4",
     "shx": "^0.3.3",
-    "sinon": "^10.0.0",
     "typescript": "~4.2.4"
   }
 }
