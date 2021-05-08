@@ -119,22 +119,22 @@ describe("AutoLanguageClient", () => {
 
     it("selects documents in project and in supported language", () => {
       const editor = mockEditor("/path/to/somewhere", client.getGrammarScopes()[0])
-      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).equals(true)
+      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).toBe(true)
     })
 
     it("does not select documents outside of project", () => {
       const editor = mockEditor("/path/to/elsewhere/file", client.getGrammarScopes()[0])
-      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).equals(false)
+      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).toBe(false)
     })
 
     it("does not select documents in unsupported language", () => {
       const editor = mockEditor("/path/to/somewhere", `${client.getGrammarScopes()[0]}-dummy`)
-      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).equals(false)
+      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).toBe(false)
     })
 
     it("does not select documents in unsupported language outside of project", () => {
       const editor = mockEditor("/path/to/elsewhere/file", `${client.getGrammarScopes()[0]}-dummy`)
-      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).equals(false)
+      expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).toBe(false)
     })
   })
 })

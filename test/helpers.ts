@@ -1,4 +1,3 @@
-import * as sinon from "sinon"
 import * as rpc from "vscode-jsonrpc"
 import { TextEditor } from "atom"
 import AutoLanguageClient from "../lib/auto-languageclient"
@@ -8,29 +7,29 @@ import { spawn } from "spawk"
 
 export function createSpyConnection(): rpc.MessageConnection {
   return {
-    listen: sinon.spy(),
-    onClose: sinon.spy(),
-    onError: sinon.spy(),
-    onDispose: sinon.spy(),
-    onUnhandledNotification: sinon.spy(),
-    onUnhandledProgress: sinon.spy(),
-    onRequest: sinon.spy(),
-    onNotification: sinon.spy(),
-    onProgress: sinon.spy(),
-    dispose: sinon.spy(),
-    sendRequest: sinon.spy(),
-    sendNotification: sinon.spy(),
-    sendProgress: sinon.spy(),
-    trace: sinon.spy(),
-    inspect: sinon.spy(),
-    end: sinon.spy(),
+    listen: jasmine.createSpy("listen"),
+    onClose: jasmine.createSpy("onClose"),
+    onError: jasmine.createSpy("onError"),
+    onDispose: jasmine.createSpy("onDispose"),
+    onUnhandledNotification: jasmine.createSpy("onUnhandledNotification"),
+    onUnhandledProgress: jasmine.createSpy("onUnhandledProgress"),
+    onRequest: jasmine.createSpy("onRequest"),
+    onNotification: jasmine.createSpy("onNotification"),
+    onProgress: jasmine.createSpy("onProgress"),
+    dispose: jasmine.createSpy("dispose"),
+    sendRequest: jasmine.createSpy("sendRequest"),
+    sendNotification: jasmine.createSpy("sendNotification"),
+    sendProgress: jasmine.createSpy("sendProgress"),
+    trace: jasmine.createSpy("trace"),
+    inspect: jasmine.createSpy("inspect"),
+    end: jasmine.createSpy("end"),
   }
 }
 
 export function createFakeEditor(path?: string): TextEditor {
   const editor = new TextEditor()
-  sinon.stub(editor, "getSelectedBufferRange")
-  sinon.spy(editor, "setTextInBufferRange")
+  spyOn(editor, "getSelectedBufferRange")
+  spyOn(editor, "setTextInBufferRange").and.callThrough()
   editor.setTabLength(4)
   editor.setSoftTabs(true)
   editor.getBuffer().setPath(path || "/a/b/c/d.js")
