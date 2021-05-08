@@ -1,10 +1,8 @@
 import * as Utils from "../lib/utils"
 import { createFakeEditor } from "./helpers"
-import { expect } from "chai"
 import { Point } from "atom"
 import { join } from "path"
 import * as fs from "fs"
-import * as sinon from "sinon"
 
 describe("Utils", () => {
   describe("getWordAtPosition", () => {
@@ -17,21 +15,21 @@ describe("Utils", () => {
     it("gets the word at position from a text editor", () => {
       // "blah"
       let range = Utils.getWordAtPosition(editor, new Point(0, 0))
-      expect(range.serialize()).eql([
+      expect(range.serialize()).toEqual([
         [0, 0],
         [0, 4],
       ])
 
       // "test1234"
       range = Utils.getWordAtPosition(editor, new Point(0, 7))
-      expect(range.serialize()).eql([
+      expect(range.serialize()).toEqual([
         [0, 5],
         [0, 13],
       ])
 
       // "test"
       range = Utils.getWordAtPosition(editor, new Point(0, 14))
-      expect(range.serialize()).eql([
+      expect(range.serialize()).toEqual([
         [0, 14],
         [0, 18],
       ])
@@ -39,7 +37,7 @@ describe("Utils", () => {
 
     it("returns empty ranges for non-words", () => {
       const range = Utils.getWordAtPosition(editor, new Point(0, 4))
-      expect(range.serialize()).eql([
+      expect(range.serialize()).toEqual([
         [0, 4],
         [0, 4],
       ])
@@ -53,13 +51,10 @@ describe("Utils", () => {
         expectedExe = `${expectedExe}.exe`
       }
 
-      const fsMock = sinon.mock(fs)
-      fsMock.expects("existsSync").withArgs(expectedExe).returns(true)
+      spyOn(fs, "existsSync").withArgs(expectedExe).and.returnValue(true)
 
       const exePath = Utils.getExePath("serve-d")
-      expect(exePath).eq(expectedExe)
-
-      fsMock.restore()
+      expect(exePath).toBe(expectedExe)
     })
     it("returns the exe path for the given root", () => {
       const rootPath = join(__dirname, `${process.platform}-${process.arch}`)
@@ -68,17 +63,14 @@ describe("Utils", () => {
         expectedExe = `${expectedExe}.exe`
       }
 
-      const fsMock = sinon.mock(fs)
-      fsMock.expects("existsSync").withArgs(expectedExe).returns(true)
+      spyOn(fs, "existsSync").withArgs(expectedExe).and.returnValue(true)
 
       const exePath = Utils.getExePath("serve-d", rootPath)
-      expect(exePath).eq(expectedExe)
-
-      fsMock.restore()
+      expect(exePath).toBe(expectedExe)
     })
     it("returns the exe name if the file does not exist under rootPath", () => {
       const exePath = Utils.getExePath("python")
-      expect(exePath).eq("python")
+      expect(exePath).toBe("python")
     })
   })
 })

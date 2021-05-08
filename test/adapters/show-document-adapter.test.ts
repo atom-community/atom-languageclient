@@ -1,7 +1,5 @@
 import { TextEditor } from "atom"
 import { shell } from "electron"
-import * as sinon from "sinon"
-import { expect } from "chai"
 import { join, dirname } from "path"
 import * as ShowDocumentAdapter from "../../lib/adapters/show-document-adapter"
 import { LanguageClientConnection, ShowDocumentParams } from "../../lib/languageclient"
@@ -14,30 +12,30 @@ describe("ShowDocumentAdapter", () => {
       const connection = createSpyConnection()
       const lcc = new LanguageClientConnection(connection)
 
-      const spy = sinon.spy()
+      const spy = jasmine.createSpy()
       // eslint-disable-next-line dot-notation
       lcc["_onRequest"] = spy // private method access
 
       ShowDocumentAdapter.attach(lcc)
       // eslint-disable-next-line dot-notation
-      expect((lcc["_onRequest"] as sinon.SinonSpy).calledOnce).to.be.true
-      const spyArgs = spy.firstCall.args
-      expect(spyArgs[0]).to.deep.equal({ method: "window/showDocument" })
-      expect(spyArgs[1]).to.equal(ShowDocumentAdapter.showDocument)
+      expect(lcc["_onRequest"]).toHaveBeenCalledTimes(1)
+      const spyArgs = spy.calls.argsFor(0)
+      expect(spyArgs[0]).toEqual({ method: "window/showDocument" })
+      expect(spyArgs[1]).toBe(ShowDocumentAdapter.showDocument)
     })
 
     it("onRequest connection is called", () => {
       const connection = createSpyConnection()
       const lcc = new LanguageClientConnection(connection)
 
-      const spy = sinon.spy()
+      const spy = jasmine.createSpy()
       connection.onRequest = spy
 
       ShowDocumentAdapter.attach(lcc)
-      expect((connection.onRequest as sinon.SinonSpy).calledOnce).to.be.true
-      const spyArgs = spy.firstCall.args
-      expect(spyArgs[0]).to.equal("window/showDocument")
-      expect(typeof spyArgs[1]).to.equal("function")
+      expect(connection.onRequest).toHaveBeenCalledTimes(1)
+      const spyArgs = spy.calls.argsFor(0)
+      expect(spyArgs[0]).toBe("window/showDocument")
+      expect(typeof spyArgs[1]).toBe("function")
     })
   })
   describe("can show documents", () => {
@@ -46,13 +44,13 @@ describe("ShowDocumentAdapter", () => {
 
       async function canShowDocumentInAtom(params: ShowDocumentParams) {
         const { success } = await ShowDocumentAdapter.showDocument(params)
-        expect(success).to.be.true
+        expect(success).toBe(true)
 
         const editor = atom.workspace.getTextEditors()[0]
-        expect(editor instanceof TextEditor).to.be.true
+        expect(editor instanceof TextEditor).toBe(true)
 
-        expect(editor!.getPath()).includes(helloPath)
-        expect(editor!.getText()).includes(`atom.notifications.addSuccess("Hello World")`)
+        expect(editor!.getPath()).toContain(helloPath)
+        expect(editor!.getText()).toContain(`atom.notifications.addSuccess("Hello World")`)
 
         return editor
       }
@@ -78,7 +76,7 @@ describe("ShowDocumentAdapter", () => {
           takeFocus: true,
         }
         const editor = await canShowDocumentInAtom(params)
-        expect(atom.workspace.getActivePane()?.getItems()[0]).equal(editor)
+        expect(atom.workspace.getActivePane()?.getItems()[0]).toBe(editor)
       })
 
       it("selects the given selection range", async () => {
@@ -88,8 +86,8 @@ describe("ShowDocumentAdapter", () => {
           selection: selectionLSRange,
         }
         const editor = await canShowDocumentInAtom(params)
-        expect(editor.getSelectedBufferRange()).deep.equal(Convert.lsRangeToAtomRange(selectionLSRange))
-        expect(editor.getSelectedText()).equal(`"Hello World"`)
+        expect(editor.getSelectedBufferRange()).toEqual(Convert.lsRangeToAtomRange(selectionLSRange))
+        expect(editor.getSelectedText()).toBe(`"Hello World"`)
       })
     })
 
@@ -99,15 +97,15 @@ describe("ShowDocumentAdapter", () => {
           uri: "http://www.github.com",
           external: true,
         }
-        const spy = sinon.spy()
+        const spy = jasmine.createSpy()
         shell.openExternal = spy
 
         const { success } = await ShowDocumentAdapter.showDocument(params)
-        expect(success).to.be.true
+        expect(success).toBe(true)
 
-        expect((shell.openExternal as sinon.SinonSpy).calledOnce).to.be.true
-        const spyArgs = spy.firstCall.args
-        expect(spyArgs[0]).to.equal("http://www.github.com")
+        expect(shell.openExternal).toHaveBeenCalledTimes(1)
+        const spyArgs = spy.calls.argsFor(0)
+        expect(spyArgs[0]).toBe("http://www.github.com")
       })
     })
   })
