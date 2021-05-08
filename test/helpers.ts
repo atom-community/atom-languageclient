@@ -59,6 +59,6 @@ export class FakeAutoLanguageClient extends AutoLanguageClient {
     return createFakeLanguageServerProcess()
   }
   public preInitialization(connection: LanguageClientConnection) {
-    connection.initialize = jasmine.createSpy().and.resolveTo({ capabilities: {} })
+    spyOn(connection, "initialize").and.resolveTo({ capabilities: {} })
   }
 }

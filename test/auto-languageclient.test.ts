@@ -98,7 +98,7 @@ describe("AutoLanguageClient", () => {
           atom.project.removePath(projectPath2)
           expect(spy).toHaveBeenCalledTimes(2)
 
-          expect(spy.calls.mostRecent.arguments[0]).toEqual({
+          expect(spy.calls.mostRecent().args[0]).toEqual({
             event: {
               added: [],
               removed: [workspaceFolder2],
