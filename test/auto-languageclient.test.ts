@@ -67,7 +67,8 @@ describe("AutoLanguageClient", () => {
           // doesn't give the workspace folder if it the server is not started for that project
           atom.project.addPath(projectPath2)
           expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder])
-          await serverManager.startServer(projectPath)
+
+          await serverManager.startServer(projectPath2)
           expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder, workspaceFolder2])
         })
       })
