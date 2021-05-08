@@ -19,6 +19,9 @@ describe("AutoLanguageClient", () => {
       let serverManager: ServerManager
 
       function beforeEachCallback() {
+        atom.workspace.getTextEditors().forEach((editor) => editor.destroy())
+        atom.project.getPaths().forEach((project) => atom.project.removePath(project))
+
         client = new FakeAutoLanguageClient()
         client.activate()
 
