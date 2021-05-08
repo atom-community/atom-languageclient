@@ -59,6 +59,6 @@ export class FakeAutoLanguageClient extends AutoLanguageClient {
     return createFakeLanguageServerProcess()
   }
   public preInitialization(connection: LanguageClientConnection) {
-    connection.initialize = sinon.stub().returns(Promise.resolve({ capabilities: {} }))
+    connection.initialize = jasmine.createSpy().and.resolveTo({ capabilities: {} })
   }
 }

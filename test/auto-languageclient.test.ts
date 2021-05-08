@@ -1,9 +1,7 @@
 import AutoLanguageClient from "../lib/auto-languageclient"
 import { projectPathToWorkspaceFolder, ServerManager } from "../lib/server-manager"
-import { expect } from "chai"
 import { FakeAutoLanguageClient } from "./helpers"
 import { dirname } from "path"
-import * as sinon from "sinon"
 
 function mockEditor(uri: string, scopeName: string): any {
   return {
@@ -41,12 +39,12 @@ describe("AutoLanguageClient", () => {
       describe("getWorkspaceFolders", () => {
         it("returns null when no server is running", async () => {
           const workspaceFolders = await serverManager.getWorkspaceFolders()
-          expect(workspaceFolders).to.be.null
+          expect(workspaceFolders).toBeNull()
         })
         it("returns null when a single file is open", async () => {
           await atom.workspace.open(__filename)
           const workspaceFolders = await serverManager.getWorkspaceFolders()
-          expect(workspaceFolders).to.be.null
+          expect(workspaceFolders).toBeNull()
         })
         it("gives the open workspace folders", async () => {
           const projectPath = __dirname
@@ -58,13 +56,13 @@ describe("AutoLanguageClient", () => {
           // gives the open workspace folder
           atom.project.addPath(projectPath)
           await serverManager.startServer(projectPath)
-          expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder])
+          expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder])
 
           // doesn't give the workspace folder if it the server is not started for that project
           atom.project.addPath(projectPath2)
-          expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder])
+          expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder])
           await serverManager.startServer(projectPath)
-          expect(await serverManager.getWorkspaceFolders()).to.deep.equals([workspaceFolder, workspaceFolder2])
+          expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder, workspaceFolder2])
         })
       })
       describe("didChangeWorkspaceFolders", () => {
@@ -77,12 +75,11 @@ describe("AutoLanguageClient", () => {
           atom.project.addPath(projectPath)
           const server = await serverManager.startServer(projectPath)
 
-          const stub = sinon.stub(server.connection, "didChangeWorkspaceFolders")
+          const spy = spyOn(server.connection, "didChangeWorkspaceFolders")
 
           atom.project.addPath(projectPath2)
 
-          expect(stub.calledOnce).to.be.true
-          expect(stub.firstCall.args[0]).to.deep.equal({
+          expect(spy).toHaveBeenCalledOnceWith({
             event: {
               added: [workspaceFolder2],
               removed: [],
@@ -90,9 +87,9 @@ describe("AutoLanguageClient", () => {
           })
 
           atom.project.removePath(projectPath2)
-          expect(stub.calledTwice).to.be.true
+          expect(spy).toHaveBeenCalledTimes(2)
 
-          expect(stub.secondCall.args[0]).to.deep.equal({
+          expect(spy.calls.mostRecent.arguments[0]).toEqual({
             event: {
               added: [],
               removed: [workspaceFolder2],
