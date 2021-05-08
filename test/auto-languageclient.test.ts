@@ -21,7 +21,6 @@ describe("AutoLanguageClient", () => {
       function beforeEachCallback() {
         atom.workspace.getTextEditors().forEach((editor) => editor.destroy())
         atom.project.getPaths().forEach((project) => atom.project.removePath(project))
-
         client = new FakeAutoLanguageClient()
         client.activate()
 
@@ -70,6 +69,8 @@ describe("AutoLanguageClient", () => {
 
           await serverManager.startServer(projectPath2)
           expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder, workspaceFolder2])
+          // TODO why should we run this manually?
+          beforeEachCallback()
         })
       })
       describe("didChangeWorkspaceFolders", () => {
@@ -105,6 +106,8 @@ describe("AutoLanguageClient", () => {
               removed: [workspaceFolder2],
             },
           })
+          // TODO why should we run this manually?
+          beforeEachCallback()
         })
       })
     })
