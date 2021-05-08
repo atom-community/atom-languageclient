@@ -18,15 +18,15 @@ describe("AutoLanguageClient", () => {
       let client: FakeAutoLanguageClient
       let serverManager: ServerManager
 
-      beforeEach(() => {
+      function beforeEachCallback() {
         client = new FakeAutoLanguageClient()
         client.activate()
 
         /* eslint-disable-next-line dot-notation */
         serverManager = client["_serverManager"]
-      })
+      }
 
-      afterEach(async () => {
+      async function afterEachCallback() {
         serverManager.stopListening()
         await serverManager.stopAllServers()
         serverManager.terminate()
@@ -34,9 +34,12 @@ describe("AutoLanguageClient", () => {
           atom.project.removePath(project)
         }
         await client.deactivate()
-      })
+      }
 
       describe("getWorkspaceFolders", () => {
+        beforeEach(beforeEachCallback)
+        afterEach(afterEachCallback)
+
         it("returns null when no server is running", async () => {
           const workspaceFolders = await serverManager.getWorkspaceFolders()
           expect(workspaceFolders).toBeNull()
@@ -66,6 +69,9 @@ describe("AutoLanguageClient", () => {
         })
       })
       describe("didChangeWorkspaceFolders", () => {
+        beforeEach(beforeEachCallback)
+        afterEach(afterEachCallback)
+
         it("gives a notification if the projects change", async () => {
           const projectPath = __dirname
           const projectPath2 = dirname(__dirname)
