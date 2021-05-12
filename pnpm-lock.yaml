@@ -6,8 +6,8 @@ specifiers:
   '@types/rimraf': ^3.0.0
   atom-ide-base: ^2.6.0
   atom-jasmine3-test-runner: ^5.2.4
-  eslint-config-atomic: ^1.14.3
-  prettier-config-atomic: ^2.0.4
+  eslint-config-atomic: ^1.14.4
+  prettier-config-atomic: ^2.0.5
   rimraf: ^3.0.2
   shx: ^0.3.3
   typescript: ~4.2.4
@@ -29,8 +29,8 @@ devDependencies:
   '@types/atom': 1.40.10
   '@types/node': 15.0.2
   atom-jasmine3-test-runner: 5.2.4
-  eslint-config-atomic: 1.14.3
-  prettier-config-atomic: 2.0.4
+  eslint-config-atomic: 1.14.4
+  prettier-config-atomic: 2.0.5
   shx: 0.3.3
   typescript: 4.2.4
 
@@ -1183,8 +1183,8 @@ packages:
       object.entries: 1.1.3
     dev: true
 
-  /eslint-config-atomic/1.14.3:
-    resolution: {integrity: sha512-VYjUvvRX3MzQXI6c6NONdWEX1zU+VoFzJ9MsOBwG8ZF2wXbWX7DdLgVW+EdgGpopokAjh1FcswOiUX8oKjz7yg==}
+  /eslint-config-atomic/1.14.4:
+    resolution: {integrity: sha512-3FtEVTMdwnP3890US3AgVjZuaVHvfcmkB12CnXkIsUC3Rs9muiFXkKb6IUg7rZ7i0FMazV1ylbKfhc+sVWCmFQ==}
     dependencies:
       '@babel/core': 7.14.0
       '@babel/eslint-parser': 7.13.14_@babel+core@7.14.0+eslint@7.25.0
@@ -1196,13 +1196,13 @@ packages:
       eslint-plugin-coffee: 0.1.14_eslint@7.25.0
       eslint-plugin-html: 6.1.2
       eslint-plugin-import: 2.22.1_eslint@7.25.0
-      eslint-plugin-json: 2.1.2
+      eslint-plugin-json: 3.0.0
       eslint-plugin-node: 11.1.0_eslint@7.25.0
       eslint-plugin-only-warn: 1.0.2
       eslint-plugin-optimize-regex: 1.2.0
       eslint-plugin-react: 7.23.2_eslint@7.25.0
       eslint-plugin-yaml: 0.4.2
-      prettier: 2.2.1
+      prettier: 2.3.0
       typescript: 4.2.4
     transitivePeerDependencies:
       - eslint-plugin-react-hooks
@@ -1299,12 +1299,12 @@ packages:
       tsconfig-paths: 3.9.0
     dev: true
 
-  /eslint-plugin-json/2.1.2:
-    resolution: {integrity: sha512-isM/fsUxS4wN1+nLsWoV5T4gLgBQnsql3nMTr8u+cEls1bL8rRQO5CP5GtxJxaOfbcKqnz401styw+H/P+e78Q==}
-    engines: {node: '>=8.10.0'}
+  /eslint-plugin-json/3.0.0:
+    resolution: {integrity: sha512-7qoY5pbzBLEttJWy4/cDtULK3EKglgIwfXk5Yqp3StJaQ4Bu4Jmp0n2fJN5vBe/hLGaECupq3edn1j/k7O0bFA==}
+    engines: {node: '>=12.0'}
     dependencies:
       lodash: 4.17.21
-      vscode-json-languageservice: 3.11.0
+      vscode-json-languageservice: 4.1.3
     dev: true
 
   /eslint-plugin-jsx-a11y/6.4.1_eslint@7.25.0:
@@ -2446,16 +2446,16 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-config-atomic/2.0.4:
-    resolution: {integrity: sha512-EuJ8YVKVmgZBDRVKoCYHvuKfq+Dqd12bA3rD387n4zoB/KaeozEsCd48tYosx6+JxB2LFmN8rcl6qKERL6guZQ==}
+  /prettier-config-atomic/2.0.5:
+    resolution: {integrity: sha512-Lyu7SZLtAZWvc3h2tTQ4R/7DB6ludK/W2VJN+olGeSXbM7ulQ4PAnB0hwxHmj6CXJ6bcbeHXOZtQ/J9xh338BA==}
     dependencies:
-      prettier: 2.2.1
-      prettier-plugin-jsdoc: 0.3.22_prettier@2.2.1
+      prettier: 2.3.0
+      prettier-plugin-jsdoc: 0.3.22_prettier@2.3.0
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /prettier-plugin-jsdoc/0.3.22_prettier@2.2.1:
+  /prettier-plugin-jsdoc/0.3.22_prettier@2.3.0:
     resolution: {integrity: sha512-8CuzIovyy0FQmt2QgrueYlnqOiYfC68TZsMQ5NRJJEb+JkWJekpO/3KWRJIkBQE/9dIT4Y0CVDqng6TqnoKJvA==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -2465,13 +2465,13 @@ packages:
       comment-parser: 1.1.5
       linguist-languages: 7.14.0
       mdast-util-from-markdown: 0.8.5
-      prettier: 2.2.1
+      prettier: 2.3.0
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /prettier/2.2.1:
-    resolution: {integrity: sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==}
+  /prettier/2.3.0:
+    resolution: {integrity: sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
@@ -2978,14 +2978,16 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /vscode-json-languageservice/3.11.0:
-    resolution: {integrity: sha512-QxI+qV97uD7HHOCjh3MrM1TfbdwmTXrMckri5Tus1/FQiG3baDZb2C9Y0y8QThs7PwHYBIQXcAc59ZveCRZKPA==}
+  /vscode-json-languageservice/4.1.3:
+    resolution: {integrity: sha512-m/wUEt4zgCNUcvGmPr1ELo+ROQNKBgASpdOOAEpcSMwYE/6GzULZ1KfBhbX9or7qnC4E0oX+wwW+lrN3EUWCgw==}
+    engines: {npm: '>=7.0.0'}
     dependencies:
       jsonc-parser: 3.0.0
+      minimatch: 3.0.4
       vscode-languageserver-textdocument: 1.0.1
-      vscode-languageserver-types: 3.16.0-next.2
+      vscode-languageserver-types: 3.16.0
       vscode-nls: 5.0.0
-      vscode-uri: 2.1.2
+      vscode-uri: 3.0.2
     dev: true
 
   /vscode-jsonrpc/6.0.0:
@@ -3006,18 +3008,13 @@ packages:
 
   /vscode-languageserver-types/3.16.0:
     resolution: {integrity: sha512-k8luDIWJWyenLc5ToFQQMaSrqCHiLwyKPHKPQZ5zz21vM+vIVUSvsRpcbiECH4WR88K2XZqc4ScRcZ7nk/jbeA==}
-    dev: false
-
-  /vscode-languageserver-types/3.16.0-next.2:
-    resolution: {integrity: sha512-QjXB7CKIfFzKbiCJC4OWC8xUncLsxo19FzGVp/ADFvvi87PlmBSCAtZI5xwGjF5qE0xkLf0jjKUn3DzmpDP52Q==}
-    dev: true
 
   /vscode-nls/5.0.0:
     resolution: {integrity: sha512-u0Lw+IYlgbEJFF6/qAqG2d1jQmJl0eyAGJHoAJqr2HT4M2BNuQYSEiSE75f52pXHSJm8AlTjnLLbBFPrdz2hpA==}
     dev: true
 
-  /vscode-uri/2.1.2:
-    resolution: {integrity: sha512-8TEXQxlldWAuIODdukIb+TR5s+9Ds40eSJrw+1iDDA9IFORPjMELarNQE3myz5XIkWWpdprmJjm1/SxMlWOC8A==}
+  /vscode-uri/3.0.2:
+    resolution: {integrity: sha512-jkjy6pjU1fxUvI51P+gCsxg1u2n8LSt0W6KrCNQceaziKzff74GoWmjVG46KieVzybO1sttPQmYfrwSHey7GUA==}
     dev: true
 
   /which-boxed-primitive/1.0.2:

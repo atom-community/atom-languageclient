@@ -51,26 +51,24 @@ export default class ApplyEditAdapter {
     // Keep checkpoints from all successful buffer edits
     const checkpoints: Array<{ buffer: TextBuffer; checkpoint: number }> = []
 
-    const promises = (workspaceEdit.documentChanges || []).map(
-      async (edit): Promise<void> => {
-        if (!TextDocumentEdit.is(edit)) {
-          return ApplyEditAdapter.handleResourceOperation(edit).catch((err) => {
-            throw Error(`Error during ${edit.kind} resource operation: ${err.message}`)
-          })
-        }
-        const path = Convert.uriToPath(edit.textDocument.uri)
-        const editor = (await atom.workspace.open(path, {
-          searchAllPanes: true,
-          // Open new editors in the background.
-          activatePane: false,
-          activateItem: false,
-        })) as TextEditor
-        const buffer = editor.getBuffer()
-        const edits = Convert.convertLsTextEdits(edit.edits)
-        const checkpoint = ApplyEditAdapter.applyEdits(buffer, edits)
-        checkpoints.push({ buffer, checkpoint })
+    const promises = (workspaceEdit.documentChanges || []).map(async (edit): Promise<void> => {
+      if (!TextDocumentEdit.is(edit)) {
+        return ApplyEditAdapter.handleResourceOperation(edit).catch((err) => {
+          throw Error(`Error during ${edit.kind} resource operation: ${err.message}`)
+        })
       }
-    )
+      const path = Convert.uriToPath(edit.textDocument.uri)
+      const editor = (await atom.workspace.open(path, {
+        searchAllPanes: true,
+        // Open new editors in the background.
+        activatePane: false,
+        activateItem: false,
+      })) as TextEditor
+      const buffer = editor.getBuffer()
+      const edits = Convert.convertLsTextEdits(edit.edits)
+      const checkpoint = ApplyEditAdapter.applyEdits(buffer, edits)
+      checkpoints.push({ buffer, checkpoint })
+    })
 
     // Apply all edits or fail and revert everything
     const applied = await Promise.all(promises)
