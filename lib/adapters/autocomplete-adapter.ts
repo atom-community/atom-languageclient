@@ -140,7 +140,7 @@ export default class AutocompleteAdapter {
       // TODO use `ObjectArrayFilterer.setCandidate` in `_suggestionCache` to avoid creating `ObjectArrayFilterer` every time from scratch
       const objFilterer = new ObjectArrayFilterer(validSuggestions, "filterText")
       // zadeh returns an array of the selected `Suggestions`
-      return (objFilterer.filter(request.prefix) as any) as Suggestion[]
+      return objFilterer.filter(request.prefix) as any as Suggestion[]
     } else {
       return suggestions
     }
