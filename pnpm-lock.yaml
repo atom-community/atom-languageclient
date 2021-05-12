@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@types/atom': ^1.40.10
+  '@types/jasmine': ^3.7.1
   '@types/node': 15.0.2
   '@types/rimraf': ^3.0.0
   atom-ide-base: ^2.6.0
@@ -10,6 +11,7 @@ specifiers:
   prettier-config-atomic: ^2.0.5
   rimraf: ^3.0.2
   shx: ^0.3.3
+  spawk: ^1.4.0
   typescript: ~4.2.4
   vscode-jsonrpc: 6.0.0
   vscode-languageserver-protocol: 3.16.0
@@ -27,11 +29,13 @@ dependencies:
 
 devDependencies:
   '@types/atom': 1.40.10
+  '@types/jasmine': 3.7.2
   '@types/node': 15.0.2
   atom-jasmine3-test-runner: 5.2.4
   eslint-config-atomic: 1.14.4
   prettier-config-atomic: 2.0.5
   shx: 0.3.3
+  spawk: 1.4.0
   typescript: 4.2.4
 
 packages:
@@ -314,6 +318,10 @@ packages:
     resolution: {integrity: sha512-a/RDj4aOSY1BGlrmj2rtXJeLk5kS/k39xWZlHKfwDUqYeGpxV6f4WG59vCn3T3FXnlhMGBrAAtx0xg/+J8mR0g==}
     dev: true
     optional: true
+
+  /@types/jasmine/3.7.2:
+    resolution: {integrity: sha512-w5Zc9pSwxlr1ne+froeIceYbrh0a2Us+0kTaX6JA0N7nPh+yv1zN10LyDMKwnT0x2AbIDGlrD1cv6plVjfCcZw==}
+    dev: true
 
   /@types/json-schema/7.0.7:
     resolution: {integrity: sha512-cxWFQVseBm6O9Gbw1IWb8r6OS4OhSt3hPZLkFApLjM8TEXROBuQGLAH2i2gZpcXdLBIrpXuTDhH7Vbm1iXmNGA==}
@@ -2733,6 +2741,11 @@ packages:
   /source-map/0.5.7:
     resolution: {integrity: sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /spawk/1.4.0:
+    resolution: {integrity: sha512-XGER/ScNkUs8H34Ih0W2nHwiuG/g6kftA0eGuhDGtc0usJI5DYroy+bHMPRM9Up82hGxL6n18k7KLDYx+v+Pwg==}
+    engines: {node: '>=12.0.0'}
     dev: true
 
   /spdx-correct/3.1.1:
