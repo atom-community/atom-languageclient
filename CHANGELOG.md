@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.3...v1.9.0) (2021-05-13)
+
+
+### Features
+
+* add support for workspace folders ([#153](https://github.com/atom-ide-community/atom-languageclient/issues/153)) ([236e2d1](https://github.com/atom-ide-community/atom-languageclient/commit/236e2d1df990f3098c6d6284bde06da4786f1e73))
+
 ## [1.8.3](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.2...v1.8.3) (2021-05-01)
 
 
