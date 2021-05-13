@@ -28,14 +28,12 @@ describe("AutoLanguageClient", () => {
         serverManager = client["_serverManager"]
       }
 
-      async function afterEachCallback() {
+      function afterEachCallback() {
         serverManager.stopListening()
-        await serverManager.stopAllServers()
         serverManager.terminate()
         for (const project of atom.project.getPaths()) {
           atom.project.removePath(project)
         }
-        await client.deactivate()
       }
 
       describe("getWorkspaceFolders", () => {
@@ -69,8 +67,6 @@ describe("AutoLanguageClient", () => {
 
           await serverManager.startServer(projectPath2)
           expect(await serverManager.getWorkspaceFolders()).toEqual([workspaceFolder, workspaceFolder2])
-          // TODO why should we run this manually?
-          beforeEachCallback()
         })
       })
       describe("didChangeWorkspaceFolders", () => {
@@ -106,8 +102,6 @@ describe("AutoLanguageClient", () => {
               removed: [workspaceFolder2],
             },
           })
-          // TODO why should we run this manually?
-          beforeEachCallback()
         })
       })
     })
