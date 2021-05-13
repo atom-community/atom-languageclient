@@ -10,6 +10,7 @@ import { Point, Notification, NotificationOptions, TextEditor } from "atom"
 declare module "atom/src/text-editor" {
   interface TextEditor {
     getNonWordCharacters(position: Point): string
+    destroy(): void
   }
 }
 

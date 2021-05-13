@@ -29,6 +29,7 @@ import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
 import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
 import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
+import { basename } from "path"
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess }
 export type ConnectionType = "stdio" | "socket" | "ipc"
@@ -106,12 +107,13 @@ export default class AutoLanguageClient {
 
   /** (Optional) Return the parameters used to initialize a client - you may want to extend capabilities */
   protected getInitializeParams(projectPath: string, lsProcess: LanguageServerProcess): ls.InitializeParams {
+    const rootUri = Convert.pathToUri(projectPath)
     return {
       processId: lsProcess.pid,
       rootPath: projectPath,
-      rootUri: Convert.pathToUri(projectPath),
+      rootUri,
       locale: atom.config.get("atom-i18n.locale") || "en",
-      workspaceFolders: null,
+      workspaceFolders: [{ uri: rootUri, name: basename(projectPath) }],
       // The capabilities supported.
       // TODO the capabilities set to false/undefined are TODO. See {ls.ServerCapabilities} for a full list.
       capabilities: {
@@ -124,7 +126,7 @@ export default class AutoLanguageClient {
             changeAnnotationSupport: undefined,
             resourceOperations: ["create", "rename", "delete"],
           },
-          workspaceFolders: false,
+          workspaceFolders: true,
           didChangeConfiguration: {
             dynamicRegistration: false,
           },
@@ -568,6 +570,8 @@ export default class AutoLanguageClient {
     })
 
     ShowDocumentAdapter.attach(server.connection)
+
+    server.connection.onWorkspaceFolders(() => this._serverManager.getWorkspaceFolders())
   }
 
   public shouldSyncForEditor(editor: TextEditor, projectPath: string): boolean {
