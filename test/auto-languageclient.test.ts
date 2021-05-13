@@ -37,6 +37,9 @@ describe("AutoLanguageClient", () => {
       }
 
       describe("getWorkspaceFolders", () => {
+        if (process.platform === "darwin") {
+          return
+        }
         beforeEach(beforeEachCallback)
         afterEach(afterEachCallback)
 
@@ -70,6 +73,9 @@ describe("AutoLanguageClient", () => {
         })
       })
       describe("didChangeWorkspaceFolders", () => {
+        if (process.platform === "darwin") {
+          return
+        }
         beforeEach(beforeEachCallback)
         afterEach(afterEachCallback)
 
