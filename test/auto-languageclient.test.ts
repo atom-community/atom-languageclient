@@ -18,7 +18,7 @@ describe("AutoLanguageClient", () => {
       let client: FakeAutoLanguageClient
       let serverManager: ServerManager
 
-      function beforeEachCallback() {
+      beforeEach(() => {
         atom.workspace.getTextEditors().forEach((editor) => editor.destroy())
         atom.project.getPaths().forEach((project) => atom.project.removePath(project))
         client = new FakeAutoLanguageClient()
@@ -26,22 +26,20 @@ describe("AutoLanguageClient", () => {
 
         /* eslint-disable-next-line dot-notation */
         serverManager = client["_serverManager"]
-      }
+      })
 
-      function afterEachCallback() {
+      afterEach(() => {
         serverManager.stopListening()
         serverManager.terminate()
         for (const project of atom.project.getPaths()) {
           atom.project.removePath(project)
         }
-      }
+      })
 
       describe("getWorkspaceFolders", () => {
         if (process.platform === "darwin") {
           return
         }
-        beforeEach(beforeEachCallback)
-        afterEach(afterEachCallback)
 
         it("returns null when no server is running", async () => {
           const workspaceFolders = await serverManager.getWorkspaceFolders()
@@ -76,8 +74,6 @@ describe("AutoLanguageClient", () => {
         if (process.platform === "darwin") {
           return
         }
-        beforeEach(beforeEachCallback)
-        afterEach(afterEachCallback)
 
         it("gives a notification if the projects change", async () => {
           const projectPath = __dirname
