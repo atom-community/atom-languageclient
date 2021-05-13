@@ -45,10 +45,22 @@ export function createFakeEditor(path?: string): TextEditor {
   return editor
 }
 
+/** A function that sleeps for a preiod of `ms` and then resolves the given value */
+function sleep<T>(resolveValue: T, ms: number) {
+  return new Promise<T>((resolve) => {
+    setTimeout(() => resolve(resolveValue), ms)
+  })
+}
+
 export function createFakeLanguageServerProcess(): LanguageServerProcess {
-  spawn("lsp").exit(0).stdout("hello from lsp")
+  spawn("lsp", [], { stdio: "inherit", shell: true })
+    .exit(() => sleep(0, 500))
+    .stdout("hello from lsp")
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require("child_process").spawn("lsp")
+  return (require("child_process") as typeof import("child_process")).spawn("lsp", [], {
+    stdio: "inherit",
+    shell: true,
+  })
 }
 
 /* eslint-disable class-methods-use-this */
