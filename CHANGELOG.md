@@ -1,3 +1,21 @@
+# [1.10.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.9.0...v1.10.0) (2021-05-14)
+
+
+### Bug Fixes
+
+* use connection.executeCommand from LS ([2c62bf6](https://github.com/atom-ide-community/atom-languageclient/commit/2c62bf6b5181cd869779beb5c0befaf1767fb5b3))
+* use lsp.CodeActionResolveRequest.type ([6fde7cf](https://github.com/atom-ide-community/atom-languageclient/commit/6fde7cf727d543d3910f43ef04e1aa0be619c6b4))
+
+
+### Features
+
+* add deorecated IdeDiagnosticAdapter ([743aede](https://github.com/atom-ide-community/atom-languageclient/commit/743aede43ab7d02c0c75c2753503dcc5d8a1186f))
+* add getLSDiagnostic for Linter adapter ([3671896](https://github.com/atom-ide-community/atom-languageclient/commit/367189673390a3879ae7d3bfdbe3984facd3872e))
+* add getLSDiagnostics for Linter adapter ([e878b8d](https://github.com/atom-ide-community/atom-languageclient/commit/e878b8d33e33698dd7752e171f2b08d7c081d26b))
+* add IdeDiagnosticAdapter methods for conversion to ls.Diagnostics ([059af66](https://github.com/atom-ide-community/atom-languageclient/commit/059af662c2d55d4c636425b8c4c19443da1dcdcf))
+* codeActionResolve in languageClient ([a9ca617](https://github.com/atom-ide-community/atom-languageclient/commit/a9ca617a663355f8ab021eb40d8c7de689e42d9a))
+* update getCodeActions and createCodeActionParams ([1c5430a](https://github.com/atom-ide-community/atom-languageclient/commit/1c5430adc67bdb280e4f96db9c5f89a2b9172868))
+
 # [1.9.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.3...v1.9.0) (2021-05-13)
 
 
