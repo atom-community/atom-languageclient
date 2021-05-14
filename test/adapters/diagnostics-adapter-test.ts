@@ -1,6 +1,5 @@
 /* eslint-disable import/no-deprecated */
 import { Range } from "atom"
-import { expect } from "chai"
 import * as path from "path"
 import IdeDiagnosticAdapter from "../../lib/adapters/diagnostic-adapter"
 import Convert from "../../lib/convert"
@@ -34,9 +33,9 @@ describe("IdeDiagnosticAdapter", () => {
       // using private method
       // eslint-disable-next-line dot-notation
       const getDiagnosticCode = adapter["getDiagnosticCode"]
-      expect(getDiagnosticCode(mockEditor, new Range([1, 2], [3, 4]), "Test message")).to.equal("test code")
-      expect(getDiagnosticCode(mockEditor, new Range([1, 2], [3, 4]), "Test message2")).to.not.exist
-      expect(getDiagnosticCode(mockEditor, new Range([1, 2], [3, 5]), "Test message")).to.not.exist
+      expect(getDiagnosticCode(mockEditor, new Range([1, 2], [3, 4]), "Test message")).toEqual("test code")
+      expect(getDiagnosticCode(mockEditor, new Range([1, 2], [3, 4]), "Test message2")).toBeUndefined()
+      expect(getDiagnosticCode(mockEditor, new Range([1, 2], [3, 5]), "Test message")).toBeUndefined()
     })
   })
 })
