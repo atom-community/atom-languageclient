@@ -1,7 +1,8 @@
 import { Range } from "atom"
 import * as ls from "../../lib/languageclient"
 import CodeActionAdapter from "../../lib/adapters/code-action-adapter"
-import LinterPushV2Adapter from "../../lib/adapters/linter-push-v2-adapter"
+/* eslint-disable import/no-deprecated */
+import IdeDiagnosticAdapter from "../../lib/adapters/diagnostic-adapter"
 import { createSpyConnection, createFakeEditor } from "../helpers.js"
 
 describe("CodeActionAdapter", () => {
@@ -20,7 +21,7 @@ describe("CodeActionAdapter", () => {
   })
 
   describe("getCodeActions", () => {
-    it("fetches code actions from the connection", async () => {
+    it("fetches code actions from the connection when IdeDiagnosticAdapter is used", async () => {
       const connection = createSpyConnection()
       const languageClient = new ls.LanguageClientConnection(connection)
       const testCommand: ls.Command = {
@@ -31,7 +32,9 @@ describe("CodeActionAdapter", () => {
       spyOn(languageClient, "codeAction").and.returnValue(Promise.resolve([testCommand]))
       spyOn(languageClient, "executeCommand").and.callThrough()
 
-      const linterAdapter = new LinterPushV2Adapter(languageClient)
+      const linterAdapter = new IdeDiagnosticAdapter(languageClient)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
       spyOn(linterAdapter, "getDiagnosticCode").and.returnValue("test code")
 
       const testPath = "/test.txt"

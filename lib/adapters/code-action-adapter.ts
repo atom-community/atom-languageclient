@@ -1,5 +1,8 @@
 import type * as atomIde from "atom-ide-base"
+import * as linter from "atom/linter"
 import LinterPushV2Adapter from "./linter-push-v2-adapter"
+/* eslint-disable import/no-deprecated */
+import IdeDiagnosticAdapter from "./diagnostic-adapter"
 import assert = require("assert")
 import Convert from "../convert"
 import ApplyEditAdapter from "./apply-edit-adapter"
@@ -7,12 +10,12 @@ import {
   CodeAction,
   CodeActionParams,
   Command,
+  Diagnostic,
   LanguageClientConnection,
   ServerCapabilities,
   WorkspaceEdit,
 } from "../languageclient"
 import { Range, TextEditor } from "atom"
-import CommandExecutionAdapter from "./command-execution-adapter"
 
 export default class CodeActionAdapter {
   /** @returns A {Boolean} indicating this adapter can adapt the server based on the given serverCapabilities. */
@@ -28,24 +31,24 @@ export default class CodeActionAdapter {
    * @param serverCapabilities The {ServerCapabilities} of the language server that will be used.
    * @param editor The Atom {TextEditor} containing the diagnostics.
    * @param range The Atom {Range} to fetch code actions for.
-   * @param diagnostics An {Array<atomIde$Diagnostic>} to fetch code actions for. This is typically a list of
-   *   diagnostics intersecting `range`.
+   * @param linterMessages An {Array<linter$Message>} to fetch code actions for. This is typically a list of messages
+   *   intersecting `range`.
    * @returns A {Promise} of an {Array} of {atomIde$CodeAction}s to display.
    */
   public static async getCodeActions(
     connection: LanguageClientConnection,
     serverCapabilities: ServerCapabilities,
-    linterAdapter: LinterPushV2Adapter | undefined,
+    linterAdapter: LinterPushV2Adapter | IdeDiagnosticAdapter | undefined,
     editor: TextEditor,
     range: Range,
-    diagnostics: atomIde.Diagnostic[]
+    linterMessages: linter.Message[] | atomIde.Diagnostic[]
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return []
     }
     assert(serverCapabilities.codeActionProvider, "Must have the textDocument/codeAction capability")
 
-    const params = CodeActionAdapter.createCodeActionParams(linterAdapter, editor, range, diagnostics)
+    const params = createCodeActionParams(linterAdapter, editor, range, linterMessages)
     const actions = await connection.codeAction(params)
     if (actions === null) {
       return []
@@ -81,34 +84,44 @@ export default class CodeActionAdapter {
 
   private static async executeCommand(command: any, connection: LanguageClientConnection): Promise<void> {
     if (Command.is(command)) {
-      await CommandExecutionAdapter.executeCommand(connection, command.command, command.arguments)
+      await connection.executeCommand({
+        command: command.command,
+        arguments: command.arguments,
+      })
     }
   }
+}
 
-  private static createCodeActionParams(
-    linterAdapter: LinterPushV2Adapter,
-    editor: TextEditor,
-    range: Range,
-    diagnostics: atomIde.Diagnostic[]
-  ): CodeActionParams {
-    return {
-      textDocument: Convert.editorToTextDocumentIdentifier(editor),
-      range: Convert.atomRangeToLSRange(range),
-      context: {
-        diagnostics: diagnostics.map((diagnostic) => {
-          // Retrieve the stored diagnostic code if it exists.
-          // Until the Linter API provides a place to store the code,
-          // there's no real way for the code actions API to give it back to us.
-          const converted = Convert.atomIdeDiagnosticToLSDiagnostic(diagnostic)
-          if (diagnostic.range != null && diagnostic.text != null) {
-            const code = linterAdapter.getDiagnosticCode(editor, diagnostic.range, diagnostic.text)
-            if (code != null) {
-              converted.code = code
-            }
-          }
-          return converted
-        }),
-      },
-    }
+function createCodeActionParams(
+  linterAdapter: LinterPushV2Adapter | IdeDiagnosticAdapter,
+  editor: TextEditor,
+  range: Range,
+  linterMessages: linter.Message[] | atomIde.Diagnostic[]
+): CodeActionParams {
+  let diagnostics: Diagnostic[]
+  if (linterMessages.length === 0) {
+    diagnostics = []
+  } else {
+    // TODO compile time dispatch using function names
+    diagnostics = areLinterMessages(linterMessages)
+      ? linterAdapter.getLSDiagnosticsForMessages(linterMessages as linter.Message[])
+      : (linterAdapter as IdeDiagnosticAdapter).getLSDiagnosticsForIdeDiagnostics(
+          linterMessages as atomIde.Diagnostic[],
+          editor
+        )
   }
+  return {
+    textDocument: Convert.editorToTextDocumentIdentifier(editor),
+    range: Convert.atomRangeToLSRange(range),
+    context: {
+      diagnostics,
+    },
+  }
+}
+
+function areLinterMessages(linterMessages: linter.Message[] | atomIde.Diagnostic[]): boolean {
+  if ("excerpt" in linterMessages[0]) {
+    return true
+  }
+  return false
 }

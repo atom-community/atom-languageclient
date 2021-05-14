@@ -1,9 +1,7 @@
 import LinterPushV2Adapter from "../../lib/adapters/linter-push-v2-adapter"
-import Convert from "../../lib/convert"
 import * as ls from "../../lib/languageclient"
-import * as path from "path"
 import { Point, Range } from "atom"
-import { createSpyConnection, createFakeEditor } from "../helpers.js"
+import { createSpyConnection } from "../helpers.js"
 
 describe("LinterPushV2Adapter", () => {
   describe("constructor", () => {
@@ -60,34 +58,6 @@ describe("LinterPushV2Adapter", () => {
     it('converts DiagnosticSeverity.Hint to "info"', () => {
       const severity = LinterPushV2Adapter.diagnosticSeverityToSeverity(ls.DiagnosticSeverity.Hint)
       expect(severity).toBe("info")
-    })
-  })
-
-  describe("captureDiagnostics", () => {
-    it("stores diagnostic codes and allows their retrival", () => {
-      const languageClient = new ls.LanguageClientConnection(createSpyConnection())
-      const adapter = new LinterPushV2Adapter(languageClient)
-      const testPath = path.join(__dirname, "test.txt")
-      adapter.captureDiagnostics({
-        uri: Convert.pathToUri(testPath),
-        diagnostics: [
-          {
-            message: "Test message",
-            range: {
-              start: { line: 1, character: 2 },
-              end: { line: 3, character: 4 },
-            },
-            source: "source",
-            code: "test code",
-            severity: ls.DiagnosticSeverity.Information,
-          },
-        ],
-      })
-
-      const mockEditor = createFakeEditor(testPath)
-      expect(adapter.getDiagnosticCode(mockEditor, new Range([1, 2], [3, 4]), "Test message")).toBe("test code")
-      expect(adapter.getDiagnosticCode(mockEditor, new Range([1, 2], [3, 4]), "Test message2")).toBe(null)
-      expect(adapter.getDiagnosticCode(mockEditor, new Range([1, 2], [3, 5]), "Test message")).toBe(null)
     })
   })
 })
