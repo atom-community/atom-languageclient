@@ -1,8 +1,6 @@
-import { expect } from "chai"
 import * as path from "path"
 import * as os from "os"
 import * as fs from "fs"
-import * as sinon from "sinon"
 import ApplyEditAdapter from "../../lib/adapters/apply-edit-adapter"
 import Convert from "../../lib/convert"
 import { TextEditor } from "atom"
@@ -24,11 +22,7 @@ function normalizeDriveLetterName(filePath: string): string {
 describe("ApplyEditAdapter", () => {
   describe("onApplyEdit", () => {
     beforeEach(() => {
-      sinon.spy(atom.notifications, "addError")
-    })
-
-    afterEach(() => {
-      ;(atom as any).notifications.addError.restore()
+      spyOn(atom.notifications, "addError").and.callThrough()
     })
 
     it("works for open files", async () => {
@@ -58,12 +52,12 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(editor.getText()).to.equal("def\nghi\n")
+      expect(result.applied).toBe(true)
+      expect(editor.getText()).toBe("def\nghi\n")
 
       // Undo should be atomic.
       editor.getBuffer().undo()
-      expect(editor.getText()).to.equal("abc\ndef\n")
+      expect(editor.getText()).toBe("abc\ndef\n")
     })
 
     it("works with TextDocumentEdits", async () => {
@@ -99,12 +93,12 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(editor.getText()).to.equal("def\nghi\n")
+      expect(result.applied).toBe(true)
+      expect(editor.getText()).toBe("def\nghi\n")
 
       // Undo should be atomic.
       editor.getBuffer().undo()
-      expect(editor.getText()).to.equal("abc\ndef\n")
+      expect(editor.getText()).toBe("abc\ndef\n")
     })
 
     it("opens files that are not already open", async () => {
@@ -124,9 +118,9 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
+      expect(result.applied).toBe(true)
       const editor = (await atom.workspace.open(TEST_PATH2)) as TextEditor
-      expect(editor.getText()).to.equal("abc")
+      expect(editor.getText()).toBe("abc")
     })
 
     it("fails with overlapping edits", async () => {
@@ -156,15 +150,13 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(false)
-      expect(
-        (atom as any).notifications.addError.calledWith("workspace/applyEdits failed", {
-          description: "Failed to apply edits.",
-          detail: `Found overlapping edit ranges in ${TEST_PATH3}`,
-        })
-      ).to.equal(true)
+      expect(result.applied).toBe(false)
+      expect(atom.notifications.addError).toHaveBeenCalledWith("workspace/applyEdits failed", {
+        description: "Failed to apply edits.",
+        detail: `Found overlapping edit ranges in ${TEST_PATH3}`,
+      })
       // No changes.
-      expect(editor.getText()).to.equal("abcdef\n")
+      expect(editor.getText()).toBe("abcdef\n")
     })
 
     it("fails with out-of-range edits", async () => {
@@ -184,10 +176,10 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(false)
-      const errorCalls = (atom as any).notifications.addError.getCalls()
-      expect(errorCalls.length).to.equal(1)
-      expect(errorCalls[0].args[1].detail).to.equal(`Out of range edit on ${TEST_PATH4}:1:2`)
+      expect(result.applied).toBe(false)
+      const errorCalls = (atom as any).notifications.addError.calls.all()
+      expect(errorCalls.length).toBe(1)
+      expect(errorCalls[0].args[1].detail).toBe(`Out of range edit on ${TEST_PATH4}:1:2`)
     })
 
     it("handles rename resource operations", async () => {
@@ -208,10 +200,10 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(fs.existsSync(newUri)).to.equal(true)
-      expect(fs.readFileSync(newUri).toString()).to.equal("abcd")
-      expect(fs.existsSync(oldUri)).to.equal(false)
+      expect(result.applied).toBe(true)
+      expect(fs.existsSync(newUri)).toBe(true)
+      expect(fs.readFileSync(newUri).toString()).toBe("abcd")
+      expect(fs.existsSync(oldUri)).toBe(false)
     })
 
     it("handles rename operation with ignoreIfExists option", async () => {
@@ -236,9 +228,9 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(fs.existsSync(oldUri)).to.equal(true)
-      expect(fs.readFileSync(newUri).toString()).to.equal("efgh")
+      expect(result.applied).toBe(true)
+      expect(fs.existsSync(oldUri)).toBe(true)
+      expect(fs.readFileSync(newUri).toString()).toBe("efgh")
     })
 
     it("handles rename operation with overwrite option", async () => {
@@ -264,9 +256,9 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(fs.existsSync(oldUri)).to.equal(false)
-      expect(fs.readFileSync(newUri).toString()).to.equal("abcd")
+      expect(result.applied).toBe(true)
+      expect(fs.existsSync(oldUri)).toBe(false)
+      expect(fs.readFileSync(newUri).toString()).toBe("abcd")
     })
 
     it("throws an error on rename operation if target exists", async () => {
@@ -288,18 +280,16 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(false)
-      expect(fs.existsSync(oldUri)).to.equal(true)
-      expect(fs.readFileSync(oldUri).toString()).to.equal("abcd")
-      expect(fs.existsSync(newUri)).to.equal(true)
-      expect(fs.readFileSync(newUri).toString()).to.equal("efgh")
+      expect(result.applied).toBe(false)
+      expect(fs.existsSync(oldUri)).toBe(true)
+      expect(fs.readFileSync(oldUri).toString()).toBe("abcd")
+      expect(fs.existsSync(newUri)).toBe(true)
+      expect(fs.readFileSync(newUri).toString()).toBe("efgh")
 
-      expect(
-        (atom as any).notifications.addError.calledWith("workspace/applyEdits failed", {
-          description: "Failed to apply edits.",
-          detail: "Error during rename resource operation: Target exists.",
-        })
-      ).to.equal(true)
+      expect(atom.notifications.addError).toHaveBeenCalledWith("workspace/applyEdits failed", {
+        description: "Failed to apply edits.",
+        detail: "Error during rename resource operation: Target exists.",
+      })
     })
 
     it("handles delete resource operations on files", async () => {
@@ -318,8 +308,8 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(fs.existsSync(uri)).to.equal(false)
+      expect(result.applied).toBe(true)
+      expect(fs.existsSync(uri)).toBe(false)
     })
 
     it("handles delete resource operations on directories", async () => {
@@ -343,10 +333,10 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(fs.existsSync(directory)).to.equal(false)
-      expect(fs.existsSync(file1)).to.equal(false)
-      expect(fs.existsSync(file2)).to.equal(false)
+      expect(result.applied).toBe(true)
+      expect(fs.existsSync(directory)).toBe(false)
+      expect(fs.existsSync(file1)).toBe(false)
+      expect(fs.existsSync(file2)).toBe(false)
     })
 
     it("throws an error when deleting a non-empty directory without recursive option", async () => {
@@ -370,13 +360,13 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(false)
-      expect(fs.existsSync(directory)).to.equal(true)
-      expect(fs.existsSync(file1)).to.equal(true)
-      expect(fs.existsSync(file2)).to.equal(true)
-      const errorCalls = (atom as any).notifications.addError.getCalls()
-      expect(errorCalls.length).to.equal(1)
-      expect(errorCalls[0].args[1].detail).to.match(/Error during delete resource operation: (.*)/)
+      expect(result.applied).toBe(false)
+      expect(fs.existsSync(directory)).toBe(true)
+      expect(fs.existsSync(file1)).toBe(true)
+      expect(fs.existsSync(file2)).toBe(true)
+      const errorCalls = (atom as any).notifications.addError.calls.all()
+      expect(errorCalls.length).toBe(1)
+      expect(errorCalls[0].args[1].detail).toMatch(/Error during delete resource operation: (.*)/)
     })
 
     it("throws an error on delete operation if target doesnt exist", async () => {
@@ -394,13 +384,11 @@ describe("ApplyEditAdapter", () => {
         },
       })
       //
-      expect(result.applied).to.equal(false)
-      expect(
-        (atom as any).notifications.addError.calledWith("workspace/applyEdits failed", {
-          description: "Failed to apply edits.",
-          detail: "Error during delete resource operation: Target doesn't exist.",
-        })
-      ).to.equal(true)
+      expect(result.applied).toBe(false)
+      expect(atom.notifications.addError).toHaveBeenCalledWith("workspace/applyEdits failed", {
+        description: "Failed to apply edits.",
+        detail: "Error during delete resource operation: Target doesn't exist.",
+      })
     })
 
     it("handles create resource operations", async () => {
@@ -418,8 +406,8 @@ describe("ApplyEditAdapter", () => {
         },
       })
 
-      expect(result.applied).to.equal(true)
-      expect(fs.existsSync(uri)).to.equal(true)
+      expect(result.applied).toBe(true)
+      expect(fs.existsSync(uri)).toBe(true)
     })
   })
 })

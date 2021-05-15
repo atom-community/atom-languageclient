@@ -2,7 +2,7 @@ import Convert from "../convert"
 import * as Utils from "../utils"
 import { CancellationTokenSource } from "vscode-jsonrpc"
 import { ActiveServer } from "../server-manager"
-import { filter } from "zadeh"
+import { ObjectArrayFilterer } from "zadeh"
 import {
   CompletionContext,
   CompletionItem,
@@ -133,7 +133,17 @@ export default class AutocompleteAdapter {
     }
 
     const filtered = !(request.prefix === "" || (triggerChar !== "" && triggerOnly))
-    return filtered ? filter(suggestions, request.prefix, { key: "filterText" }) : suggestions
+    if (filtered) {
+      // filter the suggestions who have `filterText` property
+      const validSuggestions = suggestions.filter((sgs) => typeof sgs.filterText === "string") as Suggestion[] &
+        { filterText: string }[]
+      // TODO use `ObjectArrayFilterer.setCandidate` in `_suggestionCache` to avoid creating `ObjectArrayFilterer` every time from scratch
+      const objFilterer = new ObjectArrayFilterer(validSuggestions, "filterText")
+      // zadeh returns an array of the selected `Suggestions`
+      return objFilterer.filter(request.prefix) as any as Suggestion[]
+    } else {
+      return suggestions
+    }
   }
 
   private shouldTrigger(request: ac.SuggestionsRequestedEvent, triggerChar: string, minWordLength: number): boolean {
@@ -492,7 +502,7 @@ export default class AutocompleteAdapter {
    */
   public static applySnippetToSuggestion(item: CompletionItem, suggestion: SnippetSuggestion): void {
     if (item.insertTextFormat === InsertTextFormat.Snippet) {
-      suggestion.snippet = item.textEdit != null ? item.textEdit.newText : item.insertText || ""
+      suggestion.snippet = item.textEdit != null ? item.textEdit.newText : item.insertText || item.label
     }
   }
 

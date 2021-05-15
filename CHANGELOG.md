@@ -1,3 +1,76 @@
+# [1.10.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.9.0...v1.10.0) (2021-05-14)
+
+
+### Bug Fixes
+
+* use connection.executeCommand from LS ([2c62bf6](https://github.com/atom-ide-community/atom-languageclient/commit/2c62bf6b5181cd869779beb5c0befaf1767fb5b3))
+* use lsp.CodeActionResolveRequest.type ([6fde7cf](https://github.com/atom-ide-community/atom-languageclient/commit/6fde7cf727d543d3910f43ef04e1aa0be619c6b4))
+
+
+### Features
+
+* add deorecated IdeDiagnosticAdapter ([743aede](https://github.com/atom-ide-community/atom-languageclient/commit/743aede43ab7d02c0c75c2753503dcc5d8a1186f))
+* add getLSDiagnostic for Linter adapter ([3671896](https://github.com/atom-ide-community/atom-languageclient/commit/367189673390a3879ae7d3bfdbe3984facd3872e))
+* add getLSDiagnostics for Linter adapter ([e878b8d](https://github.com/atom-ide-community/atom-languageclient/commit/e878b8d33e33698dd7752e171f2b08d7c081d26b))
+* add IdeDiagnosticAdapter methods for conversion to ls.Diagnostics ([059af66](https://github.com/atom-ide-community/atom-languageclient/commit/059af662c2d55d4c636425b8c4c19443da1dcdcf))
+* codeActionResolve in languageClient ([a9ca617](https://github.com/atom-ide-community/atom-languageclient/commit/a9ca617a663355f8ab021eb40d8c7de689e42d9a))
+* update getCodeActions and createCodeActionParams ([1c5430a](https://github.com/atom-ide-community/atom-languageclient/commit/1c5430adc67bdb280e4f96db9c5f89a2b9172868))
+
+# [1.9.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.3...v1.9.0) (2021-05-13)
+
+
+### Features
+
+* add support for workspace folders ([#153](https://github.com/atom-ide-community/atom-languageclient/issues/153)) ([236e2d1](https://github.com/atom-ide-community/atom-languageclient/commit/236e2d1df990f3098c6d6284bde06da4786f1e73))
+
+## [1.8.3](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.2...v1.8.3) (2021-05-01)
+
+
+### Bug Fixes
+
+* "object is possibly 'null'.ts(2531)" in codeaction test ([1f61f73](https://github.com/atom-ide-community/atom-languageclient/commit/1f61f7316199a039229d731f7bb1b2575e5b3bb7))
+* add null check ([e20bba5](https://github.com/atom-ide-community/atom-languageclient/commit/e20bba5a4fe06b4f1a24f2063b1a60fcd5da1514))
+* early null check instead of empty array at codeActio provider ([e7c26b4](https://github.com/atom-ide-community/atom-languageclient/commit/e7c26b4f22dbf58ae17788b2a66fa04abeafc466))
+* fixed test because the argument of _sendRequest function was changed ([f2f09f0](https://github.com/atom-ide-community/atom-languageclient/commit/f2f09f03a137c5e267af3334d51ca320570ce10e))
+* format ([c9876c6](https://github.com/atom-ide-community/atom-languageclient/commit/c9876c63dc30e93739dedd7ce09e7361b9de56f7))
+* lint(Missing return type on function) ([d665159](https://github.com/atom-ide-community/atom-languageclient/commit/d6651593ff1072629d325866408c894cc70c1402))
+* make highlight null-safe ([a80e4d9](https://github.com/atom-ide-community/atom-languageclient/commit/a80e4d98b5f317f7fdf861cf75f2034d9138af95))
+* match type definition to specification ([85cc505](https://github.com/atom-ide-community/atom-languageclient/commit/85cc505a5c9999e4da044996aa49e436d32d017a))
+* use lsp package for type definition ([1a31014](https://github.com/atom-ide-community/atom-languageclient/commit/1a31014ef37c1da8bb7463e508f65465019a954b))
+
+## [1.8.2](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.1...v1.8.2) (2021-04-21)
+
+
+### Bug Fixes
+
+* update deps ([#149](https://github.com/atom-ide-community/atom-languageclient/issues/149)) ([4e16378](https://github.com/atom-ide-community/atom-languageclient/commit/4e163780fbdb8357012dd1d4731f7187aee96e2b))
+
+## [1.8.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.8.0...v1.8.1) (2021-04-21)
+
+
+### Bug Fixes
+
+* set the correct fallback for Snippet completion ([#148](https://github.com/atom-ide-community/atom-languageclient/issues/148)) ([d3e06ee](https://github.com/atom-ide-community/atom-languageclient/commit/d3e06ee19a7689340660b1d004fac602a72f5e16))
+
+# [1.8.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.7.0...v1.8.0) (2021-04-17)
+
+
+### Bug Fixes
+
+* eliminate casting ([d753510](https://github.com/atom-ide-community/atom-languageclient/commit/d753510ca60b31a80007ec102448b86463ef581e))
+* fix import statement ([19614ce](https://github.com/atom-ide-community/atom-languageclient/commit/19614ce547e50b977b6fd9f456c71bdfbc90e29c))
+* format ([5291209](https://github.com/atom-ide-community/atom-languageclient/commit/52912091bd890bd9362c5a9c96d0f972cd612a73))
+* modify the type to pass the test ([df5c53c](https://github.com/atom-ide-community/atom-languageclient/commit/df5c53ce859e39d3b1ede56c299e73dd4fd79997))
+* should check only the first of the array / Moved isLocationLinkArray function ([080f4ce](https://github.com/atom-ide-community/atom-languageclient/commit/080f4cef9d1b686f77f8b011555d6cdf7d920782))
+* type definition ([f4f60cd](https://github.com/atom-ide-community/atom-languageclient/commit/f4f60cdc9f4eebb4b210849b3c5485b0a5604f9e))
+* type of `normalizeLocations` and `convertLocationsToDefinitions` ([6b38b93](https://github.com/atom-ide-community/atom-languageclient/commit/6b38b93f74ede31284b34ef7ad10cb6ad42be3db))
+* use Array.prototype.every() for the isLocationLinkArray function ([5d132b0](https://github.com/atom-ide-community/atom-languageclient/commit/5d132b04baca8bf054943e12979254d87e4d4daa))
+
+
+### Features
+
+* add `LocationLink` support for definition-adapter ([06612be](https://github.com/atom-ide-community/atom-languageclient/commit/06612beeccba4c9615a742e475d5e1e5951ed3a5))
+
 # [1.7.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.6.0...v1.7.0) (2021-04-14)
 
 

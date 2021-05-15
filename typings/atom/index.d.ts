@@ -10,6 +10,7 @@ import { Point, Notification, NotificationOptions, TextEditor } from "atom"
 declare module "atom/src/text-editor" {
   interface TextEditor {
     getNonWordCharacters(position: Point): string
+    destroy(): void
   }
 }
 
@@ -24,5 +25,11 @@ declare module "atom/src/notification" {
 declare module "atom/src/config" {
   interface Config {
     get<T extends "atom-i18n.locale">(key: T): string
+  }
+}
+
+declare module "atom/linter" {
+  interface Message {
+    key?: string
   }
 }

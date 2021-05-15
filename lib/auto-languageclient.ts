@@ -29,7 +29,8 @@ import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
 import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
 import { Disposable, CompositeDisposable, Point, Range, TextEditor, CommandEvent, TextEditorElement } from "atom"
 import * as ac from "atom/autocomplete-plus"
-import Dialog from './views/dialog'
+import Dialog from "./views/dialog"
+import { basename } from "path"
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess }
 export type ConnectionType = "stdio" | "socket" | "ipc"
@@ -107,12 +108,13 @@ export default class AutoLanguageClient {
 
   /** (Optional) Return the parameters used to initialize a client - you may want to extend capabilities */
   protected getInitializeParams(projectPath: string, lsProcess: LanguageServerProcess): ls.InitializeParams {
+    const rootUri = Convert.pathToUri(projectPath)
     return {
       processId: lsProcess.pid,
       rootPath: projectPath,
-      rootUri: Convert.pathToUri(projectPath),
+      rootUri,
       locale: atom.config.get("atom-i18n.locale") || "en",
-      workspaceFolders: null,
+      workspaceFolders: [{ uri: rootUri, name: basename(projectPath) }],
       // The capabilities supported.
       // TODO the capabilities set to false/undefined are TODO. See {ls.ServerCapabilities} for a full list.
       capabilities: {
@@ -125,7 +127,7 @@ export default class AutoLanguageClient {
             changeAnnotationSupport: undefined,
             resourceOperations: ["create", "rename", "delete"],
           },
-          workspaceFolders: false,
+          workspaceFolders: true,
           didChangeConfiguration: {
             dynamicRegistration: false,
           },
@@ -432,9 +434,7 @@ export default class AutoLanguageClient {
     lsProcess.on("close", (code, signal) => this.onSpawnClose(code, signal))
     lsProcess.on("disconnect", () => this.onSpawnDisconnect())
     lsProcess.on("exit", (code, signal) => this.onSpawnExit(code, signal))
-    // eslint-disable-next-line chai-friendly/no-unused-expressions
     lsProcess.stderr?.setEncoding("utf8")
-    // eslint-disable-next-line chai-friendly/no-unused-expressions
     lsProcess.stderr?.on("data", (chunk: Buffer) => this.onSpawnStdErrData(chunk, projectPath))
   }
 
@@ -573,6 +573,8 @@ export default class AutoLanguageClient {
     })
 
     ShowDocumentAdapter.attach(server.connection)
+
+    server.connection.onWorkspaceFolders(() => this._serverManager.getWorkspaceFolders())
   }
 
   public shouldSyncForEditor(editor: TextEditor, projectPath: string): boolean {
@@ -1033,7 +1035,7 @@ export default class AutoLanguageClient {
    * `didChangeWatchedFiles` message filtering, override for custom logic.
    *
    * @param filePath Path of a file that has changed in the project path
-   * @returns  `false` => message will not be sent to the language server
+   * @returns `false` => message will not be sent to the language server
    */
   protected filterChangeWatchedFiles(_filePath: string): boolean {
     return true

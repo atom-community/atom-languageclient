@@ -1,7 +1,5 @@
 import * as invariant from "assert"
 import { Point, Range } from "atom"
-import { expect } from "chai"
-import * as sinon from "sinon"
 import * as ls from "../../lib/languageclient"
 import CodeHighlightAdapter from "../../lib/adapters/code-highlight-adapter"
 import { createSpyConnection, createFakeEditor } from "../helpers.js"
@@ -20,18 +18,18 @@ describe("CodeHighlightAdapter", () => {
       const result = CodeHighlightAdapter.canAdapt({
         documentHighlightProvider: true,
       })
-      expect(result).to.be.true
+      expect(result).toBe(true)
     })
 
     it("returns false it no formatting supported", () => {
       const result = CodeHighlightAdapter.canAdapt({})
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
   })
 
   describe("highlight", () => {
     it("highlights some ranges", async () => {
-      const highlightStub = sinon.stub(connection, "documentHighlight").returns(
+      const highlightStub = spyOn(connection, "documentHighlight").and.returnValue(
         Promise.resolve([
           {
             range: {
@@ -47,12 +45,12 @@ describe("CodeHighlightAdapter", () => {
         fakeEditor,
         new Point(0, 0)
       )
-      expect(highlightStub.called).to.be.true
+      expect(highlightStub).toHaveBeenCalled()
 
       invariant(result != null)
       if (result) {
-        expect(result.length).to.equal(1)
-        expect(result[0].isEqual(new Range([0, 1], [0, 2]))).to.be.true
+        expect(result.length).toBe(1)
+        expect(result[0].isEqual(new Range([0, 1], [0, 2]))).toBe(true)
       }
     })
 
@@ -60,9 +58,9 @@ describe("CodeHighlightAdapter", () => {
       const result = await CodeHighlightAdapter.highlight(connection, {}, fakeEditor, new Point(0, 0)).catch(
         (err) => err
       )
-      expect(result).to.be.an.instanceof(Error)
+      expect(result).toBeInstanceOf(Error)
       invariant(result instanceof Error)
-      expect(result.message).to.equal("Must have the documentHighlight capability")
+      expect(result.message).toBe("Must have the documentHighlight capability")
     })
   })
 })

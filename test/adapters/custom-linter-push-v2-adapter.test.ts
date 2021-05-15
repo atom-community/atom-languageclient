@@ -1,6 +1,5 @@
 import LinterPushV2Adapter from "../../lib/adapters/linter-push-v2-adapter"
 import * as ls from "../../lib/languageclient"
-import { expect } from "chai"
 import { Point, Range } from "atom"
 
 const messageUrl = "dummy"
@@ -30,17 +29,21 @@ describe("CustomLinterPushV2Adapter", () => {
         severity: ls.DiagnosticSeverity.Information,
       }
 
-      const connection: any = { onPublishDiagnostics() {} }
+      const connection: any = {
+        onPublishDiagnostics() {
+          /* empty */
+        },
+      }
       const adapter = new CustomLinterPushV2Adapter(connection)
       const result = adapter.diagnosticToV2Message(filePath, diagnostic)
 
-      expect(result.excerpt).equals(diagnostic.message)
-      expect(result.linterName).equals(diagnostic.source)
-      expect(result.location.file).equals(filePath)
-      expect(result.location.position).deep.equals(new Range(new Point(1, 2), new Point(3, 4)))
-      expect(result.severity).equals("info")
-      expect(result.url).equals(messageUrl)
-      expect(result.solutions).deep.equals(messageSolutions)
+      expect(result.excerpt).toBe(diagnostic.message)
+      expect(result.linterName).toBe(diagnostic.source)
+      expect(result.location.file).toBe(filePath)
+      expect(result.location.position).toEqual(new Range(new Point(1, 2), new Point(3, 4)))
+      expect(result.severity).toBe("info")
+      expect(result.url).toBe(messageUrl)
+      expect(result.solutions).toEqual(messageSolutions)
     })
   })
 })

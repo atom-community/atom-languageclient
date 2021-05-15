@@ -1,7 +1,7 @@
 import type * as atomIde from "atom-ide-base"
 import Convert from "../convert"
 import * as Utils from "../utils"
-import { LanguageClientConnection, Location, ServerCapabilities } from "../languageclient"
+import { LanguageClientConnection, Location, LocationLink, ServerCapabilities } from "../languageclient"
 import { Point, TextEditor, Range } from "atom"
 
 /**
@@ -68,9 +68,16 @@ export default class DefinitionAdapter {
    * @param locationResult Either a single {Location} object or an {Array} of {Locations}.
    * @returns An {Array} of {Location}s or {null} if the locationResult was null.
    */
-  public static normalizeLocations(locationResult: Location | Location[]): Location[] | null {
+  public static normalizeLocations(
+    locationResult: Location | Location[] | LocationLink[] | null
+  ): Location[] | LocationLink[] | null {
     if (locationResult == null) {
+      // TODO use ===
       return null
+    }
+    // TODO `d.targetRange.start` never becomes `null` according to the types
+    if (isLocationLinkArray(locationResult)) {
+      return locationResult.filter((d) => d.targetRange.start != null)
     }
     return (Array.isArray(locationResult) ? locationResult : [locationResult]).filter((d) => d.range.start != null)
   }
@@ -82,7 +89,18 @@ export default class DefinitionAdapter {
    * @param languageName The name of the language these objects are written in.
    * @returns An {Array} of {Definition}s that represented the converted {Location}s.
    */
-  public static convertLocationsToDefinitions(locations: Location[], languageName: string): atomIde.Definition[] {
+  public static convertLocationsToDefinitions(
+    locations: Location[] | LocationLink[],
+    languageName: string
+  ): atomIde.Definition[] {
+    if (isLocationLinkArray(locations)) {
+      return locations.map((d) => ({
+        path: Convert.uriToPath(d.targetUri),
+        position: Convert.positionToPoint(d.targetRange.start),
+        range: Range.fromObject(Convert.lsRangeToAtomRange(d.targetRange)),
+        language: languageName,
+      }))
+    }
     return locations.map((d) => ({
       path: Convert.uriToPath(d.uri),
       position: Convert.positionToPoint(d.range.start),
@@ -90,4 +108,8 @@ export default class DefinitionAdapter {
       language: languageName,
     }))
   }
+}
+
+function isLocationLinkArray(value: any): value is LocationLink[] {
+  return Array.isArray(value) && LocationLink.is(value[0])
 }

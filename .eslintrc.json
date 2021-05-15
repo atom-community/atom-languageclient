@@ -1,5 +1,5 @@
 {
-  "extends": ["eslint-config-atomic/strict", "plugin:chai-friendly/recommended"],
+  "extends": ["eslint-config-atomic/strict"],
   "ignorePatterns": ["build/", "node_modules/"],
   "rules": {
     "no-eq-null": "warn",

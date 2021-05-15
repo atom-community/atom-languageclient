@@ -1,6 +1,6 @@
 {
   "name": "atom-languageclient",
-  "version": "1.7.0",
+  "version": "1.10.0",
   "description": "Integrate Language Servers with Atom",
   "repository": "https://github.com/atom-ide-community/atom-languageclient",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "clean": "shx rm -rf build && mkdirp build",
     "copy.typings": "shx cp -r ./typings ./build",
     "compile": "npm run copy.typings && tsc",
+    "build": "npm run clean && npm run compile",
     "watch": "npm run compile -- --watch",
     "prepare": "npm run clean && npm run compile",
     "test": "npm run compile && atom --test build/test"
@@ -27,28 +28,22 @@
   "atomTestRunner": "./test/runner",
   "dependencies": {
     "@types/rimraf": "^3.0.0",
-    "atom-ide-base": "^2.4.0",
+    "atom-ide-base": "^2.6.0",
     "rimraf": "^3.0.2",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver-protocol": "3.16.0",
     "vscode-languageserver-types": "3.16.0",
-    "zadeh": "2.0.2"
+    "zadeh": "3.0.0-beta.2"
   },
   "devDependencies": {
-    "@atom/mocha-test-runner": "^1.6.1",
     "@types/atom": "^1.40.10",
-    "@types/chai": "^4.2.14",
-    "@types/mocha": "^8.2.0",
-    "@types/node": "14.14.22",
-    "@types/sinon": "^9.0.10",
-    "chai": "^4.2.0",
-    "eslint-config-atomic": "^1.14.0",
-    "eslint-plugin-chai-friendly": "^0.6.0",
-    "mocha": "^8.2.1",
-    "mocha-appveyor-reporter": "^0.4.2",
-    "prettier-config-atomic": "^2.0.1",
+    "@types/jasmine": "^3.7.1",
+    "@types/node": "15.0.2",
+    "atom-jasmine3-test-runner": "^5.2.4",
+    "eslint-config-atomic": "^1.14.4",
+    "prettier-config-atomic": "^2.0.5",
     "shx": "^0.3.3",
-    "sinon": "^9.2.4",
-    "typescript": "~4.1.3"
+    "spawk": "^1.4.0",
+    "typescript": "~4.2.4"
   }
 }
