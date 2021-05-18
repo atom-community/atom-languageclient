@@ -1,12 +1,12 @@
 import * as Utils from "../lib/utils"
 import { createFakeEditor } from "./helpers"
-import { Point } from "atom"
+import { Point, TextEditor } from "atom"
 import { join } from "path"
 import * as fs from "fs"
 
 describe("Utils", () => {
   describe("getWordAtPosition", () => {
-    let editor: any
+    let editor: TextEditor
     beforeEach(() => {
       editor = createFakeEditor("test.txt")
       editor.setText("blah test1234 test-two")

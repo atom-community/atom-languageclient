@@ -2,14 +2,15 @@ import AutoLanguageClient from "../lib/auto-languageclient"
 import { projectPathToWorkspaceFolder, ServerManager } from "../lib/server-manager"
 import { FakeAutoLanguageClient } from "./helpers"
 import { dirname } from "path"
+import { TextEditor } from "atom"
 
-function mockEditor(uri: string, scopeName: string): any {
+function mockEditor(uri: string, scopeName: string): TextEditor {
   return {
     getPath: () => uri,
     getGrammar: () => {
       return { scopeName }
     },
-  }
+  } as TextEditor
 }
 
 describe("AutoLanguageClient", () => {
