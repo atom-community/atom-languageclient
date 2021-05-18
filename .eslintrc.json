@@ -8,7 +8,7 @@
     "class-methods-use-this": "warn",
     "default-case": "warn",
     "no-new": "warn",
-    "no-shadow": "warn",
+    "@typescript-eslint/no-shadow": "warn",
     "no-invalid-this": "warn",
     "require-await": "warn",
     "no-useless-constructor": "warn",
