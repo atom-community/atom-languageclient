@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.10.0...v1.10.1) (2021-06-10)
+
+
+### Bug Fixes
+
+* update atom-ide-base, zadeh, etc ([6cf01e4](https://github.com/atom-ide-community/atom-languageclient/commit/6cf01e420381b15576cb563ff2f25ab8e3df8854))
+
 # [1.10.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.9.0...v1.10.0) (2021-05-14)
 
 
