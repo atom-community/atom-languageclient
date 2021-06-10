@@ -22,6 +22,8 @@ export interface ActiveServer {
   process: LanguageServerProcess
   connection: ls.LanguageClientConnection
   capabilities: ls.ServerCapabilities
+  /** Out of project directories that this server can also support. */
+  additionalPaths?: Set<string>
 }
 
 interface RestartCounter {
@@ -342,4 +344,14 @@ export function normalizedProjectPathToWorkspaceFolder(normalizedProjectPath: st
 
 export function normalizePath(projectPath: string): string {
   return !projectPath.endsWith(path.sep) ? path.join(projectPath, path.sep) : projectPath
+}
+
+/** Considers a path for inclusion in `additionalPaths`. */
+export function considerAdditionalPath(
+  server: ActiveServer & { additionalPaths: Set<string> },
+  additionalPath: string
+): void {
+  if (!additionalPath.startsWith(server.projectPath)) {
+    server.additionalPaths.add(additionalPath)
+  }
 }
