@@ -705,7 +705,7 @@ export default class AutoLanguageClient {
       point
     )
 
-    if (query !== null && this.supportsDefinitionsForAdditionalPaths && server.additionalPaths !== undefined) {
+    if (query !== null && server.additionalPaths !== undefined) {
       // populate additionalPaths based on definitions
       // Indicates that the language server can support LSP functionality for out of project files indicated by `textDocument/definition` responses.
       for (const def of query.definitions) {
@@ -999,14 +999,6 @@ export default class AutoLanguageClient {
       .filter((l) => l)
       .forEach((line) => this.logger.warn(`stderr ${line}`))
   }
-
-  /**
-   * Indicates that the language server can support LSP functionality for out of project files indicated by
-   * `textDocument/definition` responses. Set it to `true` if the server supports this feature.
-   *
-   * @default `false`
-   */
-  protected supportsDefinitionsForAdditionalPaths: boolean = false
 
   private getServerAdapter<T extends keyof ServerAdapters>(
     server: ActiveServer,
