@@ -697,7 +697,23 @@ export default class AutoLanguageClient {
     }
 
     this.definitions = this.definitions || new DefinitionAdapter()
-    return this.definitions.getDefinition(server.connection, server.capabilities, this.getLanguageName(), editor, point)
+    const query = await this.definitions.getDefinition(
+      server.connection,
+      server.capabilities,
+      this.getLanguageName(),
+      editor,
+      point
+    )
+
+    if (query !== null && this.supportsDefinitionsForAdditionalPaths && server.additionalPaths !== undefined) {
+      // populate additionalPaths based on definitions
+      // Indicates that the language server can support LSP functionality for out of project files indicated by `textDocument/definition` responses.
+      for (const def of query.definitions) {
+        considerAdditionalPath(server as ActiveServer & { additionalPaths: Set<string> }, path.dirname(def.path))
+      }
+    }
+
+    return query
   }
 
   // Outline View via LS documentSymbol---------------------------------
@@ -983,6 +999,14 @@ export default class AutoLanguageClient {
       .filter((l) => l)
       .forEach((line) => this.logger.warn(`stderr ${line}`))
   }
+
+  /**
+   * Indicates that the language server can support LSP functionality for out of project files indicated by
+   * `textDocument/definition` responses. Set it to `true` if the server supports this feature.
+   *
+   * @default `false`
+   */
+  protected supportsDefinitionsForAdditionalPaths: boolean = false
 
   private getServerAdapter<T extends keyof ServerAdapters>(
     server: ActiveServer,
