@@ -109,7 +109,7 @@ export default class AutoLanguageClient {
   protected getInitializeParams(projectPath: string, lsProcess: LanguageServerProcess): ls.InitializeParams {
     const rootUri = Convert.pathToUri(projectPath)
     return {
-      processId: lsProcess.pid,
+      processId: lsProcess.pid !== undefined ? lsProcess.pid : null,
       rootPath: projectPath,
       rootUri,
       locale: atom.config.get("atom-i18n.locale") || "en",
