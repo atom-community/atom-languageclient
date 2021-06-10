@@ -47,7 +47,8 @@ export class ServerManager {
     private _startForEditor: (editor: TextEditor) => boolean,
     private _changeWatchedFileFilter: (filePath: string) => boolean,
     private _reportBusyWhile: ReportBusyWhile,
-    private _languageServerName: string
+    private _languageServerName: string,
+    private _determineProjectPath: (textEditor: TextEditor) => string | null
   ) {
     this.updateNormalizedProjectPaths()
   }
@@ -121,7 +122,7 @@ export class ServerManager {
     textEditor: TextEditor,
     { shouldStart }: { shouldStart?: boolean } = { shouldStart: false }
   ): Promise<ActiveServer | null> {
-    const finalProjectPath = this.determineProjectPath(textEditor)
+    const finalProjectPath = this._determineProjectPath(textEditor)
     if (finalProjectPath == null) {
       // Files not yet saved have no path
       return null
@@ -243,14 +244,6 @@ export class ServerManager {
       this._logger.debug(`Server terminating "${server.projectPath}"`)
       this.exitServer(server)
     })
-  }
-
-  public determineProjectPath(textEditor: TextEditor): string | null {
-    const filePath = textEditor.getPath()
-    if (filePath == null) {
-      return null
-    }
-    return this._normalizedProjectPaths.find((d) => filePath.startsWith(d)) || null
   }
 
   public updateNormalizedProjectPaths(): void {

@@ -308,7 +308,8 @@ export default class AutoLanguageClient {
       (e) => this.shouldStartForEditor(e),
       (filepath) => this.filterChangeWatchedFiles(filepath),
       this.reportBusyWhile,
-      this.getServerName()
+      this.getServerName(),
+      this.determineProjectPath
     )
     this._serverManager.startListening()
     process.on("exit", () => this.exitCleanup.bind(this))
@@ -475,6 +476,15 @@ export default class AutoLanguageClient {
    */
   protected onSpawnExit(code: number | null, signal: NodeJS.Signals | null): void {
     this.logger.debug(`exit: code ${code} signal ${signal}`)
+  }
+
+  /** (Optional) Finds the project path. If there is a custom logic for finding projects override this method. */
+  protected determineProjectPath(textEditor: TextEditor): string | null {
+    const filePath = textEditor.getPath()
+    if (filePath == null) {
+      return null
+    }
+    return this._serverManager.getNormalizedProjectPaths().find((d) => filePath.startsWith(d)) || null
   }
 
   /**
