@@ -35,43 +35,31 @@ function setupServerManager(client = setupClient()) {
 
 describe("AutoLanguageClient", () => {
   describe("determineProjectPath", () => {
-    it("returns null when a single file is open", async () => {
-      const client = setupClient()
-      const textEditor = (await atom.workspace.open(__filename)) as TextEditor
-      /* eslint-disable-next-line dot-notation */
-      const projectPath = client["determineProjectPath"](textEditor)
-      expect(projectPath).toBeNull()
-    })
-    it("returns the project path when a file of that project is open", async () => {
-      // macos has issues with handling too much resources
-      if (process.platform === "darwin") {
-        return
-      }
+    it("returns the project path for an internal or an external file in the project", async () => {
       const client = setupClient()
       const serverManager = setupServerManager(client)
 
+      // "returns null when a single file is open"
+
+      let textEditor = (await atom.workspace.open(__filename)) as TextEditor
+      /* eslint-disable-next-line dot-notation */
+      expect(client["determineProjectPath"](textEditor)).toBeNull()
+      textEditor.destroy()
+
+      // "returns the project path when a file of that project is open"
       const projectPath = __dirname
 
       // gives the open workspace folder
       atom.project.addPath(projectPath)
       await serverManager.startServer(projectPath)
 
-      const textEditor = (await atom.workspace.open(__filename)) as TextEditor
+      textEditor = (await atom.workspace.open(__filename)) as TextEditor
       /* eslint-disable-next-line dot-notation */
       expect(client["determineProjectPath"](textEditor)).toBe(normalizePath(projectPath))
-    })
-    it("returns the project path for an external file if it is in additional paths", async () => {
-      // macos has issues with handling too much resources
-      if (process.platform === "darwin") {
-        return
-      }
+      textEditor.destroy()
 
       // "returns the project path when an external file is open and it is not in additional paths"
 
-      const client = setupClient()
-      const serverManager = setupServerManager(client)
-
-      const projectPath = __dirname
       const externalDir = join(dirname(projectPath), "lib")
       const externalFile = join(externalDir, "main.js")
 
@@ -79,7 +67,7 @@ describe("AutoLanguageClient", () => {
       atom.project.addPath(projectPath)
       await serverManager.startServer(projectPath)
 
-      let textEditor = (await atom.workspace.open(externalFile)) as TextEditor
+      textEditor = (await atom.workspace.open(externalFile)) as TextEditor
       /* eslint-disable-next-line dot-notation */
       expect(client["determineProjectPath"](textEditor)).toBeNull()
       textEditor.destroy()
