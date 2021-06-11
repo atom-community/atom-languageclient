@@ -1,7 +1,14 @@
+import { TextEditor } from "atom"
 import AutoLanguageClient from "../lib/auto-languageclient"
-import { projectPathToWorkspaceFolder, ServerManager } from "../lib/server-manager"
+import {
+  projectPathToWorkspaceFolder,
+  ServerManager,
+  ActiveServer,
+  considerAdditionalPath,
+  normalizePath,
+} from "../lib/server-manager"
 import { FakeAutoLanguageClient } from "./helpers"
-import { dirname } from "path"
+import { dirname, join } from "path"
 
 function mockEditor(uri: string, scopeName: string): any {
   return {
@@ -27,6 +34,68 @@ function setupServerManager(client = setupClient()) {
 }
 
 describe("AutoLanguageClient", () => {
+  describe("determineProjectPath", () => {
+    it("returns null when a single file is open", async () => {
+      const client = setupClient()
+      const textEditor = (await atom.workspace.open(__filename)) as TextEditor
+      /* eslint-disable-next-line dot-notation */
+      const projectPath = client["determineProjectPath"](textEditor)
+      expect(projectPath).toBeNull()
+    })
+    it("returns the project path when a file of that project is open", async () => {
+      const client = setupClient()
+      const serverManager = setupServerManager(client)
+
+      const projectPath = __dirname
+
+      // gives the open workspace folder
+      atom.project.addPath(projectPath)
+      await serverManager.startServer(projectPath)
+
+      const textEditor = (await atom.workspace.open(__filename)) as TextEditor
+      /* eslint-disable-next-line dot-notation */
+      expect(client["determineProjectPath"](textEditor)).toBe(normalizePath(projectPath))
+    })
+    it("returns the project path when an external file is open and it is not in additional paths", async () => {
+      const client = setupClient()
+      const serverManager = setupServerManager(client)
+
+      const projectPath = __dirname
+      const externalDir = join(dirname(projectPath), "lib")
+      const externalFile = join(externalDir, "main.js")
+
+      // gives the open workspace folder
+      atom.project.addPath(projectPath)
+      await serverManager.startServer(projectPath)
+
+      const textEditor = (await atom.workspace.open(externalFile)) as TextEditor
+      /* eslint-disable-next-line dot-notation */
+      expect(client["determineProjectPath"](textEditor)).toBeNull()
+    })
+    it("returns the project path when an external file is open and it is in additional paths", async () => {
+      const client = setupClient()
+      const serverManager = setupServerManager(client)
+
+      const projectPath = __dirname
+      const externalDir = join(dirname(projectPath), "lib")
+      const externalFile = join(externalDir, "main.js")
+
+      // gives the open workspace folder
+      atom.project.addPath(projectPath)
+      await serverManager.startServer(projectPath)
+
+      // get server
+      const server = serverManager.getActiveServers()[0]
+      expect(typeof server.additionalPaths).toBe("object") // Set()
+      // add additional path
+      considerAdditionalPath(server as ActiveServer & { additionalPaths: Set<string> }, externalDir)
+      expect(server.additionalPaths?.has(externalDir)).toBeTrue()
+
+      const textEditor = (await atom.workspace.open(externalFile)) as TextEditor
+      /* eslint-disable-next-line dot-notation */
+      expect(client["determineProjectPath"](textEditor)).toBe(normalizePath(projectPath))
+    })
+  })
   describe("ServerManager", () => {
     describe("WorkspaceFolders", () => {
       let serverManager: ServerManager
