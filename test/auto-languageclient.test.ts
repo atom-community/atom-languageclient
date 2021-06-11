@@ -12,20 +12,26 @@ function mockEditor(uri: string, scopeName: string): any {
   }
 }
 
+function setupClient() {
+  atom.workspace.getTextEditors().forEach((editor) => editor.destroy())
+  atom.project.getPaths().forEach((project) => atom.project.removePath(project))
+  const client = new FakeAutoLanguageClient()
+  client.activate()
+  return client
+}
+
+function setupServerManager(client = setupClient()) {
+  /* eslint-disable-next-line dot-notation */
+  const serverManager = client["_serverManager"]
+  return serverManager
+}
+
 describe("AutoLanguageClient", () => {
   describe("ServerManager", () => {
     describe("WorkspaceFolders", () => {
-      let client: FakeAutoLanguageClient
       let serverManager: ServerManager
-
       beforeEach(() => {
-        atom.workspace.getTextEditors().forEach((editor) => editor.destroy())
-        atom.project.getPaths().forEach((project) => atom.project.removePath(project))
-        client = new FakeAutoLanguageClient()
-        client.activate()
-
-        /* eslint-disable-next-line dot-notation */
-        serverManager = client["_serverManager"]
+        serverManager = setupServerManager()
       })
 
       afterEach(() => {
