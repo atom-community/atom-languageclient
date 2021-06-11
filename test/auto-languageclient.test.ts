@@ -43,6 +43,10 @@ describe("AutoLanguageClient", () => {
       expect(projectPath).toBeNull()
     })
     it("returns the project path when a file of that project is open", async () => {
+      // macos has issues with handling too much resources
+      if (process.platform === "darwin") {
+        return
+      }
       const client = setupClient()
       const serverManager = setupServerManager(client)
 
@@ -57,6 +61,11 @@ describe("AutoLanguageClient", () => {
       expect(client["determineProjectPath"](textEditor)).toBe(normalizePath(projectPath))
     })
     it("returns the project path for an external file if it is in additional paths", async () => {
+      // macos has issues with handling too much resources
+      if (process.platform === "darwin") {
+        return
+      }
+
       // "returns the project path when an external file is open and it is not in additional paths"
 
       const client = setupClient()
