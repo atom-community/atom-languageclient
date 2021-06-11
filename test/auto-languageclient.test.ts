@@ -56,7 +56,9 @@ describe("AutoLanguageClient", () => {
       /* eslint-disable-next-line dot-notation */
       expect(client["determineProjectPath"](textEditor)).toBe(normalizePath(projectPath))
     })
-    it("returns the project path when an external file is open and it is not in additional paths", async () => {
+    it("returns the project path for an external file if it is in additional paths", async () => {
+      // "returns the project path when an external file is open and it is not in additional paths"
+
       const client = setupClient()
       const serverManager = setupServerManager(client)
 
@@ -68,21 +70,12 @@ describe("AutoLanguageClient", () => {
       atom.project.addPath(projectPath)
       await serverManager.startServer(projectPath)
 
-      const textEditor = (await atom.workspace.open(externalFile)) as TextEditor
+      let textEditor = (await atom.workspace.open(externalFile)) as TextEditor
       /* eslint-disable-next-line dot-notation */
       expect(client["determineProjectPath"](textEditor)).toBeNull()
-    })
-    it("returns the project path when an external file is open and it is in additional paths", async () => {
-      const client = setupClient()
-      const serverManager = setupServerManager(client)
+      textEditor.destroy()
 
-      const projectPath = __dirname
-      const externalDir = join(dirname(projectPath), "lib")
-      const externalFile = join(externalDir, "main.js")
-
-      // gives the open workspace folder
-      atom.project.addPath(projectPath)
-      await serverManager.startServer(projectPath)
+      // "returns the project path when an external file is open and it is in additional paths"
 
       // get server
       const server = serverManager.getActiveServers()[0]
@@ -91,9 +84,10 @@ describe("AutoLanguageClient", () => {
       considerAdditionalPath(server as ActiveServer & { additionalPaths: Set<string> }, externalDir)
       expect(server.additionalPaths?.has(externalDir)).toBeTrue()
 
-      const textEditor = (await atom.workspace.open(externalFile)) as TextEditor
+      textEditor = (await atom.workspace.open(externalFile)) as TextEditor
       /* eslint-disable-next-line dot-notation */
       expect(client["determineProjectPath"](textEditor)).toBe(normalizePath(projectPath))
+      textEditor.destroy()
     })
   })
   describe("ServerManager", () => {
