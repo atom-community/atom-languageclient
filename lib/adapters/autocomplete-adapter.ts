@@ -17,9 +17,10 @@ import {
   ServerCapabilities,
   TextEdit,
 } from "../languageclient"
+import ApplyEditAdapter from "./apply-edit-adapter"
 import { Point, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
-import { Suggestion, TextSuggestion, SnippetSuggestion } from "../types/autocomplete-extended"
+import { Suggestion, TextSuggestion, SnippetSuggestion, SuggestionBase } from "../types/autocomplete-extended"
 
 /**
  * Defines the behavior of suggestion acceptance. Assume you have "cons|ole" in the editor ( `|` is the cursor position)
@@ -494,6 +495,16 @@ export default class AutocompleteAdapter {
       suggestion.customReplacmentPrefix = editor.getTextInBufferRange([atomRange.start, originalBufferPosition])
     }
     suggestion.text = textEdit.newText
+  }
+
+  /** Handle additional text edits after a suggestion insert, e.g. `additionalTextEdits`. */
+  public static applyAdditionalTextEdits(event: ac.SuggestionInsertedEvent): void {
+    const suggestion = event.suggestion as SuggestionBase
+    const additionalEdits = suggestion.completionItem?.additionalTextEdits
+    const buffer = event.editor.getBuffer()
+
+    ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(additionalEdits))
+    buffer.groupLastChanges()
   }
 
   /**

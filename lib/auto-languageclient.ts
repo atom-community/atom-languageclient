@@ -35,7 +35,6 @@ import {
 } from "./server-manager.js"
 import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
-import { SuggestionBase } from "./types/autocomplete-extended"
 import { basename } from "path"
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess }
@@ -640,7 +639,7 @@ export default class AutoLanguageClient {
       filterSuggestions: true,
       getSuggestions: this.getSuggestions.bind(this),
       onDidInsertSuggestion: (event) => {
-        this.handleAdditionalTextEdits(event)
+        AutocompleteAdapter.applyAdditionalTextEdits(event)
         this.onDidInsertSuggestion(event)
       },
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
@@ -681,16 +680,6 @@ export default class AutoLanguageClient {
     _suggestion: ac.AnySuggestion,
     _request: ac.SuggestionsRequestedEvent
   ): void {}
-
-  /** Handle additional text edits after a suggestion insert, e.g. `additionalTextEdits`. */
-  private handleAdditionalTextEdits(event: ac.SuggestionInsertedEvent): void {
-    const suggestion = event.suggestion as SuggestionBase
-    const additionalEdits = suggestion.completionItem?.additionalTextEdits
-    const buffer = event.editor.getBuffer()
-
-    ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(additionalEdits))
-    buffer.groupLastChanges()
-  }
 
   protected onDidInsertSuggestion(_arg: ac.SuggestionInsertedEvent): void {}
 
