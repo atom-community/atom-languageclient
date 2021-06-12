@@ -422,8 +422,6 @@ export default class AutocompleteAdapter {
       onDidConvertCompletionItem(item, suggestion as ac.AnySuggestion, request)
     }
 
-    suggestion.completionItem = item
-
     return suggestion
   }
 
@@ -440,6 +438,7 @@ export default class AutocompleteAdapter {
     suggestion.displayText = item.label
     suggestion.type = AutocompleteAdapter.completionKindToSuggestionType(item.kind)
     AutocompleteAdapter.applyDetailsToSuggestion(item, suggestion)
+    suggestion.completionItem = item
   }
 
   public static applyDetailsToSuggestion(item: CompletionItem, suggestion: Suggestion): void {
