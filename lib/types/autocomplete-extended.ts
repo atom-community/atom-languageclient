@@ -2,9 +2,10 @@
 // See this PR: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/51284
 
 import * as ac from "atom/autocomplete-plus"
+import { CompletionItem } from "../languageclient"
 
 /** Adds LSP specific properties to the Atom SuggestionBase type */
-interface SuggestionBase extends ac.SuggestionBase {
+export interface SuggestionBase extends ac.SuggestionBase {
   /**
    * A string that is used when filtering and sorting a set of completion items with a prefix present. When `falsy` the
    * [displayText](#ac.SuggestionBase.displayText) is used. When no prefix, the `sortText` property is used.
@@ -16,6 +17,9 @@ interface SuggestionBase extends ac.SuggestionBase {
    * the suggestion was gathered from.
    */
   customReplacmentPrefix?: string
+
+  /** Original completion item, if available */
+  completionItem?: CompletionItem
 }
 export type TextSuggestion = SuggestionBase & ac.TextSuggestion
 export type SnippetSuggestion = SuggestionBase & ac.SnippetSuggestion
