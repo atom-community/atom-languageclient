@@ -1,11 +1,14 @@
 import AutoCompleteAdapter, { grammarScopeToAutoCompleteSelector } from "../../lib/adapters/autocomplete-adapter"
 import { ActiveServer } from "../../lib/server-manager.js"
 import * as ls from "../../lib/languageclient"
-import { CompositeDisposable, Point } from "atom"
+import { CompositeDisposable, Point, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
+
 import { createSpyConnection, createFakeEditor } from "../helpers.js"
 import { TextSuggestion, SnippetSuggestion } from "../../lib/types/autocomplete-extended"
 import { CompletionItem, Range } from "../../lib/languageclient"
+import { dirname, join } from "path"
+import { Convert } from "../../lib/main"
 
 function createRequest({
   prefix = "",
@@ -593,6 +596,48 @@ describe("AutoCompleteAdapter", () => {
           expect((results4[0] as TextSuggestion).text).toBe("hello world")
           expect(results4[0].replacementPrefix).toBe("")
           expect((results4[0] as any).customReplacmentPrefix).toBe(undefined)
+        })
+      })
+
+      describe("applyAdditionalTextEdits", () => {
+        it("1", async () => {
+          const newText = "hello world"
+          const range = Range.create({ line: 1, character: 0 }, { line: 1, character: 0 + newText.length })
+          const additionalTextEdits = [
+            {
+              range,
+              newText,
+            },
+          ]
+          const results = await getSuggestionsMock(
+            [
+              {
+                label: "align",
+                sortText: "a",
+                additionalTextEdits,
+              },
+            ],
+            customRequest,
+            undefined,
+            undefined,
+            true
+          )
+          expect(results[0].displayText).toBe("align")
+          expect((results[0] as TextSuggestion).text).toBe("align")
+          expect((results[0] as TextSuggestion).completionItem).toEqual({
+            label: "align",
+            sortText: "a",
+            additionalTextEdits,
+          })
+          const editor = (await atom.workspace.open(join(dirname(__dirname), "fixtures", "hello.js"))) as TextEditor
+          const suggestionInsertedEvent = {
+            editor,
+            triggerPosition: new Point(1, 0), // has no effect?
+            suggestion: results[0],
+          } as ac.SuggestionInsertedEvent
+          AutoCompleteAdapter.applyAdditionalTextEdits(suggestionInsertedEvent)
+
+          expect(editor.getBuffer().getTextInRange(Convert.lsRangeToAtomRange(range))).toBe(newText)
         })
       })
 
