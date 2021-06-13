@@ -315,7 +315,8 @@ export default class AutoLanguageClient {
       (filepath) => this.filterChangeWatchedFiles(filepath),
       this.reportBusyWhile,
       this.getServerName(),
-      this.determineProjectPath
+      this.determineProjectPath,
+      this.shutdownGracefully
     )
     this._serverManager.startListening()
     process.on("exit", () => this.exitCleanup.bind(this))
@@ -987,6 +988,12 @@ export default class AutoLanguageClient {
   protected filterChangeWatchedFiles(_filePath: string): boolean {
     return true
   }
+
+  /**
+   * If this is set to `true` (the default value), the servers will shut down gracefully. If it is set to `false`, the
+   * servers will be killed without awaiting shutdown response.
+   */
+  protected shutdownGracefully: boolean = true
 
   /**
    * Called on language server stderr output.
