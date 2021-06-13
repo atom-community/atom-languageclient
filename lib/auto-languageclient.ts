@@ -315,7 +315,7 @@ export default class AutoLanguageClient {
       (filepath) => this.filterChangeWatchedFiles(filepath),
       this.reportBusyWhile,
       this.getServerName(),
-      this.determineProjectPath,
+      (textEditor: TextEditor) => this.determineProjectPath(textEditor),
       this.shutdownGracefully
     )
     this._serverManager.startListening()
