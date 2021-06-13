@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.12.0...v1.12.1) (2021-06-13)
+
+
+### Bug Fixes
+
+* determineProjectPath was called with the wrong `this` ([e58c3a4](https://github.com/atom-ide-community/atom-languageclient/commit/e58c3a46f2405fb297f88dd60f40bf28ab2300ee))
+
 # [1.12.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.11.0...v1.12.0) (2021-06-13)
 
 
