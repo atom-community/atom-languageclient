@@ -1,3 +1,17 @@
+# [1.11.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.10.1...v1.11.0) (2021-06-13)
+
+
+### Bug Fixes
+
+* remove supportsDefinitionsForAdditionalPaths function ([47773e9](https://github.com/atom-ide-community/atom-languageclient/commit/47773e9d3b0d05fee35875143ac7bd199b97a878))
+
+
+### Features
+
+* allow overriding determineProjectPath ([d3f213f](https://github.com/atom-ide-community/atom-languageclient/commit/d3f213f18dc8777898a3d30b9d56ef93c440955b))
+* populate additionalPaths based on definitions ([e7e7828](https://github.com/atom-ide-community/atom-languageclient/commit/e7e7828418b0beaab305f6694bc0ecc8675ee365))
+* support out-of-project files ([360d4fb](https://github.com/atom-ide-community/atom-languageclient/commit/360d4fb0be17f2f12d64ac26654f2f4d5bb74c1c))
+
 ## [1.10.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.10.0...v1.10.1) (2021-06-10)
 
 
