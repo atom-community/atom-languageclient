@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.11.0...v1.12.0) (2021-06-13)
+
+
+### Features
+
+* allow disabling shutdownGracefully ([14bec25](https://github.com/atom-ide-community/atom-languageclient/commit/14bec2586e85252e418b26d55cdd2c498cbabf58))
+
 # [1.11.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.10.1...v1.11.0) (2021-06-13)
 
 
