@@ -26,7 +26,13 @@ import * as Utils from "./utils"
 import { Socket } from "net"
 import { LanguageClientConnection } from "./languageclient"
 import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
-import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
+import {
+  LanguageServerProcess,
+  ServerManager,
+  ActiveServer,
+  normalizePath,
+  considerAdditionalPath,
+} from "./server-manager.js"
 import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
 import { basename } from "path"
@@ -308,7 +314,8 @@ export default class AutoLanguageClient {
       (e) => this.shouldStartForEditor(e),
       (filepath) => this.filterChangeWatchedFiles(filepath),
       this.reportBusyWhile,
-      this.getServerName()
+      this.getServerName(),
+      this.determineProjectPath
     )
     this._serverManager.startListening()
     process.on("exit", () => this.exitCleanup.bind(this))
@@ -390,6 +397,7 @@ export default class AutoLanguageClient {
       connection,
       capabilities: initializeResponse.capabilities,
       disposable: new CompositeDisposable(),
+      additionalPaths: new Set<string>(),
     }
     this.postInitialization(newServer)
     connection.initialized()
@@ -475,6 +483,27 @@ export default class AutoLanguageClient {
    */
   protected onSpawnExit(code: number | null, signal: NodeJS.Signals | null): void {
     this.logger.debug(`exit: code ${code} signal ${signal}`)
+  }
+
+  /** (Optional) Finds the project path. If there is a custom logic for finding projects override this method. */
+  protected determineProjectPath(textEditor: TextEditor): string | null {
+    const filePath = textEditor.getPath()
+    // TODO can filePath be null
+    if (filePath === null || filePath === undefined) {
+      return null
+    }
+    const projectPath = this._serverManager.getNormalizedProjectPaths().find((d) => filePath.startsWith(d))
+    if (projectPath !== undefined) {
+      return projectPath
+    }
+
+    const serverWithClaim = this._serverManager
+      .getActiveServers()
+      .find((server) => server.additionalPaths?.has(path.dirname(filePath)))
+    if (serverWithClaim !== undefined) {
+      return normalizePath(serverWithClaim.projectPath)
+    }
+    return null
   }
 
   /**
@@ -668,7 +697,23 @@ export default class AutoLanguageClient {
     }
 
     this.definitions = this.definitions || new DefinitionAdapter()
-    return this.definitions.getDefinition(server.connection, server.capabilities, this.getLanguageName(), editor, point)
+    const query = await this.definitions.getDefinition(
+      server.connection,
+      server.capabilities,
+      this.getLanguageName(),
+      editor,
+      point
+    )
+
+    if (query !== null && server.additionalPaths !== undefined) {
+      // populate additionalPaths based on definitions
+      // Indicates that the language server can support LSP functionality for out of project files indicated by `textDocument/definition` responses.
+      for (const def of query.definitions) {
+        considerAdditionalPath(server as ActiveServer & { additionalPaths: Set<string> }, path.dirname(def.path))
+      }
+    }
+
+    return query
   }
 
   // Outline View via LS documentSymbol---------------------------------
