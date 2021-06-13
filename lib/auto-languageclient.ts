@@ -638,7 +638,10 @@ export default class AutoLanguageClient {
       excludeLowerPriority: false,
       filterSuggestions: true,
       getSuggestions: this.getSuggestions.bind(this),
-      onDidInsertSuggestion: this.onDidInsertSuggestion.bind(this),
+      onDidInsertSuggestion: (event) => {
+        AutocompleteAdapter.applyAdditionalTextEdits(event)
+        this.onDidInsertSuggestion(event)
+      },
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
     }
   }
