@@ -944,8 +944,14 @@ export default class AutoLanguageClient {
       this.getServerAdapter(server, "linterPushV2"),
       editor,
       range,
-      diagnostics
+      diagnostics,
+      this.filterCodeActions.bind(this)
     )
+  }
+
+  /** Optionally filter code action before they're displayed */
+  protected filterCodeActions(actions: (ls.Command | ls.CodeAction)[] | null): (ls.Command | ls.CodeAction)[] | null {
+    return actions
   }
 
   public provideRefactor(): atomIde.RefactorProvider {

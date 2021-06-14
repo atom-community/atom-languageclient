@@ -41,7 +41,8 @@ export default class CodeActionAdapter {
     linterAdapter: LinterPushV2Adapter | IdeDiagnosticAdapter | undefined,
     editor: TextEditor,
     range: Range,
-    linterMessages: linter.Message[] | atomIde.Diagnostic[]
+    linterMessages: linter.Message[] | atomIde.Diagnostic[],
+    filterActions: (actions: (Command | CodeAction)[] | null) => (Command | CodeAction)[] | null = (actions) => actions
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return []
@@ -49,7 +50,7 @@ export default class CodeActionAdapter {
     assert(serverCapabilities.codeActionProvider, "Must have the textDocument/codeAction capability")
 
     const params = createCodeActionParams(linterAdapter, editor, range, linterMessages)
-    const actions = await connection.codeAction(params)
+    const actions = filterActions(await connection.codeAction(params))
     if (actions === null) {
       return []
     }
