@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.12.1...v1.13.0) (2021-06-14)
+
+
+### Bug Fixes
+
+* move adding completionItem to applyCompletionItemToSuggestion ([3c46aa1](https://github.com/atom-ide-community/atom-languageclient/commit/3c46aa197bfa2b4926bc04ff628aa45c9f74463f))
+
+
+### Features
+
+* apply additionalTextEdits after completion ([0e22593](https://github.com/atom-ide-community/atom-languageclient/commit/0e22593e04cf6b143f3f9fb828aa8681d8f51b3b))
+
 ## [1.12.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.12.0...v1.12.1) (2021-06-13)
 
 
