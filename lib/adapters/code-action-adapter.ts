@@ -42,7 +42,8 @@ export default class CodeActionAdapter {
     editor: TextEditor,
     range: Range,
     linterMessages: linter.Message[] | atomIde.Diagnostic[],
-    filterActions: (actions: (Command | CodeAction)[] | null) => (Command | CodeAction)[] | null = (actions) => actions
+    filterActions: (actions: (Command | CodeAction)[] | null) => (Command | CodeAction)[] | null = (actions) => actions,
+    onApply: (action: Command | CodeAction) => Promise<boolean> = () => Promise.resolve(true)
   ): Promise<atomIde.CodeAction[]> {
     if (linterAdapter == null) {
       return []
@@ -54,15 +55,19 @@ export default class CodeActionAdapter {
     if (actions === null) {
       return []
     }
-    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection))
+    return actions.map((action) => CodeActionAdapter.createCodeAction(action, connection, onApply))
   }
 
   private static createCodeAction(
     action: Command | CodeAction,
-    connection: LanguageClientConnection
+    connection: LanguageClientConnection,
+    onApply: (action: Command | CodeAction) => Promise<boolean>
   ): atomIde.CodeAction {
     return {
       async apply() {
+        if ((await onApply(action)) === false) {
+          return
+        }
         if (CodeAction.is(action)) {
           CodeActionAdapter.applyWorkspaceEdit(action.edit)
           await CodeActionAdapter.executeCommand(action.command, connection)

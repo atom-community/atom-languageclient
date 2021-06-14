@@ -945,13 +945,22 @@ export default class AutoLanguageClient {
       editor,
       range,
       diagnostics,
-      this.filterCodeActions.bind(this)
+      this.filterCodeActions.bind(this),
+      this.onApplyCodeActions.bind(this)
     )
   }
 
   /** Optionally filter code action before they're displayed */
   protected filterCodeActions(actions: (ls.Command | ls.CodeAction)[] | null): (ls.Command | ls.CodeAction)[] | null {
     return actions
+  }
+
+  /**
+   * Optionally handle a code action before default handling. Return `false` to prevent default handling, `true` to
+   * continue with default handling.
+   */
+  protected async onApplyCodeActions(_action: ls.Command | ls.CodeAction): Promise<boolean> {
+    return true
   }
 
   public provideRefactor(): atomIde.RefactorProvider {
