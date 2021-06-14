@@ -1,3 +1,12 @@
+# [1.14.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.13.0...v1.14.0) (2021-06-14)
+
+
+### Features
+
+* send codeActionLiteralSupport ([ca02334](https://github.com/atom-ide-community/atom-languageclient/commit/ca023340d2a597fec732219154db396a41acabe6))
+* support custom filterCodeActions ([949e624](https://github.com/atom-ide-community/atom-languageclient/commit/949e62452186db03291c74b10d2175b4c14cf40f))
+* support custom onApplyCodeActions ([868f883](https://github.com/atom-ide-community/atom-languageclient/commit/868f883ae729eaf0f32c208b1af3a2a4691c408d))
+
 # [1.13.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.12.1...v1.13.0) (2021-06-14)
 
 
