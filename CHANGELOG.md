@@ -1,3 +1,59 @@
+# [1.14.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.13.0...v1.14.0) (2021-06-14)
+
+
+### Features
+
+* send codeActionLiteralSupport ([ca02334](https://github.com/atom-ide-community/atom-languageclient/commit/ca023340d2a597fec732219154db396a41acabe6))
+* support custom filterCodeActions ([949e624](https://github.com/atom-ide-community/atom-languageclient/commit/949e62452186db03291c74b10d2175b4c14cf40f))
+* support custom onApplyCodeActions ([868f883](https://github.com/atom-ide-community/atom-languageclient/commit/868f883ae729eaf0f32c208b1af3a2a4691c408d))
+
+# [1.13.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.12.1...v1.13.0) (2021-06-14)
+
+
+### Bug Fixes
+
+* move adding completionItem to applyCompletionItemToSuggestion ([3c46aa1](https://github.com/atom-ide-community/atom-languageclient/commit/3c46aa197bfa2b4926bc04ff628aa45c9f74463f))
+
+
+### Features
+
+* apply additionalTextEdits after completion ([0e22593](https://github.com/atom-ide-community/atom-languageclient/commit/0e22593e04cf6b143f3f9fb828aa8681d8f51b3b))
+
+## [1.12.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.12.0...v1.12.1) (2021-06-13)
+
+
+### Bug Fixes
+
+* determineProjectPath was called with the wrong `this` ([e58c3a4](https://github.com/atom-ide-community/atom-languageclient/commit/e58c3a46f2405fb297f88dd60f40bf28ab2300ee))
+
+# [1.12.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.11.0...v1.12.0) (2021-06-13)
+
+
+### Features
+
+* allow disabling shutdownGracefully ([14bec25](https://github.com/atom-ide-community/atom-languageclient/commit/14bec2586e85252e418b26d55cdd2c498cbabf58))
+
+# [1.11.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.10.1...v1.11.0) (2021-06-13)
+
+
+### Bug Fixes
+
+* remove supportsDefinitionsForAdditionalPaths function ([47773e9](https://github.com/atom-ide-community/atom-languageclient/commit/47773e9d3b0d05fee35875143ac7bd199b97a878))
+
+
+### Features
+
+* allow overriding determineProjectPath ([d3f213f](https://github.com/atom-ide-community/atom-languageclient/commit/d3f213f18dc8777898a3d30b9d56ef93c440955b))
+* populate additionalPaths based on definitions ([e7e7828](https://github.com/atom-ide-community/atom-languageclient/commit/e7e7828418b0beaab305f6694bc0ecc8675ee365))
+* support out-of-project files ([360d4fb](https://github.com/atom-ide-community/atom-languageclient/commit/360d4fb0be17f2f12d64ac26654f2f4d5bb74c1c))
+
+## [1.10.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.10.0...v1.10.1) (2021-06-10)
+
+
+### Bug Fixes
+
+* update atom-ide-base, zadeh, etc ([6cf01e4](https://github.com/atom-ide-community/atom-languageclient/commit/6cf01e420381b15576cb563ff2f25ab8e3df8854))
+
 # [1.10.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.9.0...v1.10.0) (2021-05-14)
 
 

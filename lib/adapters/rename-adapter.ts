@@ -9,7 +9,7 @@ import {
   TextDocumentEdit,
   ApplyWorkspaceEditResponse,
   TextEdit,
-  Range
+  Range,
 } from "../languageclient"
 import ApplyEditAdapter from "./apply-edit-adapter"
 
@@ -19,7 +19,7 @@ export default class RenameAdapter {
   }
 
   public static canPrepare(serverCapabilities: ServerCapabilities): boolean {
-    if (serverCapabilities.renameProvider === undefined || typeof serverCapabilities.renameProvider === 'boolean') {
+    if (serverCapabilities.renameProvider === undefined || typeof serverCapabilities.renameProvider === "boolean") {
       return false
     }
 
@@ -59,20 +59,20 @@ export default class RenameAdapter {
   public static async prepareRename(
     connection: LanguageClientConnection,
     editor: TextEditor,
-    point: Point,
-  ): Promise<{ possible: boolean, range?: Range, label?: string | null}> {
+    point: Point
+  ): Promise<{ possible: boolean; range?: Range; label?: string | null }> {
     const result = await connection.prepareRename(RenameAdapter.createPrepareRenameParams(editor, point))
 
     if (!result) {
       return { possible: false }
     }
-    if ('defaultBehavior' in result) {
+    if ("defaultBehavior" in result) {
       return { possible: result.defaultBehavior }
     }
     return {
       possible: true,
-      range: 'range' in result ? result.range : result,
-      label: 'range' in result ? result.placeholder : null
+      range: "range" in result ? result.range : result,
+      label: "range" in result ? result.placeholder : null,
     }
   }
 

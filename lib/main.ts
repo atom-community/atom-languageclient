@@ -22,5 +22,5 @@ export {
   DownloadFile,
   LinterPushV2Adapter,
   CommandExecutionAdapter,
-  RenameAdapter
+  RenameAdapter,
 }

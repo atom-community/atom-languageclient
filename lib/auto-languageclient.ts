@@ -26,7 +26,13 @@ import * as Utils from "./utils"
 import { Socket } from "net"
 import { LanguageClientConnection } from "./languageclient"
 import { ConsoleLogger, FilteredLogger, Logger } from "./logger"
-import { LanguageServerProcess, ServerManager, ActiveServer } from "./server-manager.js"
+import {
+  LanguageServerProcess,
+  ServerManager,
+  ActiveServer,
+  normalizePath,
+  considerAdditionalPath,
+} from "./server-manager.js"
 import { Disposable, CompositeDisposable, Point, Range, TextEditor, CommandEvent, TextEditorElement } from "atom"
 import * as ac from "atom/autocomplete-plus"
 import Dialog from "./views/dialog"
@@ -110,7 +116,7 @@ export default class AutoLanguageClient {
   protected getInitializeParams(projectPath: string, lsProcess: LanguageServerProcess): ls.InitializeParams {
     const rootUri = Convert.pathToUri(projectPath)
     return {
-      processId: lsProcess.pid,
+      processId: lsProcess.pid !== undefined ? lsProcess.pid : null,
       rootPath: projectPath,
       rootUri,
       locale: atom.config.get("atom-i18n.locale") || "en",
@@ -214,6 +220,11 @@ export default class AutoLanguageClient {
           },
           codeAction: {
             dynamicRegistration: false,
+            codeActionLiteralSupport: {
+              codeActionKind: {
+                valueSet: [""], // TODO explicitly support more?
+              },
+            },
           },
           codeLens: {
             dynamicRegistration: false,
@@ -310,7 +321,9 @@ export default class AutoLanguageClient {
       (e) => this.shouldStartForEditor(e),
       (filepath) => this.filterChangeWatchedFiles(filepath),
       this.reportBusyWhile,
-      this.getServerName()
+      this.getServerName(),
+      (textEditor: TextEditor) => this.determineProjectPath(textEditor),
+      this.shutdownGracefully
     )
     this._serverManager.startListening()
     this.registerRenameCommands()
@@ -393,6 +406,7 @@ export default class AutoLanguageClient {
       connection,
       capabilities: initializeResponse.capabilities,
       disposable: new CompositeDisposable(),
+      additionalPaths: new Set<string>(),
     }
     this.postInitialization(newServer)
     connection.initialized()
@@ -478,6 +492,27 @@ export default class AutoLanguageClient {
    */
   protected onSpawnExit(code: number | null, signal: NodeJS.Signals | null): void {
     this.logger.debug(`exit: code ${code} signal ${signal}`)
+  }
+
+  /** (Optional) Finds the project path. If there is a custom logic for finding projects override this method. */
+  protected determineProjectPath(textEditor: TextEditor): string | null {
+    const filePath = textEditor.getPath()
+    // TODO can filePath be null
+    if (filePath === null || filePath === undefined) {
+      return null
+    }
+    const projectPath = this._serverManager.getNormalizedProjectPaths().find((d) => filePath.startsWith(d))
+    if (projectPath !== undefined) {
+      return projectPath
+    }
+
+    const serverWithClaim = this._serverManager
+      .getActiveServers()
+      .find((server) => server.additionalPaths?.has(path.dirname(filePath)))
+    if (serverWithClaim !== undefined) {
+      return normalizePath(serverWithClaim.projectPath)
+    }
+    return null
   }
 
   /**
@@ -611,7 +646,10 @@ export default class AutoLanguageClient {
       excludeLowerPriority: false,
       filterSuggestions: true,
       getSuggestions: this.getSuggestions.bind(this),
-      onDidInsertSuggestion: this.onDidInsertSuggestion.bind(this),
+      onDidInsertSuggestion: (event) => {
+        AutocompleteAdapter.applyAdditionalTextEdits(event)
+        this.onDidInsertSuggestion(event)
+      },
       getSuggestionDetailsOnSelect: this.getSuggestionDetailsOnSelect.bind(this),
     }
   }
@@ -671,7 +709,23 @@ export default class AutoLanguageClient {
     }
 
     this.definitions = this.definitions || new DefinitionAdapter()
-    return this.definitions.getDefinition(server.connection, server.capabilities, this.getLanguageName(), editor, point)
+    const query = await this.definitions.getDefinition(
+      server.connection,
+      server.capabilities,
+      this.getLanguageName(),
+      editor,
+      point
+    )
+
+    if (query !== null && server.additionalPaths !== undefined) {
+      // populate additionalPaths based on definitions
+      // Indicates that the language server can support LSP functionality for out of project files indicated by `textDocument/definition` responses.
+      for (const def of query.definitions) {
+        considerAdditionalPath(server as ActiveServer & { additionalPaths: Set<string> }, path.dirname(def.path))
+      }
+    }
+
+    return query
   }
 
   // Outline View via LS documentSymbol---------------------------------
@@ -893,8 +947,23 @@ export default class AutoLanguageClient {
       this.getServerAdapter(server, "linterPushV2"),
       editor,
       range,
-      diagnostics
+      diagnostics,
+      this.filterCodeActions.bind(this),
+      this.onApplyCodeActions.bind(this)
     )
+  }
+
+  /** Optionally filter code action before they're displayed */
+  protected filterCodeActions(actions: (ls.Command | ls.CodeAction)[] | null): (ls.Command | ls.CodeAction)[] | null {
+    return actions
+  }
+
+  /**
+   * Optionally handle a code action before default handling. Return `false` to prevent default handling, `true` to
+   * continue with default handling.
+   */
+  protected async onApplyCodeActions(_action: ls.Command | ls.CodeAction): Promise<boolean> {
+    return true
   }
 
   public provideRefactor(): atomIde.RefactorProvider {
@@ -904,66 +973,69 @@ export default class AutoLanguageClient {
       rename: this.getRename.bind(this),
     }
   }
-  
-  public async registerRenameCommands()
-  {                 
-    this._disposable.add(atom.commands.add('atom-text-editor', 'IDE:Rename', async (event: CommandEvent<TextEditorElement>) => {
-      const textEditorElement = event.currentTarget
-      const textEditor = textEditorElement.getModel()
-      const bufferPosition = textEditor.getCursorBufferPosition()
-      const server = await this._serverManager.getServer(textEditor)
 
-      if (!server) {
-        return 
-      }              
+  public async registerRenameCommands() {
+    this._disposable.add(
+      atom.commands.add("atom-text-editor", "IDE:Rename", async (event: CommandEvent<TextEditorElement>) => {
+        const textEditorElement = event.currentTarget
+        const textEditor = textEditorElement.getModel()
+        const bufferPosition = textEditor.getCursorBufferPosition()
+        const server = await this._serverManager.getServer(textEditor)
 
-      if (!RenameAdapter.canAdapt(server.capabilities)) {
-        atom.notifications.addInfo(`Rename is not supported by ${this.getServerName()}`)
-      }
-      
-      const outcome = { possible: true, label: 'Rename' }
-      if (RenameAdapter.canPrepare(server.capabilities)) {
-        const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)  
-        outcome.possible = possible
-      }
-    
-      if (!outcome.possible) {
-        atom.notifications.addWarning(`Nothing to rename at position at row ${bufferPosition.row+1} and column ${bufferPosition.column+1}`)
-        return;
-      } 
-      const newName = await Dialog.prompt('Enter new name')
-      RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)                
-      return 
-    }))
-
-    this._disposable.add(atom.contextMenu.add({
-      'atom-text-editor': [
-        {
-          label: 'Refactor',
-          submenu: [
-            { label: "Rename", command: "IDE:Rename" }
-          ],
-          created: function (event: MouseEvent) {   
-            const textEditor = atom.workspace.getActiveTextEditor()
-            if (!textEditor) {
-              return
-            }
-
-            const screenPosition = atom.views.getView(textEditor).getComponent().screenPositionForMouseEvent(event)
-            const bufferPosition = textEditor.bufferPositionForScreenPosition(screenPosition)             
-          
-            textEditor.setCursorBufferPosition(bufferPosition)
-          }          
+        if (!server) {
+          return
         }
-      ]
-    }))
+
+        if (!RenameAdapter.canAdapt(server.capabilities)) {
+          atom.notifications.addInfo(`Rename is not supported by ${this.getServerName()}`)
+        }
+
+        const outcome = { possible: true, label: "Rename" }
+        if (RenameAdapter.canPrepare(server.capabilities)) {
+          const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)
+          outcome.possible = possible
+        }
+
+        if (!outcome.possible) {
+          atom.notifications.addWarning(
+            `Nothing to rename at position at row ${bufferPosition.row + 1} and column ${bufferPosition.column + 1}`
+          )
+          return
+        }
+        const newName = await Dialog.prompt("Enter new name")
+        RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)
+        return
+      })
+    )
+
+    this._disposable.add(
+      atom.contextMenu.add({
+        "atom-text-editor": [
+          {
+            label: "Refactor",
+            submenu: [{ label: "Rename", command: "IDE:Rename" }],
+            created: function (event: MouseEvent) {
+              const textEditor = atom.workspace.getActiveTextEditor()
+              if (!textEditor) {
+                return
+              }
+
+              const screenPosition = atom.views.getView(textEditor).getComponent().screenPositionForMouseEvent(event)
+              const bufferPosition = textEditor.bufferPositionForScreenPosition(screenPosition)
+
+              textEditor.setCursorBufferPosition(bufferPosition)
+            },
+          },
+        ],
+      })
+    )
   }
-  
+
   public provideIntentions() {
     return {
       grammarScopes: this.getGrammarScopes(), // [*] would also work
       getIntentions: async ({ textEditor, bufferPosition }: { textEditor: TextEditor; bufferPosition: Point }) => {
-        const intentions: { title: string, selected: () => void }[] = []
+        const intentions: { title: string; selected: () => void }[] = []
         const server = await this._serverManager.getServer(textEditor)
 
         if (server == null) {
@@ -971,9 +1043,9 @@ export default class AutoLanguageClient {
         }
 
         if (RenameAdapter.canAdapt(server.capabilities)) {
-          const outcome = { possible: true, label: 'Rename' }
+          const outcome = { possible: true, label: "Rename" }
           if (RenameAdapter.canPrepare(server.capabilities)) {
-            const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)  
+            const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)
             outcome.possible = possible
           }
 
@@ -981,22 +1053,22 @@ export default class AutoLanguageClient {
             intentions.push({
               title: outcome.label,
               selected: async () => {
-                const newName = await Dialog.prompt('Enter new name')
+                const newName = await Dialog.prompt("Enter new name")
                 return RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)
-              }
+              },
             })
           }
         }
 
         intentions.push({
-          title: 'Some dummy intention',
+          title: "Some dummy intention",
           selected: async () => {
-            console.log('selected')
-          }
+            console.log("selected")
+          },
         })
 
         return intentions
-      }
+      },
     }
   }
 
@@ -1040,6 +1112,12 @@ export default class AutoLanguageClient {
   protected filterChangeWatchedFiles(_filePath: string): boolean {
     return true
   }
+
+  /**
+   * If this is set to `true` (the default value), the servers will shut down gracefully. If it is set to `false`, the
+   * servers will be killed without awaiting shutdown response.
+   */
+  protected shutdownGracefully: boolean = true
 
   /**
    * Called on language server stderr output.

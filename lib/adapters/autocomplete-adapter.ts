@@ -17,9 +17,10 @@ import {
   ServerCapabilities,
   TextEdit,
 } from "../languageclient"
+import ApplyEditAdapter from "./apply-edit-adapter"
 import { Point, TextEditor } from "atom"
 import * as ac from "atom/autocomplete-plus"
-import { Suggestion, TextSuggestion, SnippetSuggestion } from "../types/autocomplete-extended"
+import { Suggestion, TextSuggestion, SnippetSuggestion, SuggestionBase } from "../types/autocomplete-extended"
 
 /**
  * Defines the behavior of suggestion acceptance. Assume you have "cons|ole" in the editor ( `|` is the cursor position)
@@ -437,6 +438,7 @@ export default class AutocompleteAdapter {
     suggestion.displayText = item.label
     suggestion.type = AutocompleteAdapter.completionKindToSuggestionType(item.kind)
     AutocompleteAdapter.applyDetailsToSuggestion(item, suggestion)
+    suggestion.completionItem = item
   }
 
   public static applyDetailsToSuggestion(item: CompletionItem, suggestion: Suggestion): void {
@@ -492,6 +494,24 @@ export default class AutocompleteAdapter {
       suggestion.customReplacmentPrefix = editor.getTextInBufferRange([atomRange.start, originalBufferPosition])
     }
     suggestion.text = textEdit.newText
+  }
+
+  /**
+   * Handle additional text edits after a suggestion insert, e.g. `additionalTextEdits`.
+   *
+   * `additionalTextEdits` are An optional array of additional text edits that are applied when selecting this
+   * completion. Edits must not overlap (including the same insert position) with the main edit nor with themselves.
+   *
+   * Additional text edits should be used to change text unrelated to the current cursor position (for example adding an
+   * import statement at the top of the file if the completion item will insert an unqualified type).
+   */
+  public static applyAdditionalTextEdits(event: ac.SuggestionInsertedEvent): void {
+    const suggestion = event.suggestion as SuggestionBase
+    const additionalEdits = suggestion.completionItem?.additionalTextEdits
+    const buffer = event.editor.getBuffer()
+
+    ApplyEditAdapter.applyEdits(buffer, Convert.convertLsTextEdits(additionalEdits))
+    buffer.groupLastChanges()
   }
 
   /**

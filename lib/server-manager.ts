@@ -22,6 +22,8 @@ export interface ActiveServer {
   process: LanguageServerProcess
   connection: ls.LanguageClientConnection
   capabilities: ls.ServerCapabilities
+  /** Out of project directories that this server can also support. */
+  additionalPaths?: Set<string>
 }
 
 interface RestartCounter {
@@ -47,7 +49,9 @@ export class ServerManager {
     private _startForEditor: (editor: TextEditor) => boolean,
     private _changeWatchedFileFilter: (filePath: string) => boolean,
     private _reportBusyWhile: ReportBusyWhile,
-    private _languageServerName: string
+    private _languageServerName: string,
+    private _determineProjectPath: (textEditor: TextEditor) => string | null,
+    private shutdownGracefully: boolean
   ) {
     this.updateNormalizedProjectPaths()
   }
@@ -121,7 +125,7 @@ export class ServerManager {
     textEditor: TextEditor,
     { shouldStart }: { shouldStart?: boolean } = { shouldStart: false }
   ): Promise<ActiveServer | null> {
-    const finalProjectPath = this.determineProjectPath(textEditor)
+    const finalProjectPath = this._determineProjectPath(textEditor)
     if (finalProjectPath == null) {
       // Files not yet saved have no path
       return null
@@ -209,7 +213,7 @@ export class ServerManager {
         this._activeServers.splice(this._activeServers.indexOf(server), 1)
         this._stoppingServers.push(server)
         server.disposable.dispose()
-        if (server.connection.isConnected) {
+        if (this.shutdownGracefully && server.connection.isConnected) {
           await server.connection.shutdown()
         }
 
@@ -243,14 +247,6 @@ export class ServerManager {
       this._logger.debug(`Server terminating "${server.projectPath}"`)
       this.exitServer(server)
     })
-  }
-
-  public determineProjectPath(textEditor: TextEditor): string | null {
-    const filePath = textEditor.getPath()
-    if (filePath == null) {
-      return null
-    }
-    return this._normalizedProjectPaths.find((d) => filePath.startsWith(d)) || null
   }
 
   public updateNormalizedProjectPaths(): void {
@@ -349,4 +345,14 @@ export function normalizedProjectPathToWorkspaceFolder(normalizedProjectPath: st
 
 export function normalizePath(projectPath: string): string {
   return !projectPath.endsWith(path.sep) ? path.join(projectPath, path.sep) : projectPath
+}
+
+/** Considers a path for inclusion in `additionalPaths`. */
+export function considerAdditionalPath(
+  server: ActiveServer & { additionalPaths: Set<string> },
+  additionalPath: string
+): void {
+  if (!additionalPath.startsWith(server.projectPath)) {
+    server.additionalPaths.add(additionalPath)
+  }
 }
