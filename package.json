@@ -33,7 +33,7 @@
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver-protocol": "3.16.0",
     "vscode-languageserver-types": "3.16.0",
-    "zadeh": "3.0.0-beta.3"
+    "zadeh": "3.0.0-beta.4"
   },
   "devDependencies": {
     "@types/atom": "^1.40.10",
