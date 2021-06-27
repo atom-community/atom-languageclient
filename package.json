@@ -38,12 +38,12 @@
   "devDependencies": {
     "@types/atom": "^1.40.10",
     "@types/jasmine": "^3.7.7",
-    "@types/node": "15.12.2",
+    "@types/node": "15.12.5",
     "atom-jasmine3-test-runner": "^5.2.6",
-    "eslint-config-atomic": "1.14.5",
+    "eslint-config-atomic": "1.16.1",
     "prettier-config-atomic": "^2.0.5",
     "shx": "^0.3.3",
-    "spawk": "^1.4.0",
-    "typescript": "~4.3.2"
+    "spawk": "^1.7.1",
+    "typescript": "~4.3.4"
   }
 }
