@@ -44,6 +44,7 @@
     "prettier-config-atomic": "^2.0.5",
     "shx": "^0.3.3",
     "spawk": "^1.7.1",
+    "standard-language-server": "^0.1.0",
     "typescript": "~4.3.5"
   }
 }
