@@ -1,5 +1,5 @@
 {
-  "extends": ["eslint-config-atomic/strict"],
+  "extends": ["eslint-config-atomic"],
   "ignorePatterns": ["build/", "node_modules/"],
   "rules": {
     "no-eq-null": "warn",

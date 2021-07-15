@@ -195,7 +195,7 @@ export default class AutocompleteAdapter {
     const triggerColumns: [number, number] = [triggerPoint.column, request.bufferPosition.column]
 
     // Setup the cache for subsequent filtered results
-    const isComplete = completions === null || Array.isArray(completions) || completions.isIncomplete === false
+    const isComplete = completions === null || Array.isArray(completions) || !completions.isIncomplete
     const suggestionMap = this.completionItemsToSuggestions(
       completions,
       request,
@@ -234,7 +234,7 @@ export default class AutocompleteAdapter {
     const cache = this._suggestionCache.get(server)
     if (cache) {
       const possiblyResolvedCompletionItem = cache.suggestionMap.get(suggestion)
-      if (possiblyResolvedCompletionItem != null && possiblyResolvedCompletionItem.isResolved === false) {
+      if (possiblyResolvedCompletionItem != null && !possiblyResolvedCompletionItem.isResolved) {
         const resolvedCompletionItem = await server.connection.completionItemResolve(
           possiblyResolvedCompletionItem.completionItem
         )
