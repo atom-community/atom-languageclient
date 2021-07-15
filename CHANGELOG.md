@@ -1,3 +1,13 @@
+## [1.14.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.14.0...v1.14.1) (2021-07-15)
+
+
+### Bug Fixes
+
+* bump atom-ide-base and devDependencies ([02ad02d](https://github.com/atom-ide-community/atom-languageclient/commit/02ad02d163896570fbf9be9bb6a69080700abc14))
+* bump dependencies ([4e90504](https://github.com/atom-ide-community/atom-languageclient/commit/4e90504a9525086f96013bf888aa687760612ef4))
+* bump zadeh - adds linux musl prebuilds ([9568d62](https://github.com/atom-ide-community/atom-languageclient/commit/9568d627b31d3e41ed08b2f6c31eb7be88513bfb))
+* eslint fix ([1075cac](https://github.com/atom-ide-community/atom-languageclient/commit/1075cac4cd0bc99663798124c2c9de44de7c05c7))
+
 # [1.14.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.13.0...v1.14.0) (2021-06-14)
 
 
