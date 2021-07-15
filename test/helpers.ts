@@ -77,7 +77,7 @@ export class FakeAutoLanguageClient extends AutoLanguageClient {
     return ["source.javascript"]
   }
   public startServerProcess() {
-    return createFakeLanguageServerProcess()
+    return super.spawnChildNode(["standard-language-server"])
   }
   public preInitialization(connection: LanguageClientConnection) {
     spyOn(connection, "initialize").and.resolveTo({ capabilities: {} })

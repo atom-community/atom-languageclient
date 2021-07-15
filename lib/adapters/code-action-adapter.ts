@@ -65,7 +65,7 @@ export default class CodeActionAdapter {
   ): atomIde.CodeAction {
     return {
       async apply() {
-        if ((await onApply(action)) === false) {
+        if (!(await onApply(action))) {
           return
         }
         if (CodeAction.is(action)) {
