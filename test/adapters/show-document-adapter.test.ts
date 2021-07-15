@@ -76,7 +76,7 @@ describe("ShowDocumentAdapter", () => {
           takeFocus: true,
         }
         const editor = await canShowDocumentInAtom(params)
-        expect(atom.workspace.getActivePane()?.getItems()[0]).toBe(editor)
+        expect(atom.workspace.getActivePane().getItems()[0]).toBe(editor)
       })
 
       it("selects the given selection range", async () => {

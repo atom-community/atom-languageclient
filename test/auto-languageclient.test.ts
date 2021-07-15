@@ -36,11 +36,6 @@ function setupServerManager(client = setupClient()) {
 describe("AutoLanguageClient", () => {
   describe("determineProjectPath", () => {
     it("returns the project path for an internal or an external file in the project", async () => {
-      if (process.platform === "darwin") {
-        // there is nothing OS specific about the code. It just hits the limits that MacOS can handle in this test
-        pending("skipped on MacOS")
-        return
-      }
       const client = setupClient()
       const serverManager = setupServerManager(client)
 
@@ -116,10 +111,6 @@ describe("AutoLanguageClient", () => {
       })
 
       describe("getWorkspaceFolders", () => {
-        if (process.platform === "darwin") {
-          return
-        }
-
         it("returns null when no server is running", async () => {
           const workspaceFolders = await serverManager.getWorkspaceFolders()
           expect(workspaceFolders).toBeNull()
@@ -150,10 +141,6 @@ describe("AutoLanguageClient", () => {
         })
       })
       describe("didChangeWorkspaceFolders", () => {
-        if (process.platform === "darwin") {
-          return
-        }
-
         it("gives a notification if the projects change", async () => {
           const projectPath = __dirname
           const projectPath2 = dirname(__dirname)
