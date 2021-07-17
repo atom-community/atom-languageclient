@@ -4,6 +4,7 @@ import { createSpyConnection, createFakeEditor } from "../helpers.js"
 import { Point, Range } from "atom"
 import type { TextEditor } from "atom"
 
+let originalPlatform: NodeJS.Platform
 const setProcessPlatform = (platform: any) => {
   Object.defineProperty(process, "platform", { value: platform })
 }
@@ -34,13 +35,17 @@ const callHierarchyItemInWin32: ls.CallHierarchyItem = {
   selectionRange: { start: { line: 0, character: 24 }, end: { line: 0, character: 29 } },
 }
 
-describe("OutlineViewAdapter", () => {
+describe("CallHierarchyAdapter", () => {
   let fakeEditor: TextEditor
   let connection: ls.LanguageClientConnection
 
   beforeEach(() => {
     connection = new ls.LanguageClientConnection(createSpyConnection())
     fakeEditor = createFakeEditor()
+    originalPlatform = process.platform
+  })
+  afterEach(() => {
+    Object.defineProperty(process, "platform", { value: originalPlatform })
   })
 
   describe("canAdapt", () => {
