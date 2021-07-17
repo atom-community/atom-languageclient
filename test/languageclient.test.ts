@@ -241,6 +241,54 @@ describe("LanguageClientConnection", () => {
       expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/rename")
       expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
     })
+
+    it("sends a request for prepareCallHierarchy", async () => {
+      const params: ls.CallHierarchyPrepareParams = {
+        textDocument: { uri: "file:///a/b.txt" },
+        position: { line: 1, character: 2 },
+      }
+      await lc.prepareCallHierarchy(params)
+
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("textDocument/prepareCallHierarchy")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
+    })
+
+    it("sends a request for callHierarchyIncomingCalls", async () => {
+      const params: ls.CallHierarchyIncomingCallsParams = {
+        item: {
+          name: "hello",
+          kind: 12,
+          detail: "",
+          uri: "file:///C:/path/to/file.ts",
+          range: { start: { line: 0, character: 0 }, end: { line: 1, character: 1 } },
+          selectionRange: { start: { line: 0, character: 24 }, end: { line: 0, character: 29 } },
+        },
+      }
+      await lc.callHierarchyIncomingCalls(params)
+
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("callHierarchy/incomingCalls")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
+    })
+
+    it("sends a request for callHierarchyOutgoingCalls", async () => {
+      const params: ls.CallHierarchyOutgoingCallsParams = {
+        item: {
+          name: "hello",
+          kind: 12,
+          detail: "",
+          uri: "file:///C:/path/to/file.ts",
+          range: { start: { line: 0, character: 0 }, end: { line: 1, character: 1 } },
+          selectionRange: { start: { line: 0, character: 24 }, end: { line: 0, character: 29 } },
+        },
+      }
+      await lc.callHierarchyOutgoingCalls(params)
+
+      expect(lc._sendRequest).toHaveBeenCalled()
+      expect(lc._sendRequest.calls.argsFor(0)[0].method).toBe("callHierarchy/outgoingCalls")
+      expect(lc._sendRequest.calls.argsFor(0)[1]).toBe(params)
+    })
   })
 
   describe("send notifications", () => {
