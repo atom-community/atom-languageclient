@@ -10,7 +10,7 @@ import OutlineViewAdapter from "./outline-view-adapter"
 
 /** Public: Adapts the documentSymbolProvider of the language server to the Outline View supplied by Atom IDE UI. */
 export default class CallHierarchyAdapter {
-  private _cancellationTokens: WeakMap<LanguageClientConnection, CancellationTokenSource> = new WeakMap()
+  private _cancellationTokens = new WeakMap<LanguageClientConnection, CancellationTokenSource>()
 
   /**
    * Public: Determine whether this adapter can be used to adapt a language server based on the serverCapabilities
@@ -20,7 +20,7 @@ export default class CallHierarchyAdapter {
    * @returns A {Boolean} indicating adapter can adapt the server based on the given serverCapabilities.
    */
   public static canAdapt(serverCapabilities: ServerCapabilities): boolean {
-    return !!serverCapabilities.callHierarchyProvider
+    return Boolean(serverCapabilities.callHierarchyProvider)
   }
 
   /** Corresponds to lsp's CallHierarchyPrepareRequest */
@@ -53,11 +53,11 @@ export default class CallHierarchyAdapter {
     return <CallHierarchyForAdapter<T>>{
       type,
       data: results?.map(convertCallHierarchyItem) ?? [],
-      itemAt(n: number) {
+      itemAt(num: number) {
         if (type === "incoming") {
-          return <Promise<atomIde.CallHierarchy<T>>>this.adapter.getIncoming(this.connection, this.data[n].rawData)
+          return <Promise<atomIde.CallHierarchy<T>>>this.adapter.getIncoming(this.connection, this.data[num].rawData)
         } else {
-          return <Promise<atomIde.CallHierarchy<T>>>this.adapter.getOutgoing(this.connection, this.data[n].rawData)
+          return <Promise<atomIde.CallHierarchy<T>>>this.adapter.getOutgoing(this.connection, this.data[num].rawData)
         }
       },
       connection,
@@ -74,9 +74,9 @@ export default class CallHierarchyAdapter {
     )
     return <CallHierarchyForAdapter<"incoming">>{
       type: "incoming",
-      data: results?.map?.((l) => convertCallHierarchyItem(l.from)) || [],
-      itemAt(n: number) {
-        return this.adapter.getIncoming(this.connection, this.data[n].rawData)
+      data: results?.map((res) => convertCallHierarchyItem(res.from)) ?? [],
+      itemAt(num: number) {
+        return this.adapter.getIncoming(this.connection, this.data[num].rawData)
       },
       connection,
       adapter: this,
@@ -92,9 +92,9 @@ export default class CallHierarchyAdapter {
     )
     return <CallHierarchyForAdapter<"outgoing">>{
       type: "outgoing",
-      data: results?.map((l) => convertCallHierarchyItem(l.to)) || [],
-      itemAt(n: number) {
-        return this.adapter.getOutgoing(this.connection, this.data[n].rawData)
+      data: results?.map((res) => convertCallHierarchyItem(res.to)) ?? [],
+      itemAt(num: number) {
+        return this.adapter.getOutgoing(this.connection, this.data[num].rawData)
       },
       connection,
       adapter: this,
@@ -112,7 +112,7 @@ function convertCallHierarchyItem(rawData: CallHierarchyItem): CallHierarchyItem
           ...rawData.tags.reduce((set, tag) => {
             // filter out null and remove duplicates
             const entity = symbolTagToEntityKind(tag)
-            return entity == null ? set : set.add(entity)
+            return entity === null ? set : set.add(entity)
           }, new Set<atomIde.SymbolTagKind>()),
         ]
       : [],

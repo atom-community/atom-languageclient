@@ -765,10 +765,10 @@ export default class AutoLanguageClient {
     point: Point
   ): Promise<atomIde.CallHierarchy<"incoming"> | null> {
     const server = await this._serverManager.getServer(editor)
-    if (server == null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
+    if (server === null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
       return null
     }
-    this.callHierarchy = this.callHierarchy || new CallHierarchyAdapter()
+    this.callHierarchy = this.callHierarchy ?? new CallHierarchyAdapter()
     return this.callHierarchy.getCallHierarchy(server.connection, editor, point, "incoming")
   }
 
@@ -777,10 +777,10 @@ export default class AutoLanguageClient {
     point: Point
   ): Promise<atomIde.CallHierarchy<"outgoing"> | null> {
     const server = await this._serverManager.getServer(editor)
-    if (server == null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
+    if (server === null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
       return null
     }
-    this.callHierarchy = this.callHierarchy || new CallHierarchyAdapter()
+    this.callHierarchy = this.callHierarchy ?? new CallHierarchyAdapter()
     return this.callHierarchy.getCallHierarchy(server.connection, editor, point, "outgoing")
   }
 
