@@ -4,11 +4,15 @@ import { createSpyConnection, createFakeEditor } from "../helpers.js"
 import { Point, Range } from "atom"
 import type { TextEditor } from "atom"
 
+const setProcessPlatform = (platform: any) => {
+  Object.defineProperty(process, "platform", { value: platform })
+}
+
 const callHierarchyItem: ls.CallHierarchyItem = {
   name: "hello",
   kind: 12,
   detail: "",
-  uri: "file:///C:/path/to/file.ts",
+  uri: "file:///path/to/file.ts",
   range: { start: { line: 0, character: 0 }, end: { line: 1, character: 1 } },
   selectionRange: { start: { line: 0, character: 24 }, end: { line: 0, character: 29 } },
 }
@@ -16,6 +20,14 @@ const callHierarchyItemWithTags: ls.CallHierarchyItem = {
   name: "hello",
   kind: 12,
   tags: [1],
+  detail: "",
+  uri: "file:///path/to/file.ts",
+  range: { start: { line: 0, character: 0 }, end: { line: 1, character: 1 } },
+  selectionRange: { start: { line: 0, character: 24 }, end: { line: 0, character: 29 } },
+}
+const callHierarchyItemInWin32: ls.CallHierarchyItem = {
+  name: "hello",
+  kind: 12,
   detail: "",
   uri: "file:///C:/path/to/file.ts",
   range: { start: { line: 0, character: 0 }, end: { line: 1, character: 1 } },
@@ -52,7 +64,7 @@ describe("OutlineViewAdapter", () => {
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -71,7 +83,7 @@ describe("OutlineViewAdapter", () => {
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: ["deprecated"],
@@ -112,7 +124,7 @@ describe("OutlineViewAdapter", () => {
       expect((await result.itemAt(0)).type).toEqual("incoming")
       expect((await result.itemAt(0)).data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -125,7 +137,7 @@ describe("OutlineViewAdapter", () => {
       expect((await (await result.itemAt(0)).itemAt(0)).type).toEqual("incoming")
       expect((await (await result.itemAt(0)).itemAt(0)).data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -150,7 +162,7 @@ describe("OutlineViewAdapter", () => {
       expect((await result.itemAt(0)).type).toEqual("outgoing")
       expect((await result.itemAt(0)).data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -163,7 +175,7 @@ describe("OutlineViewAdapter", () => {
       expect((await (await result.itemAt(0)).itemAt(0)).type).toEqual("outgoing")
       expect((await (await result.itemAt(0)).itemAt(0)).data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -173,6 +185,22 @@ describe("OutlineViewAdapter", () => {
           rawData: jasmine.anything(),
         },
       ])
+    })
+    it("convert paths in darwin", async () => {
+      setProcessPlatform("darwin")
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
+      const result = <any>(
+        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+      )
+      expect(result.data[0].path).toEqual("/path/to/file.ts")
+    })
+    it("convert paths in win32", async () => {
+      setProcessPlatform("win32")
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItemInWin32])
+      const result = <any>(
+        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+      )
+      expect(result.data[0].path).toEqual("C:\\path\\to\\file.ts")
     })
   })
 
@@ -188,7 +216,7 @@ describe("OutlineViewAdapter", () => {
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -211,6 +239,28 @@ describe("OutlineViewAdapter", () => {
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([])
     })
+    it("convert paths in darwin", async () => {
+      setProcessPlatform("darwin")
+      spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo([
+        {
+          from: callHierarchyItem,
+          fromRanges: [],
+        },
+      ])
+      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      expect(result.data[0].path).toEqual("/path/to/file.ts")
+    })
+    it("convert paths in win32", async () => {
+      setProcessPlatform("win32")
+      spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo([
+        {
+          from: callHierarchyItemInWin32,
+          fromRanges: [],
+        },
+      ])
+      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      expect(result.data[0].path).toEqual("C:\\path\\to\\file.ts")
+    })
   })
 
   describe("getOutgoing", () => {
@@ -225,7 +275,7 @@ describe("OutlineViewAdapter", () => {
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([
         {
-          path: "C:\\path\\to\\file.ts",
+          path: jasmine.anything(),
           name: "hello",
           icon: "type-function",
           tags: [],
@@ -247,6 +297,28 @@ describe("OutlineViewAdapter", () => {
       const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([])
+    })
+    it("convert paths in darwin", async () => {
+      setProcessPlatform("darwin")
+      spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo([
+        {
+          to: callHierarchyItem,
+          fromRanges: [],
+        },
+      ])
+      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      expect(result.data[0].path).toEqual("/path/to/file.ts")
+    })
+    it("convert paths in win32", async () => {
+      setProcessPlatform("win32")
+      spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo([
+        {
+          to: callHierarchyItemInWin32,
+          fromRanges: [],
+        },
+      ])
+      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      expect(result.data[0].path).toEqual("C:\\path\\to\\file.ts")
     })
   })
 })
