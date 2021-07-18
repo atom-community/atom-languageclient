@@ -8,7 +8,7 @@ import * as linter from "atom/linter"
 import Convert from "./convert.js"
 import ApplyEditAdapter from "./adapters/apply-edit-adapter"
 import AutocompleteAdapter, { grammarScopeToAutoCompleteSelector } from "./adapters/autocomplete-adapter"
-import CallHierarchyAdapter from "./adapters/call-hierarchy-adapter"
+import * as CallHierarchyAdapter from "./adapters/call-hierarchy-adapter"
 import CodeActionAdapter from "./adapters/code-action-adapter"
 import CodeFormatAdapter from "./adapters/code-format-adapter"
 import CodeHighlightAdapter from "./adapters/code-highlight-adapter"
@@ -76,7 +76,7 @@ export default class AutoLanguageClient {
 
   // Shared adapters that can take the RPC connection as required
   protected autoComplete?: AutocompleteAdapter
-  protected callHierarchy?: CallHierarchyAdapter
+  protected callHierarchy?: typeof CallHierarchyAdapter
   protected datatip?: DatatipAdapter
   protected definitions?: DefinitionAdapter
   protected findReferences?: FindReferencesAdapter
@@ -768,7 +768,7 @@ export default class AutoLanguageClient {
     if (server === null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
       return null
     }
-    this.callHierarchy = this.callHierarchy ?? new CallHierarchyAdapter()
+    this.callHierarchy = this.callHierarchy ?? CallHierarchyAdapter
     return this.callHierarchy.getCallHierarchy(server.connection, editor, point, "incoming")
   }
 
@@ -780,7 +780,7 @@ export default class AutoLanguageClient {
     if (server === null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
       return null
     }
-    this.callHierarchy = this.callHierarchy ?? new CallHierarchyAdapter()
+    this.callHierarchy = this.callHierarchy ?? CallHierarchyAdapter
     return this.callHierarchy.getCallHierarchy(server.connection, editor, point, "outgoing")
   }
 

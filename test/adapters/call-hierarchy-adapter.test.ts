@@ -1,4 +1,4 @@
-import CallHierarchyAdapter from "../../lib/adapters/call-hierarchy-adapter"
+import * as CallHierarchyAdapter from "../../lib/adapters/call-hierarchy-adapter"
 import * as ls from "../../lib/languageclient"
 import { createSpyConnection, createFakeEditor } from "../helpers.js"
 import { Point, Range } from "atom"
@@ -64,7 +64,7 @@ describe("CallHierarchyAdapter", () => {
     it("converts the results from the connection", async () => {
       spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
       )
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([
@@ -83,7 +83,7 @@ describe("CallHierarchyAdapter", () => {
     it("converts the results with tags from the connection", async () => {
       spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItemWithTags])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
       )
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([
@@ -102,7 +102,7 @@ describe("CallHierarchyAdapter", () => {
     it("converts null results from the connection", async () => {
       spyOn(connection, "prepareCallHierarchy").and.resolveTo(null)
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
       )
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([])
@@ -110,7 +110,7 @@ describe("CallHierarchyAdapter", () => {
     it("converts empty results from the connection", async () => {
       spyOn(connection, "prepareCallHierarchy").and.resolveTo([])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
       )
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([])
@@ -124,7 +124,7 @@ describe("CallHierarchyAdapter", () => {
         },
       ])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
       )
       expect((await result.itemAt(0)).type).toEqual("incoming")
       expect((await result.itemAt(0)).data).toEqual([
@@ -162,7 +162,7 @@ describe("CallHierarchyAdapter", () => {
         },
       ])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
       )
       expect((await result.itemAt(0)).type).toEqual("outgoing")
       expect((await result.itemAt(0)).data).toEqual([
@@ -195,7 +195,7 @@ describe("CallHierarchyAdapter", () => {
       setProcessPlatform("darwin")
       spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
       )
       expect(result.data[0].path).toEqual("/path/to/file.ts")
     })
@@ -203,7 +203,7 @@ describe("CallHierarchyAdapter", () => {
       setProcessPlatform("win32")
       spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItemInWin32])
       const result = <any>(
-        await new CallHierarchyAdapter().getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
       )
       expect(result.data[0].path).toEqual("C:\\path\\to\\file.ts")
     })
@@ -211,13 +211,18 @@ describe("CallHierarchyAdapter", () => {
 
   describe("getIncoming", () => {
     it("converts the results from the connection", async () => {
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo([
         {
           from: callHierarchyItem,
           fromRanges: [],
         },
       ])
-      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        ).itemAt(0)
+      )
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([
         {
@@ -233,50 +238,75 @@ describe("CallHierarchyAdapter", () => {
       ])
     })
     it("converts null results from the connection", async () => {
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo(null)
-      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        ).itemAt(0)
+      )
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([])
     })
     it("converts empty results from the connection", async () => {
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo([])
-      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        ).itemAt(0)
+      )
       expect(result.type).toEqual("incoming")
       expect(result.data).toEqual([])
     })
     it("convert paths in darwin", async () => {
       setProcessPlatform("darwin")
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo([
         {
           from: callHierarchyItem,
           fromRanges: [],
         },
       ])
-      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        ).itemAt(0)
+      )
       expect(result.data[0].path).toEqual("/path/to/file.ts")
     })
     it("convert paths in win32", async () => {
       setProcessPlatform("win32")
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyIncomingCalls").and.resolveTo([
         {
           from: callHierarchyItemInWin32,
           fromRanges: [],
         },
       ])
-      const result = <any>await new CallHierarchyAdapter().getIncoming(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "incoming")
+        ).itemAt(0)
+      )
       expect(result.data[0].path).toEqual("C:\\path\\to\\file.ts")
     })
   })
 
   describe("getOutgoing", () => {
     it("converts the results from the connection", async () => {
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo([
         {
           to: callHierarchyItem,
           fromRanges: [],
         },
       ])
-      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        ).itemAt(0)
+      )
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([
         {
@@ -292,37 +322,57 @@ describe("CallHierarchyAdapter", () => {
       ])
     })
     it("converts null results from the connection", async () => {
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo(null)
-      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        ).itemAt(0)
+      )
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([])
     })
     it("converts empty results from the connection", async () => {
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo([])
-      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        ).itemAt(0)
+      )
       expect(result.type).toEqual("outgoing")
       expect(result.data).toEqual([])
     })
     it("convert paths in darwin", async () => {
       setProcessPlatform("darwin")
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo([
         {
           to: callHierarchyItem,
           fromRanges: [],
         },
       ])
-      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        ).itemAt(0)
+      )
       expect(result.data[0].path).toEqual("/path/to/file.ts")
     })
     it("convert paths in win32", async () => {
       setProcessPlatform("win32")
+      spyOn(connection, "prepareCallHierarchy").and.resolveTo([callHierarchyItem])
       spyOn(connection, "callHierarchyOutgoingCalls").and.resolveTo([
         {
           to: callHierarchyItemInWin32,
           fromRanges: [],
         },
       ])
-      const result = <any>await new CallHierarchyAdapter().getOutgoing(connection, callHierarchyItem)
+      const result = <any>(
+        await (
+          await CallHierarchyAdapter.getCallHierarchy(connection, fakeEditor, new Point(0, 0), "outgoing")
+        ).itemAt(0)
+      )
       expect(result.data[0].path).toEqual("C:\\path\\to\\file.ts")
     })
   })
