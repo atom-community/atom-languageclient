@@ -25,35 +25,36 @@ This npm package can be used by Atom package authors wanting to integrate LSP-co
 
 The language server protocol consists of a number of capabilities. Some of these already have a counterpoint we can connect up to today while others do not. The following table shows each capability in v2 and how it is exposed via Atom;
 
-| Capability                      | Atom interface              |
-| ------------------------------- | --------------------------- |
-| window/showMessage              | Notifications package       |
-| window/showMessageRequest       | Notifications package       |
-| window/logMessage               | Atom-IDE console            |
-| telemetry/event                 | Ignored                     |
-| workspace/didChangeWatchedFiles | Atom file watch API         |
-| textDocument/publishDiagnostics | Linter v2 push/indie        |
-| textDocument/completion         | AutoComplete+               |
-| completionItem/resolve          | AutoComplete+ (Atom 1.24+)  |
-| textDocument/hover              | Atom-IDE data tips          |
-| textDocument/signatureHelp      | Atom-IDE signature help     |
-| textDocument/definition         | Atom-IDE definitions        |
-| textDocument/findReferences     | Atom-IDE findReferences     |
-| textDocument/documentHighlight  | Atom-IDE code highlights    |
-| textDocument/documentSymbol     | Atom-IDE outline view       |
-| workspace/symbol                | TBD                         |
-| textDocument/codeAction         | Atom-IDE code actions       |
-| textDocument/codeLens           | TBD                         |
-| textDocument/formatting         | Format File command         |
-| textDocument/rangeFormatting    | Format Selection command    |
-| textDocument/onTypeFormatting   | Atom-IDE on type formatting |
-| textDocument/onSaveFormatting   | Atom-IDE on save formatting |
-| textDocument/rename             | TBD                         |
-| textDocument/didChange          | Send on save                |
-| textDocument/didOpen            | Send on open                |
-| textDocument/didSave            | Send after save             |
-| textDocument/willSave           | Send before save            |
-| textDocument/didClose           | Send on close               |
+| Capability                        | Atom interface              |
+| --------------------------------- | --------------------------- |
+| window/showMessage                | Notifications package       |
+| window/showMessageRequest         | Notifications package       |
+| window/logMessage                 | Atom-IDE console            |
+| telemetry/event                   | Ignored                     |
+| workspace/didChangeWatchedFiles   | Atom file watch API         |
+| textDocument/publishDiagnostics   | Linter v2 push/indie        |
+| textDocument/completion           | AutoComplete+               |
+| completionItem/resolve            | AutoComplete+ (Atom 1.24+)  |
+| textDocument/hover                | Atom-IDE data tips          |
+| textDocument/signatureHelp        | Atom-IDE signature help     |
+| textDocument/definition           | Atom-IDE definitions        |
+| textDocument/findReferences       | Atom-IDE findReferences     |
+| textDocument/documentHighlight    | Atom-IDE code highlights    |
+| textDocument/documentSymbol       | Atom-IDE outline view       |
+| workspace/symbol                  | TBD                         |
+| textDocument/codeAction           | Atom-IDE code actions       |
+| textDocument/codeLens             | TBD                         |
+| textDocument/formatting           | Format File command         |
+| textDocument/rangeFormatting      | Format Selection command    |
+| textDocument/onTypeFormatting     | Atom-IDE on type formatting |
+| textDocument/onSaveFormatting     | Atom-IDE on save formatting |
+| textDocument/prepareCallHierarchy | Atom-IDE outline view       |
+| textDocument/rename               | TBD                         |
+| textDocument/didChange            | Send on save                |
+| textDocument/didOpen              | Send on open                |
+| textDocument/didSave              | Send after save             |
+| textDocument/willSave             | Send before save            |
+| textDocument/didClose             | Send on close               |
 
 ## Developing packages
 

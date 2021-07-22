@@ -533,6 +533,51 @@ export class LanguageClientConnection extends EventEmitter {
     return this._sendRequest(lsp.ExecuteCommandRequest.type, params)
   }
 
+  /**
+   * Public: Send a `textDocument/prepareCallHierarchy` request.
+   *
+   * @param params The {CallHierarchyIncomingCallsParams} that containing {textDocument} and {position} associated with
+   *   the calling.
+   * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
+   * @returns A {Promise} containing an {Array} of {CallHierarchyItem}s that corresponding to the request.
+   */
+  public prepareCallHierarchy(
+    params: lsp.CallHierarchyPrepareParams,
+    _cancellationToken?: jsonrpc.CancellationToken
+  ): Promise<lsp.CallHierarchyItem[] | null> {
+    return this._sendRequest(lsp.CallHierarchyPrepareRequest.type, params)
+  }
+
+  /**
+   * Public: Send a `callHierarchy/incomingCalls` request.
+   *
+   * @param params The {CallHierarchyIncomingCallsParams} that identifies {CallHierarchyItem} to get incoming calls.
+   * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
+   * @returns A {Promise} containing an {Array} of {CallHierarchyIncomingCall}s for the function that called by the
+   *   function given to the parameter.
+   */
+  public callHierarchyIncomingCalls(
+    params: lsp.CallHierarchyIncomingCallsParams,
+    _cancellationToken?: jsonrpc.CancellationToken
+  ): Promise<lsp.CallHierarchyIncomingCall[] | null> {
+    return this._sendRequest(lsp.CallHierarchyIncomingCallsRequest.type, params)
+  }
+
+  /**
+   * Public: Send a `callHierarchy/outgoingCalls` request.
+   *
+   * @param params The {CallHierarchyOutgoingCallsParams} that identifies {CallHierarchyItem} to get outgoing calls.
+   * @param cancellationToken The {CancellationToken} that is used to cancel this request if necessary.
+   * @returns A {Promise} containing an {Array} of {CallHierarchyIncomingCall}s for the function that calls the function
+   *   given to the parameter.
+   */
+  public callHierarchyOutgoingCalls(
+    params: lsp.CallHierarchyOutgoingCallsParams,
+    _cancellationToken?: jsonrpc.CancellationToken
+  ): Promise<lsp.CallHierarchyOutgoingCall[] | null> {
+    return this._sendRequest(lsp.CallHierarchyOutgoingCallsRequest.type, params)
+  }
+
   private _onRequest<T extends Extract<keyof KnownRequests, string>>(
     type: { method: T },
     callback: RequestCallback<T>
