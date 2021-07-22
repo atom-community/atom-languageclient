@@ -1,3 +1,18 @@
+# [1.15.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.14.1...v1.15.0) (2021-07-22)
+
+
+### Bug Fixes
+
+* apply comment ([890c731](https://github.com/atom-ide-community/atom-languageclient/commit/890c731f67231d7fdbbbaed1448a7db5f643670d))
+* path test ([3bd2372](https://github.com/atom-ide-community/atom-languageclient/commit/3bd23724f671c04f902d157e8efdca7bb0b67920))
+* test (path convert) ([633edff](https://github.com/atom-ide-community/atom-languageclient/commit/633edffd7f86301e7c2e985ef5bd206215bc2bc1))
+* use exported function instead of class method ([48b62a5](https://github.com/atom-ide-community/atom-languageclient/commit/48b62a5b5280fc5c7d623d5a0c5638ca76c5df72))
+
+
+### Features
+
+* add call hierarchy ([6840575](https://github.com/atom-ide-community/atom-languageclient/commit/6840575f38c1f8a4dc404a7c140321d8bec865e7))
+
 ## [1.14.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.14.0...v1.14.1) (2021-07-15)
 
 
