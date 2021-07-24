@@ -1,44 +1,45 @@
 lockfileVersion: 5.3
 
-specifiers:
-  '@types/atom': ^1.40.11
-  '@types/jasmine': ^3.8.1
-  '@types/node': 16.3.2
-  '@types/rimraf': ^3.0.1
-  atom-ide-base: ^3.3.0
-  atom-jasmine3-test-runner: ^5.2.7
-  eslint-config-atomic: 1.16.1
-  prettier-config-atomic: ^2.0.5
-  rimraf: ^3.0.2
-  shx: ^0.3.3
-  spawk: ^1.7.1
-  standard-language-server: ^0.1.0
-  typescript: ~4.3.5
-  vscode-jsonrpc: 6.0.0
-  vscode-languageserver-protocol: 3.16.0
-  vscode-languageserver-types: 3.16.0
-  zadeh: 3.0.0-beta.4
+importers:
 
-dependencies:
-  '@types/rimraf': 3.0.1
-  atom-ide-base: 3.3.0
-  rimraf: 3.0.2
-  vscode-jsonrpc: 6.0.0
-  vscode-languageserver-protocol: 3.16.0
-  vscode-languageserver-types: 3.16.0
-  zadeh: 3.0.0-beta.4
-
-devDependencies:
-  '@types/atom': 1.40.11
-  '@types/jasmine': 3.8.1
-  '@types/node': 16.3.2
-  atom-jasmine3-test-runner: 5.2.7
-  eslint-config-atomic: 1.16.1
-  prettier-config-atomic: 2.0.5
-  shx: 0.3.3
-  spawk: 1.7.1
-  standard-language-server: 0.1.0
-  typescript: 4.3.5
+  .:
+    specifiers:
+      '@types/atom': ^1.40.11
+      '@types/jasmine': ^3.8.1
+      '@types/node': 16.4.1
+      '@types/rimraf': ^3.0.1
+      atom-ide-base: ^3.3.0
+      atom-jasmine3-test-runner: ^5.2.7
+      eslint-config-atomic: 1.16.2
+      prettier-config-atomic: ^2.0.5
+      rimraf: ^3.0.2
+      shx: ^0.3.3
+      spawk: ^1.7.1
+      standard-language-server: ^0.1.0
+      typescript: ~4.3.5
+      vscode-jsonrpc: 6.0.0
+      vscode-languageserver-protocol: 3.16.0
+      vscode-languageserver-types: 3.16.0
+      zadeh: 3.0.0-beta.4
+    dependencies:
+      '@types/rimraf': 3.0.1
+      atom-ide-base: 3.3.0
+      rimraf: 3.0.2
+      vscode-jsonrpc: 6.0.0
+      vscode-languageserver-protocol: 3.16.0
+      vscode-languageserver-types: 3.16.0
+      zadeh: 3.0.0-beta.4
+    devDependencies:
+      '@types/atom': 1.40.11
+      '@types/jasmine': 3.8.1
+      '@types/node': 16.4.1
+      atom-jasmine3-test-runner: 5.2.7
+      eslint-config-atomic: 1.16.2
+      prettier-config-atomic: 2.0.5
+      shx: 0.3.3
+      spawk: 1.7.1
+      standard-language-server: 0.1.0
+      typescript: 4.3.5
 
 packages:
 
@@ -375,6 +376,10 @@ packages:
   /@types/node/16.3.2:
     resolution: {integrity: sha512-jJs9ErFLP403I+hMLGnqDRWT0RYKSvArxuBVh2veudHV7ifEC1WAmjJADacZ7mRbA2nWgHtn8xyECMAot0SkAw==}
 
+  /@types/node/16.4.1:
+    resolution: {integrity: sha512-UW7cbLqf/Wu5XH2RKKY1cHwUNLicIDRLMraYKz+HHAerJ0ZffUEk+fMnd8qU2JaS6cAy0r8tsaf7yqHASf/Y0Q==}
+    dev: true
+
   /@types/prop-types/15.7.3:
     resolution: {integrity: sha512-KfRL3PuHmqQLOG+2tGpRO26Ctg+Cq1E01D2DMriKEATHgWLfeNDmq9e29Q9WIky0dQ3NPkd1mzYH8Lm936Z9qw==}
     dev: false
@@ -650,9 +655,9 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.3
-      es-abstract: 1.18.0
+      es-abstract: 1.18.3
       get-intrinsic: 1.1.1
-      is-string: 1.0.5
+      is-string: 1.0.6
     dev: true
 
   /array-union/2.1.0:
@@ -673,7 +678,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.3
-      es-abstract: 1.18.0
+      es-abstract: 1.18.3
     dev: true
 
   /array.prototype.flatmap/1.2.4:
@@ -1268,28 +1273,6 @@ packages:
       is-arrayish: 0.2.1
     dev: true
 
-  /es-abstract/1.18.0:
-    resolution: {integrity: sha512-LJzK7MrQa8TS0ja2w3YNLzUgJCGPdPOV1yVvezjNnS89D+VR08+Szt2mz3YB2Dck/+w5tfIq/RoUAFqJJGM2yw==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      call-bind: 1.0.2
-      es-to-primitive: 1.2.1
-      function-bind: 1.1.1
-      get-intrinsic: 1.1.1
-      has: 1.0.3
-      has-symbols: 1.0.2
-      is-callable: 1.2.3
-      is-negative-zero: 2.0.1
-      is-regex: 1.1.2
-      is-string: 1.0.5
-      object-inspect: 1.10.2
-      object-keys: 1.1.1
-      object.assign: 4.1.2
-      string.prototype.trimend: 1.0.4
-      string.prototype.trimstart: 1.0.4
-      unbox-primitive: 1.0.1
-    dev: true
-
   /es-abstract/1.18.3:
     resolution: {integrity: sha512-nQIr12dxV7SSxE6r6f1l3DtAeEYdsGpps13dR0TwJg1S8gyp4ZPgy3FZcHBgbiQqnoqSTb+oC+kO4UQ0C/J8vw==}
     engines: {node: '>= 0.4'}
@@ -1434,8 +1417,8 @@ packages:
       object.entries: 1.1.4
     dev: true
 
-  /eslint-config-atomic/1.16.1:
-    resolution: {integrity: sha512-BxmzWSwSOIOl14Cu7YyxwmFtQAvCh2hSLJAJ1AdONjJmAIqAq8IzCfs117mrEP4Q1kxhMABZbDWIcPkx332Snw==}
+  /eslint-config-atomic/1.16.2:
+    resolution: {integrity: sha512-cBcN0Jh6r3+qj2RS9f/wl+CJxgKb+DFoGoiVOk8dwH8BePkDjbYPhRyjcaK1PMXB58i1BlkSTVBAJl52L7gHxA==}
     dependencies:
       '@babel/core': 7.14.0
       '@babel/eslint-parser': 7.14.7_@babel+core@7.14.0+eslint@7.25.0
@@ -1598,9 +1581,9 @@ packages:
       eslint-module-utils: 2.6.1
       find-up: 2.1.0
       has: 1.0.3
-      is-core-module: 2.4.0
+      is-core-module: 2.5.0
       minimatch: 3.0.4
-      object.values: 1.1.3
+      object.values: 1.1.4
       pkg-up: 2.0.0
       read-pkg-up: 3.0.0
       resolve: 1.20.0
@@ -2353,12 +2336,6 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /is-core-module/2.4.0:
-    resolution: {integrity: sha512-6A2fkfq1rfeQZjxrZJGerpLCTHRNEBiSgnu0+obeJpEPZRUooHgsizvzv0ZjJwOz3iWIHdJtVWJ/tmPr3D21/A==}
-    dependencies:
-      has: 1.0.3
-    dev: true
-
   /is-core-module/2.5.0:
     resolution: {integrity: sha512-TXCMSDsEHMEEZ6eCA8rwRDbLu55MRGmrctljsBX/2v1d9/GzqHOxW5c5oPSgrUt2vBFXebu9rGqckXGPWOlYpg==}
     dependencies:
@@ -2440,14 +2417,6 @@ packages:
     resolution: {integrity: sha1-V/4cTkhHTt1lsJkR8msc1Ald2oQ=}
     dev: true
 
-  /is-regex/1.1.2:
-    resolution: {integrity: sha512-axvdhb5pdhEVThqJzYXwMlVuZwC+FF2DpcOhTS+y/8jVq4trxyPgfcwIxIKiyeuLlSQYKkmUaPQJ8ZE4yNKXDg==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      call-bind: 1.0.2
-      has-symbols: 1.0.2
-    dev: true
-
   /is-regex/1.1.3:
     resolution: {integrity: sha512-qSVXFz28HM7y+IWX6vLCsexdlvzT1PJNFSBuaQLQ5o0IEw8UDYW6/2+eCMVyIsbM8CNLX2a/QWmSpyxYEHY7CQ==}
     engines: {node: '>= 0.4'}
@@ -2458,11 +2427,6 @@ packages:
 
   /is-resolvable/1.1.0:
     resolution: {integrity: sha512-qgDYXFSR5WvEfuS5dMj6oTMEbrrSaM0CrFk2Yiq/gXnBvD9pMa2jGXxyhGLfvhZpuMZe18CJpFxAt3CRs42NMg==}
-    dev: true
-
-  /is-string/1.0.5:
-    resolution: {integrity: sha512-buY6VNRjhQMiF1qWDouloZlQbRhDPCebwxSjxMjxgemYT46YMd2NR0/H+fBhEfWX4A/w9TBJ+ol+okqJKFE6vQ==}
-    engines: {node: '>= 0.4'}
     dev: true
 
   /is-string/1.0.6:
@@ -2880,10 +2844,6 @@ packages:
     resolution: {integrity: sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=}
     engines: {node: '>=0.10.0'}
 
-  /object-inspect/1.10.2:
-    resolution: {integrity: sha512-gz58rdPpadwztRrPjZE9DZLOABUpTGdcANUgOwBFO1C+HZZhePoP83M65WGDmbpwFYJSWqavbl4SgDn4k8RYTA==}
-    dev: true
-
   /object-inspect/1.11.0:
     resolution: {integrity: sha512-jp7ikS6Sd3GxQfZJPyH3cjcbJF6GZPClgdV+EFygjFLQ5FmW/dRUnTd9PQ9k0JhoNDabWFbpF1yCdSWCC6gexg==}
     dev: true
@@ -2919,16 +2879,6 @@ packages:
       call-bind: 1.0.2
       define-properties: 1.1.3
       es-abstract: 1.18.3
-      has: 1.0.3
-    dev: true
-
-  /object.values/1.1.3:
-    resolution: {integrity: sha512-nkF6PfDB9alkOUxpf1HNm/QlkeW3SReqL5WXeBLpEJJnlPSvRaDQpW3gQTksTN3fgJX4hL42RzKyOin6ff3tyw==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      call-bind: 1.0.2
-      define-properties: 1.1.3
-      es-abstract: 1.18.0
       has: 1.0.3
     dev: true
 
@@ -3048,10 +2998,6 @@ packages:
   /path-key/3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
-    dev: true
-
-  /path-parse/1.0.6:
-    resolution: {integrity: sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==}
     dev: true
 
   /path-parse/1.0.7:
@@ -3340,8 +3286,8 @@ packages:
   /resolve/2.0.0-next.3:
     resolution: {integrity: sha512-W8LucSynKUIDu9ylraa7ueVZ7hc0uAgJBxVsQSKOXOyle8a93qXhcz+XAXZ8bIq2d6i4Ehddn6Evt+0/UwKk6Q==}
     dependencies:
-      is-core-module: 2.4.0
-      path-parse: 1.0.6
+      is-core-module: 2.5.0
+      path-parse: 1.0.7
     dev: true
 
   /restore-cursor/1.0.1:
@@ -3486,7 +3432,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       get-intrinsic: 1.1.1
-      object-inspect: 1.10.2
+      object-inspect: 1.11.0
     dev: true
 
   /slash/3.0.0:
