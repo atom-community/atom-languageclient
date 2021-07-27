@@ -55,16 +55,19 @@ export default class DocumentSyncAdapter {
   /**
    * Public: Create a new {DocumentSyncAdapter} for the given language server.
    *
-   * @param connection A {LanguageClientConnection} to the language server to be kept in sync.
+   * @param _connection A {LanguageClientConnection} to the language server to be kept in sync.
    * @param documentSync The document syncing options.
-   * @param editorSelector A predicate function that takes a {TextEditor} and returns a {boolean} indicating whether
+   * @param _editorSelector A predicate function that takes a {TextEditor} and returns a {boolean} indicating whether
    *   this adapter should care about the contents of the editor.
+   * @param _getLanguageIdFromEditor A function that returns a {string} of `languageId` used for `textDocument/didOpen`
+   *   notification. If {null} or {undefined} is returned, it will fall back to the editor's grammar name.
    */
   constructor(
     private _connection: LanguageClientConnection,
     private _editorSelector: (editor: TextEditor) => boolean,
     documentSync: TextDocumentSyncOptions | TextDocumentSyncKind | undefined,
-    private _reportBusyWhile: Utils.ReportBusyWhile
+    private _reportBusyWhile: Utils.ReportBusyWhile,
+    private _getLanguageIdFromEditor: (editor: TextEditor) => string | void | null
   ) {
     if (typeof documentSync === "object") {
       this._documentSync = documentSync
@@ -119,7 +122,8 @@ export default class DocumentSyncAdapter {
       this._connection,
       this._documentSync,
       this._versions,
-      this._reportBusyWhile
+      this._reportBusyWhile,
+      this._getLanguageIdFromEditor
     )
     this._editors.set(editor, sync)
     this._disposable.add(sync)
@@ -149,16 +153,17 @@ export class TextEditorSyncAdapter {
   /**
    * Public: Create a {TextEditorSyncAdapter} in sync with a given language server.
    *
-   * @param editor A {TextEditor} to keep in sync.
-   * @param connection A {LanguageClientConnection} to a language server to keep in sync.
-   * @param documentSync The document syncing options.
+   * @param _editor A {TextEditor} to keep in sync.
+   * @param _connection A {LanguageClientConnection} to a language server to keep in sync.
+   * @param _documentSync The document syncing options.
    */
   constructor(
     private _editor: TextEditor,
     private _connection: LanguageClientConnection,
     private _documentSync: TextDocumentSyncOptions,
     private _versions: Map<string, number>,
-    private _reportBusyWhile: Utils.ReportBusyWhile
+    private _reportBusyWhile: Utils.ReportBusyWhile,
+    private _getLanguageIdFromEditor: (editor: TextEditor) => string | void | null
   ) {
     this._fakeDidChangeWatchedFiles = atom.project.onDidChangeFiles == null
 
@@ -203,9 +208,12 @@ export class TextEditorSyncAdapter {
     this._disposable.dispose()
   }
 
-  /** Get the languageId field that will be sent to the language server by simply using the grammar name. */
+  /**
+   * Get the languageId field that will be sent to the language server by simply using the `_getLanguageIdFromEditor`.
+   * Fall back to the grammar name if `_getLanguageIdFromEditor` returns null or undefined.
+   */
   public getLanguageId(): string {
-    return this._editor.getGrammar().name
+    return this._getLanguageIdFromEditor(this._editor) ?? this._editor.getGrammar().name
   }
 
   /**

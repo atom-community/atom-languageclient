@@ -295,6 +295,25 @@ export default class AutoLanguageClient {
     return configuration
   }
 
+  /**
+   * (Optional) Determines the `languageId` string used for `textDocument/didOpen` notification. If {null} or
+   * {undefined} is returned, it will fall back to the {_editor}'s grammar name.
+   *
+   * You can override this like this:
+   *
+   *     class MyLanguageClient extends AutoLanguageClient {
+   *       getLanguageIdFromEditor(editor: TextEditor) {
+   *         if (editor.getGrammar().scopeName === "source.myLanguage") {
+   *           return "myCustumLanguageId"
+   *         }
+   *       }
+   *     }
+   *
+   * @param _editor A {TextEditor} which is opened.
+   * @returns A {string} of `languageId` used for `textDocument/didOpen` notification.
+   */
+  public getLanguageIdFromEditor(_editor: TextEditor): string | void | null {}
+
   // Helper methods that are useful for implementors
   // ---------------------------------------------------------------------------
 
@@ -576,7 +595,8 @@ export default class AutoLanguageClient {
         server.connection,
         (editor) => this.shouldSyncForEditor(editor, server.projectPath),
         server.capabilities.textDocumentSync,
-        this.reportBusyWhile
+        this.reportBusyWhile,
+        (editor) => this.getLanguageIdFromEditor(editor)
       )
       server.disposable.add(docSyncAdapter)
     }
