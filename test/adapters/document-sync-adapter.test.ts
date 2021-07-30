@@ -84,7 +84,7 @@ describe("DocumentSyncAdapter", () => {
     })
   })
 
-  describe("_getLanguageIdFromEditor", () => {
+  describe("getLanguageId", () => {
     function create(getLanguageIdFromEditor: () => string | null | void) {
       return new DocumentSyncAdapter(
         null as any,
@@ -95,7 +95,7 @@ describe("DocumentSyncAdapter", () => {
       )
     }
 
-    it("use as language id if string is returned", () => {
+    it("use the return value of `_getLanguageIdFromEditor` as the languageId", () => {
       const editor = createFakeEditor()
       const adapter = create(() => "someLanguageId") as any
       adapter._handleNewEditor(editor)
@@ -103,7 +103,7 @@ describe("DocumentSyncAdapter", () => {
       expect(result).toBe("someLanguageId")
     })
 
-    it("fall back to the grammar name if undefined is returned", () => {
+    it("fall back to the grammar name if `_getLanguageIdFromEditor` returns undefined", () => {
       const editor = createFakeEditor()
       spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
       const adapter = create(() => undefined) as any
@@ -112,7 +112,7 @@ describe("DocumentSyncAdapter", () => {
       expect(result).toBe("testGrammarName")
     })
 
-    it("fall back to the grammar name if null is returned", () => {
+    it("fall back to the grammar name if `_getLanguageIdFromEditor` returns null", () => {
       const editor = createFakeEditor()
       spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
       const adapter = create(() => null) as any
@@ -121,7 +121,7 @@ describe("DocumentSyncAdapter", () => {
       expect(result).toBe("testGrammarName")
     })
 
-    it("don't fall back to the grammar name if empty string is returned", () => {
+    it("don't fall back to the grammar name if `_getLanguageIdFromEditor` returns an empty string", () => {
       const editor = createFakeEditor()
       spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
       const adapter = create(() => "") as any
