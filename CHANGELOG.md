@@ -1,3 +1,18 @@
+# [1.16.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.15.0...v1.16.0) (2021-07-31)
+
+
+### Bug Fixes
+
+* added auto-languageclient's test ([e1bd570](https://github.com/atom-ide-community/atom-languageclient/commit/e1bd5706744e50153d6642b439942a29eff009e8))
+* apply comment (getLanguageIdFromEditor returns grammar name) ([c074b49](https://github.com/atom-ide-community/atom-languageclient/commit/c074b49469a6f9d9633746adb08f6b65a82a8157))
+* make the test name accurate ([c0899dc](https://github.com/atom-ide-community/atom-languageclient/commit/c0899dc5a793c7ec100ea7b571ca6292df580a95))
+* test and comment ([220c9fd](https://github.com/atom-ide-community/atom-languageclient/commit/220c9fd897e5c6bb3a7b54e9d0075aec4a3c87c5))
+
+
+### Features
+
+* make the languageId of didOpen notifications configurable ([cf8f666](https://github.com/atom-ide-community/atom-languageclient/commit/cf8f6663c63cd59e405d15a9ab75e968f906898a))
+
 # [1.15.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.14.1...v1.15.0) (2021-07-22)
 
 
