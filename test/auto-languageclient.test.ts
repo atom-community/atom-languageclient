@@ -209,4 +209,14 @@ describe("AutoLanguageClient", () => {
       expect(client.shouldSyncForEditor(editor, "/path/to/somewhere")).toBe(false)
     })
   })
+
+  describe("getLanguageIdFromEditor", () => {
+    const client = setupClient()
+
+    it("returns the editor's grammar name", () => {
+      const editor = new TextEditor()
+      spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
+      expect((client as any).getLanguageIdFromEditor(editor)).toBe("testGrammarName")
+    })
+  })
 })
