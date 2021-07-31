@@ -60,14 +60,14 @@ export default class DocumentSyncAdapter {
    * @param _editorSelector A predicate function that takes a {TextEditor} and returns a {boolean} indicating whether
    *   this adapter should care about the contents of the editor.
    * @param _getLanguageIdFromEditor A function that returns a {string} of `languageId` used for `textDocument/didOpen`
-   *   notification. If {null} or {undefined} is returned, it will fall back to the editor's grammar name.
+   *   notification.
    */
   constructor(
     private _connection: LanguageClientConnection,
     private _editorSelector: (editor: TextEditor) => boolean,
     documentSync: TextDocumentSyncOptions | TextDocumentSyncKind | undefined,
     private _reportBusyWhile: Utils.ReportBusyWhile,
-    private _getLanguageIdFromEditor: (editor: TextEditor) => string | void | null
+    private _getLanguageIdFromEditor: (editor: TextEditor) => string
   ) {
     if (typeof documentSync === "object") {
       this._documentSync = documentSync
@@ -163,7 +163,7 @@ export class TextEditorSyncAdapter {
     private _documentSync: TextDocumentSyncOptions,
     private _versions: Map<string, number>,
     private _reportBusyWhile: Utils.ReportBusyWhile,
-    private _getLanguageIdFromEditor: (editor: TextEditor) => string | void | null
+    private _getLanguageIdFromEditor: (editor: TextEditor) => string
   ) {
     this._fakeDidChangeWatchedFiles = atom.project.onDidChangeFiles == null
 
@@ -208,12 +208,9 @@ export class TextEditorSyncAdapter {
     this._disposable.dispose()
   }
 
-  /**
-   * Get the languageId field that will be sent to the language server by simply using the `_getLanguageIdFromEditor`.
-   * Fall back to the grammar name if `_getLanguageIdFromEditor` returns null or undefined.
-   */
+  /** Get the languageId field that will be sent to the language server by simply using the `_getLanguageIdFromEditor`. */
   public getLanguageId(): string {
-    return this._getLanguageIdFromEditor(this._editor) ?? this._editor.getGrammar().name
+    return this._getLanguageIdFromEditor(this._editor)
   }
 
   /**

@@ -54,7 +54,7 @@ describe("DocumentSyncAdapter", () => {
         () => false,
         textDocumentSync,
         (_t, f) => f(),
-        () => undefined
+        () => ""
       )
     }
 
@@ -85,7 +85,7 @@ describe("DocumentSyncAdapter", () => {
   })
 
   describe("getLanguageId", () => {
-    function create(getLanguageIdFromEditor: () => string | null | void) {
+    function create(getLanguageIdFromEditor: () => string) {
       return new DocumentSyncAdapter(
         null as any,
         () => false,
@@ -101,33 +101,6 @@ describe("DocumentSyncAdapter", () => {
       adapter._handleNewEditor(editor)
       const result = adapter.getEditorSyncAdapter(editor).getLanguageId()
       expect(result).toBe("someLanguageId")
-    })
-
-    it("fall back to the grammar name if `_getLanguageIdFromEditor` returns undefined", () => {
-      const editor = createFakeEditor()
-      spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
-      const adapter = create(() => undefined) as any
-      adapter._handleNewEditor(editor)
-      const result = adapter.getEditorSyncAdapter(editor).getLanguageId()
-      expect(result).toBe("testGrammarName")
-    })
-
-    it("fall back to the grammar name if `_getLanguageIdFromEditor` returns null", () => {
-      const editor = createFakeEditor()
-      spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
-      const adapter = create(() => null) as any
-      adapter._handleNewEditor(editor)
-      const result = adapter.getEditorSyncAdapter(editor).getLanguageId()
-      expect(result).toBe("testGrammarName")
-    })
-
-    it("don't fall back to the grammar name if `_getLanguageIdFromEditor` returns an empty string", () => {
-      const editor = createFakeEditor()
-      spyOn(editor, "getGrammar").and.returnValue({ name: "testGrammarName" } as any)
-      const adapter = create(() => "") as any
-      adapter._handleNewEditor(editor)
-      const result = adapter.getEditorSyncAdapter(editor).getLanguageId()
-      expect(result).toBe("")
     })
   })
 })

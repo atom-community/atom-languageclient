@@ -296,8 +296,8 @@ export default class AutoLanguageClient {
   }
 
   /**
-   * (Optional) Determines the `languageId` string used for `textDocument/didOpen` notification. If {null} or
-   * {undefined} is returned, it will fall back to the {_editor}'s grammar name.
+   * (Optional) Determines the `languageId` string used for `textDocument/didOpen` notification. The default is to use
+   * the grammar name.
    *
    * You can override this like this:
    *
@@ -306,14 +306,15 @@ export default class AutoLanguageClient {
    *         if (editor.getGrammar().scopeName === "source.myLanguage") {
    *           return "myCustumLanguageId"
    *         }
+   *         return super.getLanguageIdFromEditor(editor)
    *       }
    *     }
    *
-   * @param _editor A {TextEditor} which is opened.
+   * @param editor A {TextEditor} which is opened.
    * @returns A {string} of `languageId` used for `textDocument/didOpen` notification.
    */
-  protected getLanguageIdFromEditor(_editor: TextEditor): string {
-    return this._editor.getGrammar().name
+  protected getLanguageIdFromEditor(editor: TextEditor): string {
+    return editor.getGrammar().name
   }
 
   // Helper methods that are useful for implementors
