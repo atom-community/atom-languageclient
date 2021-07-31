@@ -312,7 +312,9 @@ export default class AutoLanguageClient {
    * @param _editor A {TextEditor} which is opened.
    * @returns A {string} of `languageId` used for `textDocument/didOpen` notification.
    */
-  public getLanguageIdFromEditor(_editor: TextEditor): string | void | null {}
+  protected getLanguageIdFromEditor(_editor: TextEditor): string {
+    return this._editor.getGrammar().name
+  }
 
   // Helper methods that are useful for implementors
   // ---------------------------------------------------------------------------
