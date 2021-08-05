@@ -50,6 +50,7 @@ describe("Convert", () => {
     })
 
     it("does not encode Windows drive specifiers", () => {
+      setProcessPlatform("win32")
       expect(Convert.pathToUri("d:\\ee\\ff.txt")).toBe("file:///d:/ee/ff.txt")
     })
 
