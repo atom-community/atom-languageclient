@@ -1,3 +1,13 @@
+## [1.16.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.16.0...v1.16.1) (2021-08-06)
+
+
+### Bug Fixes
+
+* disable test for drive characters except windows ([91443a2](https://github.com/atom-ide-community/atom-languageclient/commit/91443a276b128ceb020723be787b4e2649e50e9d))
+* path test ([6d49d81](https://github.com/atom-ide-community/atom-languageclient/commit/6d49d816347084db2076557500e18b289e42189a))
+* use pending() in windows test ([b32cadd](https://github.com/atom-ide-community/atom-languageclient/commit/b32cadd5cbffe85bdedf719c5d61c39e06351c71))
+* **convert/pathToUri:** improve encoding of path other than the file ([2bba886](https://github.com/atom-ide-community/atom-languageclient/commit/2bba886c3f6549c92325507a634e23d285ac9fd1))
+
 # [1.16.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.15.0...v1.16.0) (2021-07-31)
 
 
