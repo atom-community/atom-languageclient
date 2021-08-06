@@ -52,9 +52,10 @@ describe("Convert", () => {
     it("does not encode Windows drive specifiers", () => {
       // This test only succeeds on windows. (Because of the difference in the processing method of drive characters)
       // However, it is enough to test the windows drive character only on windows.
-      if (process.platform === "win32") {
-        expect(Convert.pathToUri("d:\\ee\\ff.txt")).toBe("file:///d:/ee/ff.txt")
+      if (process.platform !== "win32") {
+        pending("Only test on windows")
       }
+      expect(Convert.pathToUri("d:\\ee\\ff.txt")).toBe("file:///d:/ee/ff.txt")
     })
 
     it("URI encodes special characters", () => {
