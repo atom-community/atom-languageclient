@@ -6,7 +6,7 @@ importers:
     specifiers:
       '@types/atom': ^1.40.11
       '@types/jasmine': ^3.8.1
-      '@types/node': 16.7.1
+      '@types/node': 16.7.4
       '@types/rimraf': ^3.0.1
       atom-ide-base: ^3.3.0
       atom-jasmine3-test-runner: ^5.2.7
@@ -16,7 +16,7 @@ importers:
       shx: ^0.3.3
       spawk: ^1.7.1
       standard-language-server: ^0.1.0
-      typescript: ~4.3.5
+      typescript: ~4.4.0
       vscode-jsonrpc: 6.0.0
       vscode-languageserver-protocol: 3.16.0
       vscode-languageserver-types: 3.16.0
@@ -32,14 +32,14 @@ importers:
     devDependencies:
       '@types/atom': 1.40.11
       '@types/jasmine': 3.8.1
-      '@types/node': 16.7.1
+      '@types/node': 16.7.4
       atom-jasmine3-test-runner: 5.2.7
       eslint-config-atomic: 1.16.2
       prettier-config-atomic: 2.0.5
       shx: 0.3.3
       spawk: 1.7.1
       standard-language-server: 0.1.0
-      typescript: 4.3.5
+      typescript: 4.4.2
 
 packages:
 
@@ -376,8 +376,8 @@ packages:
   /@types/node/16.3.2:
     resolution: {integrity: sha512-jJs9ErFLP403I+hMLGnqDRWT0RYKSvArxuBVh2veudHV7ifEC1WAmjJADacZ7mRbA2nWgHtn8xyECMAot0SkAw==}
 
-  /@types/node/16.7.1:
-    resolution: {integrity: sha512-ncRdc45SoYJ2H4eWU9ReDfp3vtFqDYhjOsKlFFUDEn8V1Bgr2RjYal8YT5byfadWIRluhPFU6JiDOl0H6Sl87A==}
+  /@types/node/16.7.4:
+    resolution: {integrity: sha512-25QXpDsTiDnl2rZGUenagVMwO46way8dOUdvoC3R3p+6TrbpxeJBo/v87BEG1IHI31Jhaa8lPeSHcqwxsVBeYQ==}
     dev: true
 
   /@types/prop-types/15.7.3:
@@ -3764,6 +3764,12 @@ packages:
 
   /typescript/4.3.5:
     resolution: {integrity: sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
+
+  /typescript/4.4.2:
+    resolution: {integrity: sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
