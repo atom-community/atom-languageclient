@@ -49,7 +49,8 @@ export async function showDocument(params: ShowDocumentParams): Promise<ShowDocu
     }
     return { success: true }
   } catch (e) {
-    atom.notifications.addError(e)
+    const error = e instanceof Error ? e.message : String(e);
+    atom.notifications.addError(error)
     return { success: false }
   }
 }
