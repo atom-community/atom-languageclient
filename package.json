@@ -40,7 +40,7 @@
     "@types/node": "^16.7.4",
     "@types/rimraf": "^3.0.2",
     "atom-jasmine3-test-runner": "^5.2.8",
-    "eslint-config-atomic": "1.16.2",
+    "eslint-config-atomic": "1.16.3",
     "prettier-config-atomic": "^2.1.0",
     "shx": "^0.3.3",
     "spawk": "^1.7.1",
