@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: UziTech/action-setup-atom@v1
-      - uses: actions/setup-node@v2.4.0
+      - uses: actions/setup-node@v2.4.1
         with:
           node-version: "*"
       - name: NPM install
