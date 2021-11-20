@@ -44,7 +44,7 @@
     "shx": "^0.3.3",
     "spawk": "^1.7.1",
     "standard-language-server": "^0.1.0",
-    "typescript": "~4.4.4"
+    "typescript": "~4.5.0"
   },
   "atomTestRunner": "./test/runner"
 }
