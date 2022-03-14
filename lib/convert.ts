@@ -17,6 +17,9 @@ export default class Convert {
    * @returns The Uri corresponding to the path. e.g. file:///a/b/c.txt
    */
   public static pathToUri(filePath: string): string {
+    if (new URL(filePath, "file://").protocol !== "file:") {
+      return filePath
+    }
     let newPath = filePath.replace(/\\/g, "/")
     if (newPath[0] !== "/") {
       newPath = `/${newPath}`

@@ -1,3 +1,53 @@
+## [1.16.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.16.0...v1.16.1) (2021-08-06)
+
+
+### Bug Fixes
+
+* disable test for drive characters except windows ([91443a2](https://github.com/atom-ide-community/atom-languageclient/commit/91443a276b128ceb020723be787b4e2649e50e9d))
+* path test ([6d49d81](https://github.com/atom-ide-community/atom-languageclient/commit/6d49d816347084db2076557500e18b289e42189a))
+* use pending() in windows test ([b32cadd](https://github.com/atom-ide-community/atom-languageclient/commit/b32cadd5cbffe85bdedf719c5d61c39e06351c71))
+* **convert/pathToUri:** improve encoding of path other than the file ([2bba886](https://github.com/atom-ide-community/atom-languageclient/commit/2bba886c3f6549c92325507a634e23d285ac9fd1))
+
+# [1.16.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.15.0...v1.16.0) (2021-07-31)
+
+
+### Bug Fixes
+
+* added auto-languageclient's test ([e1bd570](https://github.com/atom-ide-community/atom-languageclient/commit/e1bd5706744e50153d6642b439942a29eff009e8))
+* apply comment (getLanguageIdFromEditor returns grammar name) ([c074b49](https://github.com/atom-ide-community/atom-languageclient/commit/c074b49469a6f9d9633746adb08f6b65a82a8157))
+* make the test name accurate ([c0899dc](https://github.com/atom-ide-community/atom-languageclient/commit/c0899dc5a793c7ec100ea7b571ca6292df580a95))
+* test and comment ([220c9fd](https://github.com/atom-ide-community/atom-languageclient/commit/220c9fd897e5c6bb3a7b54e9d0075aec4a3c87c5))
+
+
+### Features
+
+* make the languageId of didOpen notifications configurable ([cf8f666](https://github.com/atom-ide-community/atom-languageclient/commit/cf8f6663c63cd59e405d15a9ab75e968f906898a))
+
+# [1.15.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.14.1...v1.15.0) (2021-07-22)
+
+
+### Bug Fixes
+
+* apply comment ([890c731](https://github.com/atom-ide-community/atom-languageclient/commit/890c731f67231d7fdbbbaed1448a7db5f643670d))
+* path test ([3bd2372](https://github.com/atom-ide-community/atom-languageclient/commit/3bd23724f671c04f902d157e8efdca7bb0b67920))
+* test (path convert) ([633edff](https://github.com/atom-ide-community/atom-languageclient/commit/633edffd7f86301e7c2e985ef5bd206215bc2bc1))
+* use exported function instead of class method ([48b62a5](https://github.com/atom-ide-community/atom-languageclient/commit/48b62a5b5280fc5c7d623d5a0c5638ca76c5df72))
+
+
+### Features
+
+* add call hierarchy ([6840575](https://github.com/atom-ide-community/atom-languageclient/commit/6840575f38c1f8a4dc404a7c140321d8bec865e7))
+
+## [1.14.1](https://github.com/atom-ide-community/atom-languageclient/compare/v1.14.0...v1.14.1) (2021-07-15)
+
+
+### Bug Fixes
+
+* bump atom-ide-base and devDependencies ([02ad02d](https://github.com/atom-ide-community/atom-languageclient/commit/02ad02d163896570fbf9be9bb6a69080700abc14))
+* bump dependencies ([4e90504](https://github.com/atom-ide-community/atom-languageclient/commit/4e90504a9525086f96013bf888aa687760612ef4))
+* bump zadeh - adds linux musl prebuilds ([9568d62](https://github.com/atom-ide-community/atom-languageclient/commit/9568d627b31d3e41ed08b2f6c31eb7be88513bfb))
+* eslint fix ([1075cac](https://github.com/atom-ide-community/atom-languageclient/commit/1075cac4cd0bc99663798124c2c9de44de7c05c7))
+
 # [1.14.0](https://github.com/atom-ide-community/atom-languageclient/compare/v1.13.0...v1.14.0) (2021-06-14)
 
 

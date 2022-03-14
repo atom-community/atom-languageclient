@@ -25,6 +25,18 @@ describe("Convert", () => {
   })
 
   describe("pathToUri", () => {
+    it("does not convert path other than file:", () => {
+      expect(Convert.pathToUri("http://atom.io/a")).toBe("http://atom.io/a")
+      expect(Convert.pathToUri("https://atom.io/b")).toBe("https://atom.io/b")
+      expect(Convert.pathToUri("deno:/hello.js")).toBe("deno:/hello.js")
+    })
+
+    it("does not convert non-alphanumeric path other than file:", () => {
+      expect(Convert.pathToUri("http://atom.io/a%40%E3%81%82")).toBe("http://atom.io/a%40%E3%81%82")
+      expect(Convert.pathToUri("https://atom.io/b?foo=bar")).toBe("https://atom.io/b?foo=bar")
+      expect(Convert.pathToUri("deno:/hello%40%E3%81%82.js")).toBe("deno:/hello%40%E3%81%82.js")
+    })
+
     it("prefixes an absolute path with file://", () => {
       expect(Convert.pathToUri("/a/b/c/d.txt")).toBe("file:///a/b/c/d.txt")
     })
@@ -38,6 +50,11 @@ describe("Convert", () => {
     })
 
     it("does not encode Windows drive specifiers", () => {
+      // This test only succeeds on windows. (Because of the difference in the processing method of drive characters)
+      // However, it is enough to test the windows drive character only on windows.
+      if (process.platform !== "win32") {
+        pending("Only test on windows")
+      }
       expect(Convert.pathToUri("d:\\ee\\ff.txt")).toBe("file:///d:/ee/ff.txt")
     })
 
@@ -47,10 +64,18 @@ describe("Convert", () => {
   })
 
   describe("uriToPath", () => {
-    it("does not convert http: and https: uri's", () => {
+    it("does not convert uri other than file:", () => {
       setProcessPlatform("darwin")
       expect(Convert.uriToPath("http://atom.io/a")).toBe("http://atom.io/a")
       expect(Convert.uriToPath("https://atom.io/b")).toBe("https://atom.io/b")
+      expect(Convert.uriToPath("deno:/hello.js")).toBe("deno:/hello.js")
+    })
+
+    it("does not convert non-alphanumeric uri other than file:", () => {
+      setProcessPlatform("darwin")
+      expect(Convert.uriToPath("http://atom.io/a%40%E3%81%82")).toBe("http://atom.io/a%40%E3%81%82")
+      expect(Convert.uriToPath("https://atom.io/b?foo=bar")).toBe("https://atom.io/b?foo=bar")
+      expect(Convert.uriToPath("deno:/hello%40%E3%81%82.js")).toBe("deno:/hello%40%E3%81%82.js")
     })
 
     it("converts a file:// path to an absolute path", () => {

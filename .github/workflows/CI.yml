@@ -19,7 +19,7 @@ jobs:
           - windows-latest
         atom_channel: [stable, beta]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: UziTech/action-setup-atom@v1
         with:
           channel: ${{ matrix.atom_channel }}
@@ -36,11 +36,11 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Commit lint ✨
-        uses: wagoid/commitlint-github-action@v2
+        uses: wagoid/commitlint-github-action@v4
 
       - name: Install dependencies
         run: npm install
@@ -57,9 +57,9 @@ jobs:
       github.event.repository.fork == false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: UziTech/action-setup-atom@v1
-      - uses: actions/setup-node@v2.1.2
+      - uses: actions/setup-node@v3.0.0
         with:
           node-version: "*"
       - name: NPM install

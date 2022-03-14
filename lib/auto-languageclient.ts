@@ -8,6 +8,7 @@ import * as linter from "atom/linter"
 import Convert from "./convert.js"
 import ApplyEditAdapter from "./adapters/apply-edit-adapter"
 import AutocompleteAdapter, { grammarScopeToAutoCompleteSelector } from "./adapters/autocomplete-adapter"
+import * as CallHierarchyAdapter from "./adapters/call-hierarchy-adapter"
 import CodeActionAdapter from "./adapters/code-action-adapter"
 import CodeFormatAdapter from "./adapters/code-format-adapter"
 import CodeHighlightAdapter from "./adapters/code-highlight-adapter"
@@ -76,6 +77,7 @@ export default class AutoLanguageClient {
 
   // Shared adapters that can take the RPC connection as required
   protected autoComplete?: AutocompleteAdapter
+  protected callHierarchy?: typeof CallHierarchyAdapter
   protected datatip?: DatatipAdapter
   protected definitions?: DefinitionAdapter
   protected findReferences?: FindReferencesAdapter
@@ -249,13 +251,15 @@ export default class AutoLanguageClient {
             codeDescriptionSupport: true,
             dataSupport: true,
           },
+          callHierarchy: {
+            dynamicRegistration: false,
+          },
           implementation: undefined,
           typeDefinition: undefined,
           colorProvider: undefined,
           foldingRange: undefined,
           selectionRange: undefined,
           linkedEditingRange: undefined,
-          callHierarchy: undefined,
           semanticTokens: undefined,
         },
         general: {
@@ -291,6 +295,28 @@ export default class AutoLanguageClient {
   /** (Optional) Transform the configuration object before it is sent to the server */
   protected mapConfigurationObject(configuration: any): any {
     return configuration
+  }
+
+  /**
+   * (Optional) Determines the `languageId` string used for `textDocument/didOpen` notification. The default is to use
+   * the grammar name.
+   *
+   * You can override this like this:
+   *
+   *     class MyLanguageClient extends AutoLanguageClient {
+   *       getLanguageIdFromEditor(editor: TextEditor) {
+   *         if (editor.getGrammar().scopeName === "source.myLanguage") {
+   *           return "myCustumLanguageId"
+   *         }
+   *         return super.getLanguageIdFromEditor(editor)
+   *       }
+   *     }
+   *
+   * @param editor A {TextEditor} which is opened.
+   * @returns A {string} of `languageId` used for `textDocument/didOpen` notification.
+   */
+  protected getLanguageIdFromEditor(editor: TextEditor): string {
+    return editor.getGrammar().name
   }
 
   // Helper methods that are useful for implementors
@@ -575,7 +601,8 @@ export default class AutoLanguageClient {
         server.connection,
         (editor) => this.shouldSyncForEditor(editor, server.projectPath),
         server.capabilities.textDocumentSync,
-        this.reportBusyWhile
+        this.reportBusyWhile,
+        (editor) => this.getLanguageIdFromEditor(editor)
       )
       server.disposable.add(docSyncAdapter)
     }
@@ -746,6 +773,41 @@ export default class AutoLanguageClient {
 
     this.outlineView = this.outlineView || new OutlineViewAdapter()
     return this.outlineView.getOutline(server.connection, editor)
+  }
+
+  // Call Hierarchy View via LS callHierarchy---------------------------------
+  public provideCallHierarchy(): atomIde.CallHierarchyProvider {
+    return {
+      name: this.name,
+      grammarScopes: this.getGrammarScopes(),
+      priority: 1,
+      getIncomingCallHierarchy: this.getIncomingCallHierarchy.bind(this),
+      getOutgoingCallHierarchy: this.getOutgoingCallHierarchy.bind(this),
+    }
+  }
+
+  protected async getIncomingCallHierarchy(
+    editor: TextEditor,
+    point: Point
+  ): Promise<atomIde.CallHierarchy<"incoming"> | null> {
+    const server = await this._serverManager.getServer(editor)
+    if (server === null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
+      return null
+    }
+    this.callHierarchy = this.callHierarchy ?? CallHierarchyAdapter
+    return this.callHierarchy.getCallHierarchy(server.connection, editor, point, "incoming")
+  }
+
+  protected async getOutgoingCallHierarchy(
+    editor: TextEditor,
+    point: Point
+  ): Promise<atomIde.CallHierarchy<"outgoing"> | null> {
+    const server = await this._serverManager.getServer(editor)
+    if (server === null || !CallHierarchyAdapter.canAdapt(server.capabilities)) {
+      return null
+    }
+    this.callHierarchy = this.callHierarchy ?? CallHierarchyAdapter
+    return this.callHierarchy.getCallHierarchy(server.connection, editor, point, "outgoing")
   }
 
   // Linter push v2 API via LS publishDiagnostics
