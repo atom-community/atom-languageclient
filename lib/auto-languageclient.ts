@@ -34,8 +34,9 @@ import {
   normalizePath,
   considerAdditionalPath,
 } from "./server-manager.js"
-import { Disposable, CompositeDisposable, Point, Range, TextEditor } from "atom"
+import { Disposable, CompositeDisposable, Point, Range, TextEditor, CommandEvent, TextEditorElement } from "atom"
 import * as ac from "atom/autocomplete-plus"
+import Dialog from "./views/dialog"
 import { basename } from "path"
 
 export { ActiveServer, LanguageClientConnection, LanguageServerProcess }
@@ -234,6 +235,7 @@ export default class AutoLanguageClient {
             dynamicRegistration: false,
           },
           rename: {
+            prepareSupport: true,
             dynamicRegistration: false,
           },
           moniker: {
@@ -350,6 +352,7 @@ export default class AutoLanguageClient {
       this.shutdownGracefully
     )
     this._serverManager.startListening()
+    this.registerRenameCommands()
     process.on("exit", () => this.exitCleanup.bind(this))
   }
 
@@ -1030,6 +1033,104 @@ export default class AutoLanguageClient {
       grammarScopes: this.getGrammarScopes(),
       priority: 1,
       rename: this.getRename.bind(this),
+    }
+  }
+
+  public async registerRenameCommands() {
+    this._disposable.add(
+      atom.commands.add("atom-text-editor", "IDE:Rename", async (event: CommandEvent<TextEditorElement>) => {
+        const textEditorElement = event.currentTarget
+        const textEditor = textEditorElement.getModel()
+        const bufferPosition = textEditor.getCursorBufferPosition()
+        const server = await this._serverManager.getServer(textEditor)
+
+        if (!server) {
+          return
+        }
+
+        if (!RenameAdapter.canAdapt(server.capabilities)) {
+          atom.notifications.addInfo(`Rename is not supported by ${this.getServerName()}`)
+        }
+
+        const outcome = { possible: true, label: "Rename" }
+        if (RenameAdapter.canPrepare(server.capabilities)) {
+          const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)
+          outcome.possible = possible
+        }
+
+        if (!outcome.possible) {
+          atom.notifications.addWarning(
+            `Nothing to rename at position at row ${bufferPosition.row + 1} and column ${bufferPosition.column + 1}`
+          )
+          return
+        }
+        const newName = await Dialog.prompt("Enter new name")
+        RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)
+        return
+      })
+    )
+
+    this._disposable.add(
+      atom.contextMenu.add({
+        "atom-text-editor": [
+          {
+            label: "Refactor",
+            submenu: [{ label: "Rename", command: "IDE:Rename" }],
+            created: function (event: MouseEvent) {
+              const textEditor = atom.workspace.getActiveTextEditor()
+              if (!textEditor) {
+                return
+              }
+
+              const screenPosition = atom.views.getView(textEditor).getComponent().screenPositionForMouseEvent(event)
+              const bufferPosition = textEditor.bufferPositionForScreenPosition(screenPosition)
+
+              textEditor.setCursorBufferPosition(bufferPosition)
+            },
+          },
+        ],
+      })
+    )
+  }
+
+  public provideIntentions() {
+    return {
+      grammarScopes: this.getGrammarScopes(), // [*] would also work
+      getIntentions: async ({ textEditor, bufferPosition }: { textEditor: TextEditor; bufferPosition: Point }) => {
+        const intentions: { title: string; selected: () => void }[] = []
+        const server = await this._serverManager.getServer(textEditor)
+
+        if (server == null) {
+          return intentions
+        }
+
+        if (RenameAdapter.canAdapt(server.capabilities)) {
+          const outcome = { possible: true, label: "Rename" }
+          if (RenameAdapter.canPrepare(server.capabilities)) {
+            const { possible } = await RenameAdapter.prepareRename(server.connection, textEditor, bufferPosition)
+            outcome.possible = possible
+          }
+
+          if (outcome.possible) {
+            intentions.push({
+              title: outcome.label,
+              selected: async () => {
+                const newName = await Dialog.prompt("Enter new name")
+                return RenameAdapter.rename(server.connection, textEditor, bufferPosition, newName)
+              },
+            })
+          }
+        }
+
+        intentions.push({
+          title: "Some dummy intention",
+          selected: async () => {
+            console.log("selected")
+          },
+        })
+
+        return intentions
+      },
     }
   }
 
